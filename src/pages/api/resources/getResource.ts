@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getData } from '../../../src/app/db/getData'
+import { getData } from '../../../db/getData'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
