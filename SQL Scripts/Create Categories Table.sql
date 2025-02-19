@@ -1,5 +1,5 @@
 CREATE TABLE categories
 (
-	categories_id INT PRIMARY KEY NOT NULL,
+	categories_id SERIAL PRIMARY KEY NOT NULL,
 	name	TEXT
 )
