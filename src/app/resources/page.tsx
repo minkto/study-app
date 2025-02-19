@@ -1,6 +1,8 @@
+"use client";
+
 import { useEffect, useState } from 'react';
 
-const ResourcesPage = () => {
+const Page = () => {
     const [resources, setResource] = useState([]);
 
     useEffect(() => {
@@ -14,11 +16,13 @@ const ResourcesPage = () => {
         <div>
             <h1>Resources Page</h1>
             <ul>
-                {resources.map((resources: any) => (
+                
+                {/* eslint-disable @typescript-eslint/no-explicit-any */
+                resources.map((resources: any) => (
                     <li key={resources.version}>{resources.version}</li>
                 ))}
             </ul>
         </div>)
 }
 
-export default ResourcesPage
+export default Page
