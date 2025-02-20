@@ -1,0 +1,20 @@
+.dashboard
+{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.dashboard__sidebar
+{
+    background-color: rgb(203, 255, 224);
+    width: 20%;
+    height: 100%;
+}
+
+.dashboard__main-content
+{
+    background-color: cadetblue;
+    width: 80%;
+    height: 100%;
+}
