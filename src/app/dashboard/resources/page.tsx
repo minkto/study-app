@@ -16,7 +16,6 @@ const Page = () => {
         <div>
             <h1>Resources Page</h1>
             <ul>
-                
                 {/* eslint-disable @typescript-eslint/no-explicit-any */
                 resources.map((resources: any) => (
                     <li key={resources.version}>{resources.version}</li>
