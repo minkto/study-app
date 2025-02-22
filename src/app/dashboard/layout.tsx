@@ -1,9 +1,9 @@
 import "./layout.css";
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
     return (
         <div className="dashboard">
@@ -12,8 +12,10 @@ export default function RootLayout({
             </aside>
             <div className="dashboard__main-content">
                 <p>Dashboard Layout - This is the main content for dashboard.</p>
-                {children}
-            </div> 
+                <div className="dashboard__widgets-container">
+                    {children}
+                </div>
+            </div>
         </div>
     );
 }

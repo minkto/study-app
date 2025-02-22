@@ -1,5 +1,6 @@
 "use client";
 
+import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 import { useEffect, useState } from 'react';
 
 const Page = () => {
@@ -15,11 +16,13 @@ const Page = () => {
     return (
         <div>
             <h1>Resources Page</h1>
+            <DashboardWidget title="Resources">
+            </DashboardWidget>
             <ul>
                 {/* eslint-disable @typescript-eslint/no-explicit-any */
-                resources.map((resources: any) => (
-                    <li key={resources.version}>{resources.version}</li>
-                ))}
+                    resources.map((resources: any) => (
+                        <li key={resources.version}>{resources.version}</li>
+                    ))}
             </ul>
         </div>)
 }
