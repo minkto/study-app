@@ -9,4 +9,4 @@ export const pool = new Pool({
   port: Number(process.env.POSTGRES_PORT),
 });
 
-module.exports = pool
+export default pool
