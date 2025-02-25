@@ -1,6 +1,7 @@
 export interface Resource
 {
-    resourceId : number,
+    resourceId? : number,
     name: string,
-    description? : string
+    description? : string,
+    categoryId?: number
 }

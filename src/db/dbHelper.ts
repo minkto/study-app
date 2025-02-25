@@ -1,12 +1,11 @@
 import { pool } from './db';
-interface DbQuery
-{
+interface DbQuery {
     text: string,
-    values: Array<string>
+    values: Array<string | number | undefined>
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getData(text: string, params?: any[]) {
+export async function queryData(text: string, params?: any[]) {
     const client = await pool.connect();
     try {
         const res = await client.query(text, params);
@@ -16,7 +15,7 @@ export async function getData(text: string, params?: any[]) {
     }
 }
 
-export async function insertData(query: DbQuery) {
+export async function queryDataRowCount(query: DbQuery) {
     const client = await pool.connect();
     try {
         const res = await client.query(query);
