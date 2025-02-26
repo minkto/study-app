@@ -34,6 +34,7 @@
 
 .resources-listing-card__options {
     flex: 0 0 auto;
+    position: relative;
 }
 
 .resources-listing-card__description {
@@ -68,4 +69,30 @@
     flex-basis: 60%;
     display: flex;
     flex-wrap: wrap;
+}
+
+.card-dropdown-menu {
+    border-radius: 5px;
+    border: 1px solid black;
+    min-width: 210px;
+    height: auto;
+    background-color: rgb(255, 255, 255);
+    top: 100%;
+    right: 100%;
+    position: absolute;
+}
+
+.card-dropdown-menu__list {
+    list-style: none;
+}
+
+.card-dropdown-menu__list-item {
+    border-bottom: 1px solid #EEEEEE;
+    padding: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.card-dropdown-menu__list-item:last-child {
+    border-bottom: none;
 }
