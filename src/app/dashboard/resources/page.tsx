@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import ResourceListings from '@/components/resource-listings/ResourceListings';
 import { Resource } from '@/shared.types';
 import { useEffect, useState } from 'react';
 
@@ -23,9 +24,9 @@ const Page = () => {
         <div>
             <h1>Resources Page</h1>
             <DashboardWidget title="Resources">
-                
+                <ResourceListings />
             </DashboardWidget>
-            <h2>Resource Listing Component</h2>
+            <h2>Resource Listing Component </h2>
             <ul>
                 {
                     resources?.map((resources: Resource) => (
@@ -33,7 +34,6 @@ const Page = () => {
                     ))
                 }
             </ul>
-           
         </div>)
 }
 
