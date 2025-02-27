@@ -34,6 +34,7 @@
 
 .resources-listing-card__options {
     flex: 0 0 auto;
+    position: relative;
 }
 
 .resources-listing-card__description {

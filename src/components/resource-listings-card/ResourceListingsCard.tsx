@@ -1,20 +1,27 @@
+import { useState } from 'react';
 import CategoryPill from '../category-pill/CategoryPill';
 import IconMoreHorizontal from '../icons/icon-more-horizontal/IconMoreHorizontal';
 import styles from './resource-listings-card.module.css'
+import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
 
-interface ResourceListingsCardProps 
-{
-    title? : string;
+interface ResourceListingsCardProps {
+    title?: string;
 }
 
-const ResourceListingsCard = ({title = "Card Name"} : ResourceListingsCardProps) => 
-{
-    return(
+const ResourceListingsCard = ({ title = "Card Name" }: ResourceListingsCardProps) => {
+    const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
+
+    const toggleDropdown = () => {
+        setDropdownMenuOpen(!dropdownMenuOpen);
+    }
+
+    return (
         <div className={styles["resources-listing-card"]}>
             <div className={styles["resources-listing-card__row"]}>
                 <h2 className={styles["resources-listing-card__name"]}>{title}</h2>
                 <div className={styles["resources-listing-card__options"]}>
-                    <button>
+                    {<CardDropdownMenu isOpen={dropdownMenuOpen} onClose={toggleDropdown} />}
+                    <button className={styles["resources-listing-card__options-button"]} onClick={toggleDropdown}>
                         <IconMoreHorizontal width={32} height={32} />
                     </button>
                 </div>
@@ -46,12 +53,11 @@ const ResourceListingsCard = ({title = "Card Name"} : ResourceListingsCardProps)
                     Morbi quis purus maximus, dignissim enim nec, molestie lorem. Mauris porta rhoncus rhoncus.
                     Sed at lectus porttitor, elementum metus sed, ornare tellus. Fusce eget turpis nunc.</p>
                 <div className={styles["resources-listing-card__description-container"]}></div>
-
             </div>
 
             <div className={styles["resources-listing-card__description-overlay"]}></div>
         </div>
-   );
+    );
 }
 
 export default ResourceListingsCard;
