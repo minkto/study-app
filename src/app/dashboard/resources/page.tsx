@@ -2,7 +2,6 @@
 
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 import ResourceListings from '@/components/resource-listings/ResourceListings';
-import { Resource } from '@/shared.types';
 import { useEffect, useState } from 'react';
 
 const Page = () => {
@@ -24,17 +23,9 @@ const Page = () => {
         <div>
             <h1>Resources Page</h1>
             <DashboardWidget title="Resources">
-                <ResourceListings />
+                <ResourceListings resources={resources} />
             </DashboardWidget>
-            <h2>Resource Listing Component </h2>
-            <ul>
-                {
-                    resources?.map((resources: Resource) => (
-                        <li key={resources.resourceId}>{resources.name}, {resources?.description}</li>
-                    ))
-                }
-            </ul>
         </div>)
 }
 
-export default Page
+export default Page;
