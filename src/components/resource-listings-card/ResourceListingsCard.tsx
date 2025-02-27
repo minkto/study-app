@@ -3,12 +3,13 @@ import CategoryPill from '../category-pill/CategoryPill';
 import IconMoreHorizontal from '../icons/icon-more-horizontal/IconMoreHorizontal';
 import styles from './resource-listings-card.module.css'
 import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
+import { Resource } from '@/shared.types';
 
 interface ResourceListingsCardProps {
-    title?: string;
+    resource: Resource;
 }
 
-const ResourceListingsCard = ({ title = "Card Name" }: ResourceListingsCardProps) => {
+const ResourceListingsCard = ({resource}: ResourceListingsCardProps) => {
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
 
     const toggleDropdown = () => {
@@ -18,7 +19,7 @@ const ResourceListingsCard = ({ title = "Card Name" }: ResourceListingsCardProps
     return (
         <div className={styles["resources-listing-card"]}>
             <div className={styles["resources-listing-card__row"]}>
-                <h2 className={styles["resources-listing-card__name"]}>{title}</h2>
+                <h2 className={styles["resources-listing-card__name"]}>{resource.name}</h2>
                 <div className={styles["resources-listing-card__options"]}>
                     {<CardDropdownMenu isOpen={dropdownMenuOpen} onClose={toggleDropdown} />}
                     <button className={styles["resources-listing-card__options-button"]} onClick={toggleDropdown}>
@@ -45,7 +46,7 @@ const ResourceListingsCard = ({ title = "Card Name" }: ResourceListingsCardProps
                 </div>
             </div>
             <div className={styles["resources-listing-card__description"]}>
-                <p className={styles["max-lines"]}>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                <p className={styles["max-lines"]}>{resource?.description} .Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                     Morbi vitae finibus augue. Nulla tincidunt porttitor felis, ut iaculis sapien pretium id.
                     Nunc non vulputate libero, ac suscipit felis. Fusce sodales lacus vel nisi dignissim, vel convallis quam placerat.
                     Suspendisse potenti. Praesent ac mi et leo congue sollicitudin.
