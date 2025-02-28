@@ -46,13 +46,7 @@ const ResourceListingsCard = ({resource}: ResourceListingsCardProps) => {
                 </div>
             </div>
             <div className={styles["resources-listing-card__description"]}>
-                <p className={styles["max-lines"]}>{resource?.description} .Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Morbi vitae finibus augue. Nulla tincidunt porttitor felis, ut iaculis sapien pretium id.
-                    Nunc non vulputate libero, ac suscipit felis. Fusce sodales lacus vel nisi dignissim, vel convallis quam placerat.
-                    Suspendisse potenti. Praesent ac mi et leo congue sollicitudin.
-                    Donec enim metus, consectetur id malesuada vel, accumsan quis felis.
-                    Morbi quis purus maximus, dignissim enim nec, molestie lorem. Mauris porta rhoncus rhoncus.
-                    Sed at lectus porttitor, elementum metus sed, ornare tellus. Fusce eget turpis nunc.</p>
+                <p className={styles["max-lines"]}>{resource?.description}</p>
                 <div className={styles["resources-listing-card__description-container"]}></div>
             </div>
 
