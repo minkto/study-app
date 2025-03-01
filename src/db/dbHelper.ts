@@ -15,6 +15,17 @@ export async function queryData(text: string, params?: any[]) {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function queryDataSingleRow(text: string, params?: any[]) {
+    const client = await pool.connect();
+    try {
+        const res = await client.query(text, params);
+        return res.rows[0];
+    } finally {
+        client.release();
+    }
+}
+
 export async function queryDataRowCount(query: DbQuery) {
     const client = await pool.connect();
     try {
