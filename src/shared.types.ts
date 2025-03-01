@@ -13,6 +13,6 @@ export interface Chapter
     statusId? : number,
     name: string,
     url?: string,
-    originalDateCompleted?: Date,
-    lastDateCompleted?: Date
+    originalDateCompleted?: Date | undefined | null,
+    lastDateCompleted?: Date | undefined | null
 }
