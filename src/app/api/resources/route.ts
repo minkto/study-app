@@ -13,7 +13,7 @@ export async function GET() {
         return NextResponse.json(mappedResources, { status: 200 });
     }
     catch (error) {
-        return NextResponse.json({ message: 'Database error', error }, { status: 500 });
+        return NextResponse.json({ message: 'API Error', error }, { status: 500 });
     }
 }
 
@@ -30,8 +30,8 @@ export async function POST(request: Request) {
         return NextResponse.json(newResource, { status: 200 });
 
     } catch (error) {
-        console.error("Database error:", error);
-        return NextResponse.json({ message: 'Database error', error: error instanceof Error ? error.message : error },
+        console.error("API error:", error);
+        return NextResponse.json({ message: 'API Error', error: error instanceof Error ? error.message : error },
             { status: 500 });
     }
 }
@@ -59,8 +59,8 @@ export async function PUT(request: Request) {
         return NextResponse.json(resource, { status: 200 });
 
     } catch (error) {
-        console.error("Database error:", error);
-        return NextResponse.json({ message: 'Database error', error: error instanceof Error ? error.message : error },
+        console.error("API Error:", error);
+        return NextResponse.json({ message: 'API Error', error: error instanceof Error ? error.message : error },
             { status: 500 });
     }
 }
