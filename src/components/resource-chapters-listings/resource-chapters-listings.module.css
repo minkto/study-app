@@ -1,0 +1,61 @@
+.table-head-cell {
+    background-color: #EEEEEE;
+    padding: 10px;
+}
+
+.table-head-cell:first-child {
+
+    border-radius: 5px 0 0 0;
+}
+
+.table-head-cell:last-child {
+    border-radius: 0 5px 0 0;   
+}
+
+
+.table-container
+{
+    width: 95%;
+    border-collapse: collapse; 
+}
+
+
+.table-row-data {
+    padding: 10px;
+}
+
+tbody .table-row
+{
+    background-color: #FFFFFF;
+    transition: 0.3s;
+    border: 1px solid #EEEEEE;
+}
+
+tbody .table-row:nth-child(2n)
+{
+    background-color: #FAFFF5;
+    transition: 0.3s;
+}
+
+
+tbody .table-row:hover,
+tbody .table-row:nth-child(2n):hover
+{
+    background-color: #ceff96;
+}
+
+
+tbody .table-row-data.progress--completed
+{
+    background-color: #C8FFA6;
+}
+
+tbody .table-row-data.progress--in-progress
+{
+    background-color: #F5FFCB;
+}
+
+tbody .table-row-data.progress--not-started
+{
+    background-color: #FFD0CB;
+}

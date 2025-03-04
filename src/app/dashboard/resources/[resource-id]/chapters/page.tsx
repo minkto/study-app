@@ -1,14 +1,20 @@
 "use client";
 
-import ChapterListings from "@/components/chapter-listings/ChapterListings";
+import { DashboardWidget } from "@/components/dashboard/DashboardWidget";
+import ResourceChaptersListings from "@/components/resource-chapters-listings/ResourceChaptersListings";
+import { useParams } from "next/navigation";
 
 const Page = () => {
+    const params = useParams();
+    const resourceId = params["resource-id"] as string;
 
     return (
         <div>
             <h1>Selected Resource Chapters Page</h1>
-            <ChapterListings />
-        </div>)
+            <DashboardWidget title="Resource Chapters">
+                <ResourceChaptersListings resourceId={resourceId} />
+            </DashboardWidget>
+        </div>);
 }
 
 export default Page;
