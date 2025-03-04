@@ -9,7 +9,11 @@ declare module '@tanstack/react-table' {
     }
 };
 
-const ResourceChaptersListings = () => {
+interface ResourceChaptersListingsProps {
+    resourceId?: string
+}
+
+const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
 
     const ChapterStatuses =
     {
@@ -84,9 +88,13 @@ const ResourceChaptersListings = () => {
     });
 
     useEffect(() => {
-        const fetchChapters = async () => {
+        const fetchChapters = async (resourceId: string | undefined) => {
             try {
-                const response = await fetch('/api/resources/1/chapters');
+                if (resourceId === undefined) {
+                    console.log("Could not find resource Id from the URL");
+                    return;
+                }
+                const response = await fetch(`/api/resources/${resourceId}/chapters`);
                 const data = await response.json();
                 setData(data);
             }
@@ -95,8 +103,8 @@ const ResourceChaptersListings = () => {
             }
         };
 
-        fetchChapters();
-    }, []);
+        fetchChapters(resourceId);
+    }, [resourceId]);
 
     console.log('Chapter Data: ', data);
 
