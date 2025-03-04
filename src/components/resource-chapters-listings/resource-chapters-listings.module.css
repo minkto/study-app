@@ -1,13 +1,11 @@
-
 .table-head-cell {
     background-color: #EEEEEE;
     padding: 10px;
-    border: 1px solid black;
 }
 
 .table-head-cell:first-child {
 
-    border-radius: 5px  0 0;
+    border-radius: 5px 0 0 0;
 }
 
 .table-head-cell:last-child {
@@ -17,7 +15,8 @@
 
 .table-container
 {
-    width: 100%;
+    width: 95%;
+    border-collapse: collapse; 
 }
 
 
@@ -27,8 +26,9 @@
 
 tbody .table-row
 {
-    background-color: #ffffff;
+    background-color: #FFFFFF;
     transition: 0.3s;
+    border: 1px solid #EEEEEE;
 }
 
 tbody .table-row:nth-child(2n)
@@ -44,15 +44,6 @@ tbody .table-row:nth-child(2n):hover
     background-color: #ceff96;
 }
 
-tbody .table-row:last-child td:first-child
-{
-    border-radius: 0 0 0 5px;   
-}
-
-tbody .table-row:last-child td:last-child
-{
-    border-radius: 0 0 5px 0;   
-}
 
 tbody .table-row-data.progress--completed
 {
