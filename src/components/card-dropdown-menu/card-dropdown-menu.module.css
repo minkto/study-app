@@ -15,9 +15,20 @@
 
 .card-dropdown-menu__list-item {
     border-bottom: 1px solid #EEEEEE;
-    padding: 10px;
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.card-dropdown-menu__link {
+    display: block;
+    padding: 10px;
+    width: 100%;
+}
+
+.card-dropdown-menu__button {
+    display: block;
+    padding: 10px;
+    width: 100%;
 }
 
 .card-dropdown-menu__list-item:last-child {
