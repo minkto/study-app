@@ -1,6 +1,6 @@
 "use client"
 
-import { Category } from '@/shared.types';
+import { Category, Resource } from '@/shared.types';
 import Form from 'next/form'
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
@@ -11,8 +11,8 @@ const ResourceForm = () => {
     });
 
     const [categories, setCategories] = useState<Category[]>([]);
-    const [buttonDisabled, setButtonDisabled] = useState(false);
-    const [formData, setFormData] = useState({
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+    const [formData, setFormData] = useState<Resource>({
         name: "",
         categoryId: -1,
         description: "",
@@ -23,7 +23,7 @@ const ResourceForm = () => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
     }
 
-    const isFormValid = () => {
+    const isFormValid = () : boolean => {
         let result = true;
         if (!formData.name) {
             setFormErrors({ ...formErrors, nameError: "The 'Name' field is a mandatory field." });
@@ -41,10 +41,12 @@ const ResourceForm = () => {
 
         // If nothing was changed on dropdown, take the first value.
         if (categories?.length > 0 &&
-            formData.categoryId <= -1 &&
-            categories[0]?.categoryId) {
-            formData.categoryId = categories[0]?.categoryId;
-        }
+            formData.categoryId !== undefined && 
+            formData.categoryId  <= -1 &&
+            categories[0]?.categoryId) 
+            {
+                formData.categoryId = categories[0]?.categoryId;
+            }
 
         if (!isFormValid()) {
             return;
