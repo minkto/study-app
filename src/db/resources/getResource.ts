@@ -8,7 +8,7 @@ export async function getResource(id: number) {
             resourceId: x.resource_id,
             name: x.name,
             description: x.description,
-            categoryId: x.categoryId
+            categoryId: x.category_id
         }))[0];
 
     return resource;
