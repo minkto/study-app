@@ -21,7 +21,12 @@ const ResourceListingsCard = ({resource}: ResourceListingsCardProps) => {
             <div className={styles["resources-listing-card__row"]}>
                 <h2 className={styles["resources-listing-card__name"]}>{resource.name}</h2>
                 <div className={styles["resources-listing-card__options"]}>
-                    {<CardDropdownMenu links={ [{href : `resources/${resource.resourceId}/chapters`, label: "View Chapters"}]}
+                    {<CardDropdownMenu links={ 
+                        [
+                            {href : `resources/${resource.resourceId}/chapters`, label: "View Chapters"},
+                            {href : `resources/${resource.resourceId}/edit-resource`, label: "Edit Resource"}
+                        ]
+                    }
                      isOpen={dropdownMenuOpen} onClose={toggleDropdown} />}
                     <button className={styles["resources-listing-card__options-button"]} onClick={toggleDropdown}>
                         <IconMoreHorizontal width={32} height={32} />
