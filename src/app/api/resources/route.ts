@@ -1,5 +1,4 @@
 import { createResource } from "@/db/resources/createResource";
-import { deleteResource } from "@/db/resources/deleteResource";
 import { getResource } from "@/db/resources/getResource";
 import { getResoures } from "@/db/resources/getResources";
 import { updateResource } from "@/db/resources/updateResource";
@@ -63,20 +62,4 @@ export async function PUT(request: Request) {
         return NextResponse.json({ message: 'API Error', error: error instanceof Error ? error.message : error },
             { status: 500 });
     }
-}
-
-export async function DELETE(request: Request) {
-
-    const res = await request.json();
-    const resourceId = res["resourceId"];
-    const resourceFromDb = await getResource(resourceId);
-
-    if (resourceFromDb === undefined ||
-        resourceFromDb === null) {
-        return NextResponse.json({ message: "No resource was found." }, { status: 404 });
-    }
-
-    const result = await deleteResource(resourceId);
-
-    return NextResponse.json(result, { status: 200 });
 }
