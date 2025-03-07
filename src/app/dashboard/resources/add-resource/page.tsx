@@ -9,6 +9,10 @@ import styles from './dashboard-form.module.css'
 
 const Page = () => {
 
+    const [formErrors, setFormErrors] = useState({
+        nameError : "",
+    });
+
     const [categories, setCategories] = useState<Category[]>([]);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [formData, setFormData] = useState({
@@ -23,8 +27,24 @@ const Page = () => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
     }
 
+    const isFormValid = () => 
+    {
+        let result = true;
+        if(!formData.name)
+        {
+            setFormErrors({...formErrors, nameError : "The 'Name' field is a mandatory field."});
+            result = false;
+        } 
+        else
+        {
+            setFormErrors({...formErrors, nameError : ""});
+        }
+
+        return result;
+    };
+
     const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+        event.preventDefault(); 
 
         // If nothing was changed on dropdown, take the first value.
         if (categories?.length > 0 &&
@@ -33,7 +53,7 @@ const Page = () => {
             formData.categoryId = categories[0]?.categoryId;
         }
 
-        if (!formData.name) {
+        if (!isFormValid()) {
             return;
         }
 
@@ -85,6 +105,7 @@ const Page = () => {
                 <div className={`${styles["form-field-wrapper"]} ${styles["centered-fields"]}`}>
                     <label htmlFor='form-resource__name'>Name</label>
                     <input className={`${styles["form-field"]}`} id="form-resource__name" name="name" type='text' onChange={handleChange}></input>
+                    { formErrors.nameError ? (<p className={styles['form-field__error-message']}>{formErrors.nameError}</p>) : null}
                 </div>
 
                 <div className={`${styles["form-field-wrapper"]} ${styles["centered-fields"]}`}>
@@ -95,7 +116,6 @@ const Page = () => {
                         )}
                     </select>
                 </div>
-
                 <div className={`${styles["form-field-wrapper"]} ${styles["centered-fields"]}`}>
                     <label htmlFor='form-resource__description'>Description</label>
                     <textarea className={`${styles["form-field"]}`} id="form-resource__description" rows={5} name="description" onChange={handleChange}></textarea>

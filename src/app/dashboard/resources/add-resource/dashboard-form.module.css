@@ -42,3 +42,7 @@ textarea.form-field {
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.2rem;
 }
+
+.form-field__error-message{
+    color: red;
+}
