@@ -7,9 +7,10 @@ import { Resource } from '@/shared.types';
 
 interface ResourceListingsCardProps {
     resource: Resource;
+    onDelete:  (id: number | undefined) => Promise<void>;
 }
 
-const ResourceListingsCard = ({resource}: ResourceListingsCardProps) => {
+const ResourceListingsCard = ({resource, onDelete}: ResourceListingsCardProps) => {
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
 
     const toggleDropdown = () => {
@@ -24,7 +25,8 @@ const ResourceListingsCard = ({resource}: ResourceListingsCardProps) => {
                     {<CardDropdownMenu links={ 
                         [
                             {href : `resources/${resource.resourceId}/chapters`, label: "View Chapters"},
-                            {href : `resources/${resource.resourceId}/edit-resource`, label: "Edit Resource"}
+                            {href : `resources/${resource.resourceId}/edit-resource`, label: "Edit Resource"},
+                            {onClick: () => onDelete(resource.resourceId), label: "Delete Resource"},
                         ]
                     }
                      isOpen={dropdownMenuOpen} onClose={toggleDropdown} />}
