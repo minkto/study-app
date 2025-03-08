@@ -19,24 +19,27 @@ const CardDropdownMenu = ({ links }: CardDropdownMenuProps) => {
 
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
-    
+
     const renderDropdownMenuOptions = (dropdownMenuOptions: DropdownMenuOption[] | undefined) => {
         if (dropdownMenuOptions === undefined) {
             return null;
         }
         return (
             dropdownMenuOptions?.map((i) => (
-                <li key={i.label} className={styles["card-dropdown-menu__list-item"]}>
+                <li key={i.label} className={styles["dropdown-menu__list-item"]}>
                     {i.href ? (
-                        <a href={i.href} className={styles["card-dropdown-menu__link"]}>{i.label}</a>
+                        <a href={i.href} className={styles["dropdown-menu__link"]}>{i.label}</a>
                     ) : (
-                        <button onClick={i.onClick} className={styles["card-dropdown-menu__button"]}>{i.label}</button>
+                        <button onClick={i.onClick} className={styles["dropdown-menu__button"]}>{i.label}</button>
                     )}
                 </li>
             ))
         );
     }
-    const toggleDropdown = useCallback((()  => setDropdownMenuOpen(!dropdownMenuOpen)),[dropdownMenuOpen]);
+
+    const toggleDropdown = useCallback(
+        (() => setDropdownMenuOpen(!dropdownMenuOpen)), [dropdownMenuOpen]
+    );
 
     useEffect(() => {
         const onOutsideClick = (e: MouseEvent | KeyboardEvent) => {
@@ -54,16 +57,16 @@ const CardDropdownMenu = ({ links }: CardDropdownMenuProps) => {
             document.removeEventListener("mousedown", onOutsideClick);
             document.removeEventListener("keydown", onOutsideClick);
         };
-    }, [dropdownMenuOpen,toggleDropdown]);
+    }, [dropdownMenuOpen, toggleDropdown]);
 
     return (
-        <div className={styles["resources-listing-card__options"]}>
-             {dropdownMenuOpen ? <div className={styles['card-dropdown-menu']} ref={modalRef}>
-                <ul className={styles['card-dropdown-menu__list']}>
-                   {renderDropdownMenuOptions(links)}
-                </ul> 
-            </div>: null}
-            <button className={styles["resources-listing-card__options-button"]} onClick={toggleDropdown}>
+        <div className={styles["dropdown-menu__options"]}>
+            {dropdownMenuOpen ? <div className={styles['dropdown-menu']} ref={modalRef}>
+                <ul className={styles['dropdown-menu__list']}>
+                    {renderDropdownMenuOptions(links)}
+                </ul>
+            </div> : null}
+            <button className={styles["dropdown-menu__options-button"]} onClick={toggleDropdown}>
                 <IconMoreHorizontal width={32} height={32} />
             </button>
         </div>);

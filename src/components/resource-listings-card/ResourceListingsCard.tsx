@@ -5,22 +5,22 @@ import { Resource } from '@/shared.types';
 
 interface ResourceListingsCardProps {
     resource: Resource;
-    onDelete:  (id: number | undefined) => Promise<void>;
+    onDelete: (id: number | undefined) => Promise<void>;
 }
 
-const ResourceListingsCard = ({resource, onDelete}: ResourceListingsCardProps) => {
+const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps) => {
 
     return (
         <div className={styles["resources-listing-card"]}>
             <div className={styles["resources-listing-card__row"]}>
                 <h2 className={styles["resources-listing-card__name"]}>{resource.name}</h2>
-                    {<CardDropdownMenu links={ 
-                        [
-                            {href : `resources/${resource.resourceId}/chapters`, label: "View Chapters"},
-                            {href : `resources/${resource.resourceId}/edit-resource`, label: "Edit Resource"},
-                            {onClick: () => onDelete(resource.resourceId), label: "Delete Resource"},
-                        ]
-                    }/>}
+                {<CardDropdownMenu links={
+                    [
+                        { href: `resources/${resource.resourceId}/chapters`, label: "View Chapters" },
+                        { href: `resources/${resource.resourceId}/edit-resource`, label: "Edit Resource" },
+                        { onClick: () => onDelete(resource.resourceId), label: "Delete Resource" },
+                    ]
+                } />}
             </div>
 
             <div className={styles["resources-listing-card__row"]}>
