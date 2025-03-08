@@ -2,6 +2,7 @@ import { Chapter } from "@/shared.types";
 import { CellContext, createColumnHelper, flexRender, getCoreRowModel, RowData, useReactTable } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
+import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -74,8 +75,13 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             id: 'menuOptions',
             header: () => null,
             cell: () => {
-                return (<div><button>...</button>
-                </div>
+                return (
+                    <CardDropdownMenu links={ 
+                        [
+                            {label: "Edit Chapter"},
+                            {label: "Delete Chapter"},
+                        ]
+                    }/>  
                 )
             }
         }
