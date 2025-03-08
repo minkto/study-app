@@ -1,3 +1,8 @@
+.resources-listing-card__options {
+    flex: 0 0 auto;
+    position: relative;
+}
+
 .card-dropdown-menu {
     border-radius: 5px;
     border: 1px solid black;

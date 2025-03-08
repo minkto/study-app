@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import CategoryPill from '../category-pill/CategoryPill';
-import IconMoreHorizontal from '../icons/icon-more-horizontal/IconMoreHorizontal';
 import styles from './resource-listings-card.module.css'
 import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
 import { Resource } from '@/shared.types';
@@ -11,29 +9,18 @@ interface ResourceListingsCardProps {
 }
 
 const ResourceListingsCard = ({resource, onDelete}: ResourceListingsCardProps) => {
-    const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
-
-    const toggleDropdown = () => {
-        setDropdownMenuOpen(!dropdownMenuOpen);
-    }
 
     return (
         <div className={styles["resources-listing-card"]}>
             <div className={styles["resources-listing-card__row"]}>
                 <h2 className={styles["resources-listing-card__name"]}>{resource.name}</h2>
-                <div className={styles["resources-listing-card__options"]}>
                     {<CardDropdownMenu links={ 
                         [
                             {href : `resources/${resource.resourceId}/chapters`, label: "View Chapters"},
                             {href : `resources/${resource.resourceId}/edit-resource`, label: "Edit Resource"},
                             {onClick: () => onDelete(resource.resourceId), label: "Delete Resource"},
                         ]
-                    }
-                     isOpen={dropdownMenuOpen} onClose={toggleDropdown} />}
-                    <button className={styles["resources-listing-card__options-button"]} onClick={toggleDropdown}>
-                        <IconMoreHorizontal width={32} height={32} />
-                    </button>
-                </div>
+                    }/>}
             </div>
 
             <div className={styles["resources-listing-card__row"]}>

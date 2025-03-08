@@ -32,11 +32,6 @@
     margin-bottom: 10px;
 }
 
-.resources-listing-card__options {
-    flex: 0 0 auto;
-    position: relative;
-}
-
 .resources-listing-card__description {
     padding: 0.5em;
     margin-top: 10px;
