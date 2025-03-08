@@ -4,39 +4,17 @@ import IconMoreHorizontal from '../icons/icon-more-horizontal/IconMoreHorizontal
 import styles from './resource-listings-card.module.css'
 import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
 import { Resource } from '@/shared.types';
-import { useRouter } from 'next/navigation';
-
 
 interface ResourceListingsCardProps {
     resource: Resource;
+    onDelete:  (id: number | undefined) => Promise<void>;
 }
 
-const ResourceListingsCard = ({resource}: ResourceListingsCardProps) => {
+const ResourceListingsCard = ({resource, onDelete}: ResourceListingsCardProps) => {
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
-
-    const router = useRouter();
 
     const toggleDropdown = () => {
         setDropdownMenuOpen(!dropdownMenuOpen);
-    }
-
-    const deleteResource = async() => 
-    {
-        try 
-        {
-            const response = await fetch(`/api/resources/${resource.resourceId}`, {
-                method: 'DELETE'
-            });
-            if(response.ok)
-            {
-                console.log("Redirecting to resources..");
-                router.push('/dashboard/resources');
-            }
-        } 
-        catch(error)
-        {
-            console.log("An error has occured in deleting the Resource: ", error);
-        }
     }
 
     return (
@@ -48,7 +26,7 @@ const ResourceListingsCard = ({resource}: ResourceListingsCardProps) => {
                         [
                             {href : `resources/${resource.resourceId}/chapters`, label: "View Chapters"},
                             {href : `resources/${resource.resourceId}/edit-resource`, label: "Edit Resource"},
-                            {onClick:deleteResource ,label: "Delete Resource"}
+                            {onClick: () => onDelete(resource.resourceId), label: "Delete Resource"},
                         ]
                     }
                      isOpen={dropdownMenuOpen} onClose={toggleDropdown} />}
