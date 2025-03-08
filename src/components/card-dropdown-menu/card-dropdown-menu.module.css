@@ -1,6 +1,17 @@
-.dropdown-menu__options {
+.dropdown-menu {
     flex: 0 0 auto;
     position: relative;
+}
+
+.dropdown-menu__options {
+    border-radius: 5px;
+    border: 1px solid black;
+    min-width: 210px;
+    height: auto;
+    background-color: rgb(255, 255, 255);
+    top: 100%;
+    right: 100%;
+    position: absolute;
 }
 
 .dropdown-menu__options-button
@@ -17,16 +28,6 @@
     border-radius: 5px;
 }
 
-.dropdown-menu {
-    border-radius: 5px;
-    border: 1px solid black;
-    min-width: 210px;
-    height: auto;
-    background-color: rgb(255, 255, 255);
-    top: 100%;
-    right: 100%;
-    position: absolute;
-}
 
 .dropdown-menu__list {
     list-style: none;

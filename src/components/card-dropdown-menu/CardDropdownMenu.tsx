@@ -60,8 +60,8 @@ const CardDropdownMenu = ({ links }: CardDropdownMenuProps) => {
     }, [dropdownMenuOpen, toggleDropdown]);
 
     return (
-        <div className={styles["dropdown-menu__options"]}>
-            {dropdownMenuOpen ? <div className={styles['dropdown-menu']} ref={modalRef}>
+        <div className={styles["dropdown-menu"]}>
+            {dropdownMenuOpen ? <div className={styles['dropdown-menu__options']} ref={modalRef}>
                 <ul className={styles['dropdown-menu__list']}>
                     {renderDropdownMenuOptions(links)}
                 </ul>
