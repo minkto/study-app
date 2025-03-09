@@ -11,12 +11,18 @@ export interface Chapter {
     statusId?: number,
     name: string,
     url?: string,
-    originalDateCompleted?: string | undefined | null,
-    lastDateCompleted?: string | undefined | null,
+    originalDateCompleted?: string ,
+    lastDateCompleted?: string,
     daysSinceCompleted?: number
 }
 
 export interface Category {
     categoryId?: number | undefined | null,
+    name: string
+}
+
+export interface Status 
+{
+    statusId?: number | undefined | null,
     name: string
 }

@@ -9,10 +9,9 @@ export async function POST(request: Request) {
         const chapter: Chapter =
         {
             name: res["name"],
-            chapterId: res["chapterId"],
             resourceId: res["resourceId"],
             statusId: res["statusId"],
-            url: res["url"]
+            url: res["url"],
         };
 
         const result = await createChapter(chapter);
