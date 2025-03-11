@@ -20,6 +20,16 @@
     padding: 5px;
 }
 
+.dashboard__widget-row
+{
+  display: flex;
+}
+
+.row-reverse
+{
+    flex-direction: row-reverse;
+}
+
 /* TODO - To organize and arrange cards.
 .dashboard__widgets-container-row
 {
