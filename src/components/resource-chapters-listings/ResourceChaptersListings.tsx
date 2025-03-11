@@ -1,5 +1,5 @@
 import { Chapter } from "@/shared.types";
-import { CellContext, createColumnHelper, flexRender, getCoreRowModel, RowData, useReactTable } from "@tanstack/react-table";
+import { CellContext, createColumnHelper, flexRender, getCoreRowModel, Row, RowData, useReactTable } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
@@ -74,14 +74,15 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         {
             id: 'menuOptions',
             header: () => null,
-            cell: () => {
+            cell: ({ row }: { row: Row<Chapter> }) => {
+                const chapterId = row.original.chapterId
                 return (
-                    <CardDropdownMenu links={ 
+                    <CardDropdownMenu links={
                         [
-                            {label: "Edit Chapter"},
-                            {label: "Delete Chapter"},
+                            { label: "Edit Chapter", href: `chapters/${chapterId}/edit-chapter` },
+                            { label: "Delete Chapter" },
                         ]
-                    }/>  
+                    } />
                 )
             }
         }
