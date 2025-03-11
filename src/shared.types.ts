@@ -11,8 +11,8 @@ export interface Chapter {
     statusId?: number,
     name: string,
     url?: string,
-    originalDateCompleted?: string ,
-    lastDateCompleted?: string,
+    originalDateCompleted?: string  | null,
+    lastDateCompleted?: string  | null,
     daysSinceCompleted?: number
 }
 

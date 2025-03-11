@@ -11,6 +11,7 @@ export async function getChapter(chapterId: number) {
             resourceId: queryResult.resource_id,
             statusId: queryResult.status_id,
             name: queryResult.name,
+            url: queryResult.url,
             lastDateCompleted: queryResult.last_date_completed,
             originalDateCompleted: queryResult.original_date_completed
         };
