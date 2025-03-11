@@ -80,7 +80,17 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                     <CardDropdownMenu links={
                         [
                             { label: "Edit Chapter", href: `chapters/${chapterId}/edit-chapter` },
-                            { label: "Delete Chapter" },
+                            {
+                                label: "Delete Chapter",  
+                                onClick: async () => {
+                                    try {
+                                        await deleteChapter(chapterId);
+                                        await fetchChapters(resourceId);
+                                    } catch (error) {
+                                        console.error("Failed to delete chapter:", error);
+                                    }
+                                },
+                            }
                         ]
                     } />
                 )
@@ -94,22 +104,37 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         getCoreRowModel: getCoreRowModel(),
     });
 
-    useEffect(() => {
-        const fetchChapters = async (resourceId: string | undefined) => {
-            try {
-                if (resourceId === undefined) {
-                    console.log("Could not find resource Id from the URL");
-                    return;
-                }
-                const response = await fetch(`/api/resources/${resourceId}/chapters`);
-                const data = await response.json();
-                setData(data);
+    const fetchChapters = async (resourceId: string | undefined) => {
+        try {
+            if (resourceId === undefined) {
+                console.log("Could not find resource Id from the URL");
+                return;
             }
-            catch (error) {
-                console.log("An error has occurred in the API: ", error);
-            }
-        };
+            const response = await fetch(`/api/resources/${resourceId}/chapters`);
+            const data = await response.json();
+            setData(data);
+        }
+        catch (error) {
+            console.log("An error has occurred in the API: ", error);
+        }
+    };
 
+    const deleteChapter = async (chapterId: number | undefined) => {
+        try {
+            if (resourceId === undefined) {
+                console.log("Could not find Chapter Id from the URL");
+                return;
+            }
+            const response = await fetch(`/api/chapters/${chapterId}`, {method: 'DELETE'});
+            const data = await response.json();
+            setData(data);
+        }
+        catch (error) {
+            console.log("An error has occurred in the API: ", error);
+        }
+    };
+    
+    useEffect(() => {
         fetchChapters(resourceId);
     }, [resourceId]);
 
