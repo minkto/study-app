@@ -26,3 +26,9 @@ export interface Status
     statusId?: number | undefined | null,
     name: string
 }
+
+export interface SvgIcon 
+{
+    width?: number,
+    height?: number
+}

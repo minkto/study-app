@@ -1,7 +1,7 @@
 "use client";
 
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
-import IconPlus from '@/components/icons/icon-more-horizontal/IconPlus';
+import IconPlus from '@/components/icons/icon-plus/IconPlus';
 import ResourceListings from '@/components/resource-listings/ResourceListings';
 import Link from 'next/link';
 
