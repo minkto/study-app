@@ -1,4 +1,5 @@
 import "./layout.css";
+import SidebarNavigation from "@/components/sidebar-navigation/SidebarNavigation";
 
 export default function RootLayout({
     children,
@@ -7,9 +8,8 @@ export default function RootLayout({
 }>) {
     return (
         <div className="dashboard">
-            <aside className="dashboard__sidebar">
-                <div>Dashboard Layout - Side Nav</div>
-            </aside>
+            <SidebarNavigation/>
+            
             <div className="dashboard__main-content">
                 <p>Dashboard Layout - This is the main content for dashboard.</p>
                 <div className="dashboard__widgets-container">
