@@ -1,12 +1,11 @@
 .dashboard {
     display: flex;
     flex-direction: row;
-    height: 100vh;
 }
 
 .dashboard__main-content {
     background-color: cadetblue;
-    width: 80%;
+    width:95%;
     height: 100%;
     padding: 5px;
 }
