@@ -14,16 +14,14 @@
     position: absolute;
 }
 
-.dropdown-menu__options-button
-{
+.dropdown-menu__options-button {
     background-color: transparent;
     outline: transparent;
     border: none;
     transition: 0.3s;
 }
 
-.dropdown-menu__options-button:hover
-{
+.dropdown-menu__options-button:hover {
     background-color: rgb(241, 240, 240);
     border-radius: 5px;
 }
@@ -38,12 +36,23 @@
     display: block;
     padding: 10px;
     width: 100%;
+
 }
 
 .dropdown-menu__button {
     display: block;
     padding: 10px;
     width: 100%;
+    background-color: transparent;
+    font-size: inherit;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown-menu__link:hover,
+.dropdown-menu__button:hover {
+    background-color: rgb(241, 240, 240);
 }
 
 .dropdown-menu__list-item {
