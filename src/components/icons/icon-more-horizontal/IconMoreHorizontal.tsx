@@ -1,9 +1,6 @@
-interface IconMoreHorizontalProps {
-    width?: number;
-    height?: number;
-}
+import { SvgIcon } from "@/shared.types";
 
-const IconMoreHorizontal = ({ width = 16, height = 16 }: IconMoreHorizontalProps) =>
+const IconMoreHorizontal = ({ width = 16, height = 16 }: SvgIcon) =>
 
 (<svg
     width={width}
