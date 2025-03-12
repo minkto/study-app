@@ -8,17 +8,14 @@ import IconSettings from "../icons/icon-settings/IconSettings";
 import IconLogout from "../icons/icon-logout/IconLogout";
 import { useState } from "react";
 
-export const SidebarNavigation = () => 
-{
-
-    const [sidebarToggle,setSidebarToggle] = useState(false);
+export const SidebarNavigation = () => {
+    const [sidebarToggle, setSidebarToggle] = useState(false);
 
     const toggleSidebar = () => {
-        console.log('Toggle Class',sidebarToggle)
         setSidebarToggle(!sidebarToggle)
     }
 
-    return(<aside className={`sidebar${sidebarToggle ? "" : "--expanded"}`}>
+    return (<aside className={`sidebar${sidebarToggle ? "" : "--expanded"}`}>
         <div className="sidebar__container">
             <div className="sidebar__container-top">
 
@@ -48,7 +45,7 @@ export const SidebarNavigation = () =>
                         <li className="sidebar__container-menu-list-item">
                             <Link href={"#"}><IconSettings width={32} height={32} />Settings</Link>
                         </li>
-                        <li className="sidebar__container-menu-list-item"> 
+                        <li className="sidebar__container-menu-list-item">
                             <Link href={"#"}><IconLogout width={32} height={32} />Logout</Link>
                         </li>
                     </ul>
