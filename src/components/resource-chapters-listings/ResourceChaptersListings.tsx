@@ -3,6 +3,7 @@ import { CellContext, createColumnHelper, flexRender, getCoreRowModel, Row, RowD
 import { useEffect, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
+import { ChapterStatuses } from "@/constants/constants";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -15,14 +16,6 @@ interface ResourceChaptersListingsProps {
 }
 
 const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
-
-    const ChapterStatuses =
-    {
-        NOT_STARTED: 0,
-        IN_PROGRESS: 1,
-        COMPLETED: 2,
-        INVALID: 3
-    };
 
     const statusMapping = {
         [ChapterStatuses.NOT_STARTED]: { text: "Not Started", class: "progress--not-started" },

@@ -1,4 +1,4 @@
-import { FormState } from "@/constants/constants";
+import { ChapterStatuses, FormState } from "@/constants/constants";
 import { Chapter, Status } from "@/shared.types";
 import Form from "next/form";
 import { useRouter } from "next/navigation";
@@ -67,37 +67,52 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
     }
 
     const setFormDataDateValues = () => {
+        const statusValue = Number(formData?.statusId);
 
-        formData.originalDateCompleted = originalDateCompleted;
-        formData.lastDateCompleted = lastDateCompleted;
+        if (statusValue === ChapterStatuses.COMPLETED) {
+            formData.originalDateCompleted = originalDateCompleted;
+            formData.lastDateCompleted = lastDateCompleted;
+        }
+        else {
+            formData.originalDateCompleted = null;
+            formData.lastDateCompleted = null;
+        }
     }
 
     const renderDateFields = (): ReactElement => {
-        return <>
-            <div className="form-field-wrapper centered-fields">
-                <label htmlFor='form-chapter__original-date'>Original Date Completed</label>
-                <DatePicker
-                    id="form-chapter__original-date"
-                    name="originalDateCompleted"
-                    className="form-field"
-                    selected={originalDateCompleted}
-                    onChange={(date) => setOriginalDateCompleted(date)} />
 
-                {formErrors.originalDateCompletedError ? (<p className='form-field__error-message'>{formErrors.originalDateCompletedError}</p>) : null}
-            </div>
+        const statusValue = Number(formData?.statusId);
 
-            <div className="form-field-wrapper centered-fields">
-                <label htmlFor='form-chapter__last-date-completed'>Last Date Completed</label>
-                <DatePicker
-                    id="form-chapter__last-date-completed"
-                    name="lastDateCompleted"
-                    className="form-field"
-                    selected={lastDateCompleted}
-                    onChange={(date) => setLastDateCompleted(date)} />
+        if (statusValue === ChapterStatuses.COMPLETED) {
+            return <>
+                <div className="form-field-wrapper centered-fields">
+                    <label htmlFor='form-chapter__original-date'>Original Date Completed</label>
+                    <DatePicker
+                        id="form-chapter__original-date"
+                        name="originalDateCompleted"
+                        className="form-field"
+                        selected={originalDateCompleted}
+                        onChange={(date) => setOriginalDateCompleted(date)} />
 
-                {formErrors.lastDateCompletedError ? (<p className='form-field__error-message'>{formErrors.lastDateCompletedError}</p>) : null}
-            </div>
-        </>
+                    {formErrors.originalDateCompletedError ? (<p className='form-field__error-message'>{formErrors.originalDateCompletedError}</p>) : null}
+                </div>
+
+                <div className="form-field-wrapper centered-fields">
+                    <label htmlFor='form-chapter__last-date-completed'>Last Date Completed</label>
+                    <DatePicker
+                        id="form-chapter__last-date-completed"
+                        name="lastDateCompleted"
+                        className="form-field"
+                        selected={lastDateCompleted}
+                        onChange={(date) => setLastDateCompleted(date)} />
+
+                    {formErrors.lastDateCompletedError ? (<p className='form-field__error-message'>{formErrors.lastDateCompletedError}</p>) : null}
+                </div>
+            </>
+        }
+        else {
+            return <></>;
+        }
     }
 
     const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
