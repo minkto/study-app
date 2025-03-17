@@ -78,6 +78,13 @@ a {
   width: 95%;
 }
 
+.react-datepicker-wrapper 
+{
+  width: 100%;
+}
+
+
+.form-field-wrapper>.react-datepicker-wrapper input[type].form-field,
 .form-field-wrapper>input[type].form-field,
 .form-field-wrapper>select.form-field,
 .form-field-wrapper>textarea.form-field,

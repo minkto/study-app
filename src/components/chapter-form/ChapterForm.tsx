@@ -3,6 +3,8 @@ import { Chapter, Status } from "@/shared.types";
 import Form from "next/form";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, ReactElement, useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface ChapterFormProps {
     resourceId: string;
@@ -22,8 +24,8 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
     const [formData, setFormData] = useState<Chapter>({
         name: "",
         url: "",
-        lastDateCompleted: "",
-        originalDateCompleted: "",
+        lastDateCompleted: new Date(),
+        originalDateCompleted: new Date(),
         statusId: -1,
         resourceId: -1,
         chapterId: -1
@@ -31,8 +33,10 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
 
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
     const [statuses, setStatuses] = useState<Status[]>([]);
-    const router = useRouter();
+    const [originalDateCompleted, setOriginalDateCompleted] = useState<Date | null>();
+    const [lastDateCompleted, setLastDateCompleted] = useState<Date | null>();
 
+    const router = useRouter();
 
     const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -59,20 +63,38 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
             formData.statusId = statuses[0]?.statusId;
         }
 
-        formData.resourceId = parseInt(resourceId); 
+        formData.resourceId = parseInt(resourceId);
+    }
+
+    const setFormDataDateValues = () => {
+
+        formData.originalDateCompleted = originalDateCompleted;
+        formData.lastDateCompleted = lastDateCompleted;
     }
 
     const renderDateFields = (): ReactElement => {
         return <>
             <div className="form-field-wrapper centered-fields">
                 <label htmlFor='form-chapter__original-date'>Original Date Completed</label>
-                <input className="form-field" id="form-chapter__original-date" name="originalDateCompleted" type='text' onChange={handleChange} value={formData?.originalDateCompleted ?? ""}></input>
+                <DatePicker
+                    id="form-chapter__original-date"
+                    name="originalDateCompleted"
+                    className="form-field"
+                    selected={originalDateCompleted}
+                    onChange={(date) => setOriginalDateCompleted(date)} />
+
                 {formErrors.originalDateCompletedError ? (<p className='form-field__error-message'>{formErrors.originalDateCompletedError}</p>) : null}
             </div>
 
             <div className="form-field-wrapper centered-fields">
                 <label htmlFor='form-chapter__last-date-completed'>Last Date Completed</label>
-                <input className="form-field" id="form-chapter__last-date-completed" name="lastDateCompleted" type='text' onChange={handleChange} value={formData?.lastDateCompleted ?? ""}></input>
+                <DatePicker
+                    id="form-chapter__last-date-completed"
+                    name="lastDateCompleted"
+                    className="form-field"
+                    selected={lastDateCompleted}
+                    onChange={(date) => setLastDateCompleted(date)} />
+
                 {formErrors.lastDateCompletedError ? (<p className='form-field__error-message'>{formErrors.lastDateCompletedError}</p>) : null}
             </div>
         </>
@@ -82,6 +104,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
         event.preventDefault();
 
         setFormDataDefaultValues();
+        setFormDataDateValues();
 
         if (!isFormValid()) {
             return;
@@ -89,7 +112,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
 
         try {
             setButtonDisabled(true);
-            const apiUrl = formState === FormState.ADD ? '/api/chapters' : `/api/chapters/${chapterId}` 
+            const apiUrl = formState === FormState.ADD ? '/api/chapters' : `/api/chapters/${chapterId}`
             const response = await fetch(apiUrl, {
                 method: formState === FormState.ADD ? 'POST' : 'PUT',
                 body: JSON.stringify(formData)
@@ -130,6 +153,8 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                 const response = await fetch(`/api/chapters/${chapterId}`);
                 const data: Chapter = await response.json();
                 setFormData(data);
+                setLastDateCompleted(data?.lastDateCompleted);
+                setOriginalDateCompleted(data?.originalDateCompleted);
 
             } catch (error) {
                 if (error instanceof Error) {
