@@ -2,7 +2,8 @@ export interface Resource {
     resourceId?: number,
     name: string,
     description?: string,
-    categoryId?: number
+    categoryId?: number,
+    categoryName? : string
 }
 
 export interface Chapter {

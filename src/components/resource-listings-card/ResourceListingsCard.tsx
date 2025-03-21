@@ -8,6 +8,20 @@ interface ResourceListingsCardProps {
     onDelete: (id: number | undefined) => Promise<void>;
 }
 
+const renderCategory = (resource: Resource) => {
+    if (resource?.categoryName !== "" &&
+        resource?.categoryName !== undefined &&
+        resource?.categoryName !== null) {
+        return (
+            <div className={styles["resources-listing-card__category"]}>
+                <CategoryPill title={resource.categoryName} />
+            </div>
+        )
+    }
+
+    return null;
+}
+
 const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps) => {
 
     return (
@@ -29,16 +43,7 @@ const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps)
                     <div className={styles["resources-listing-card__progress-bar__name"]}>Percentage Reviewed</div>
                     <div className={styles["resources-listing-card__progress-bar__image"]}></div>
                 </div>
-            </div>
-            <div className={styles["resources-listing-card__row"]}>
-                <div className={styles["resources-listing-card__category"]}>
-                    <CategoryPill />
-                    <CategoryPill />
-                    <CategoryPill />
-                    <CategoryPill />
-                    <CategoryPill />
-                    <CategoryPill />
-                </div>
+                {renderCategory(resource)}
             </div>
             <div className={styles["resources-listing-card__description"]}>
                 <p className={styles["max-lines"]}>{resource?.description}</p>
