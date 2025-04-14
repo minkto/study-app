@@ -48,20 +48,41 @@
     width: 100%;
 }
 
-.resources-listing-card__progress-bar__image {
-    background-color: greenyellow;
+.resources-listing-card__progress-bar__background {
+    background-color: #F3F3F3;
     border-radius: 5px;
     width: 150px;
     height: 20px;
+    position: relative;
+
 }
+
+.resources-listing-card__progress-bar__overlay {
+    background-color: #B1FFC5;
+    border-radius: 5px;
+    height: 20px;
+    width: 0;
+    transition: width 1s ease-in-out;
+}
+
 
 .resources-listing-card__progress-bar {
-    flex: 1;
+    flex: 2;
 }
 
+.resources-listing-card__progress-bar__name {
+    margin: 5px auto;
+}
+
+.resources-listing-card__progress-bar__value {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    text-align: center;
+}
+
+
 .resources-listing-card__category {
-    flex: 2;
-    flex-basis: 60%;
     display: flex;
     flex-wrap: wrap;
 }
