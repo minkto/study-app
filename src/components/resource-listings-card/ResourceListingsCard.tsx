@@ -2,6 +2,7 @@ import CategoryPill from '../category-pill/CategoryPill';
 import styles from './resource-listings-card.module.css'
 import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
 import { GetResourceDto } from '@/shared.types';
+import { useEffect, useState } from 'react';
 
 interface ResourceListingsCardProps {
     resource: GetResourceDto;
@@ -24,6 +25,12 @@ const renderCategory = (resource: GetResourceDto) => {
 
 const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps) => {
 
+    const [progressBarWidth, setProgressBarWidth] = useState("0%");
+
+    useEffect(() => {
+        setProgressBarWidth(`calc(${resource.percentageCompleted}%)`);
+    }, [resource.percentageCompleted]);
+    
     return (
         <div className={styles["resources-listing-card"]}>
             <div className={styles["resources-listing-card__row"]}>
@@ -40,9 +47,12 @@ const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps)
             <div className={styles["resources-listing-card__row"]}>
                 {/*<!-- Percentage Component -->*/}
                 <div className={styles["resources-listing-card__progress-bar"]}>
-                    <div className={styles["resources-listing-card__progress-bar__name"]}>Percentage Reviewed</div>
-                    <div className={styles["resources-listing-card__progress-bar__value"]}>{resource.percentageCompleted}</div>
-                    <div className={styles["resources-listing-card__progress-bar__image"]}></div>
+                    <div className={styles["resources-listing-card__progress-bar__name"]}>Percentage Complete</div>
+                    <div className={styles["resources-listing-card__progress-bar__background"]}>
+                        <div style={{ width: progressBarWidth }} className={styles["resources-listing-card__progress-bar__overlay"]}></div>
+                        <div className={styles["resources-listing-card__progress-bar__value"]}>{resource.percentageCompleted}%</div>
+                    </div>
+
                 </div>
                 {renderCategory(resource)}
             </div>
