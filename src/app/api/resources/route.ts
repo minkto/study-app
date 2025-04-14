@@ -1,17 +1,21 @@
 import { createResource } from "@/db/resources/createResource";
 import { getResource } from "@/db/resources/getResource";
-import { getResoures } from "@/db/resources/getResources";
 import { updateResource } from "@/db/resources/updateResource";
+import { getResourcesDto } from "@/services/resourceService";
 import { Resource } from "@/shared.types";
 import { NextResponse } from "next/server";
 
 export async function GET() {
 
     try {
-        const mappedResources = await getResoures();
-        return NextResponse.json(mappedResources, { status: 200 });
-    }
-    catch (error) {
+        const mappedResources = await getResourcesDto();
+        if (mappedResources === null || mappedResources === undefined) {
+            return NextResponse.json({ message: "No resources found." }, { status: 404 });
+        }
+        else {
+            return NextResponse.json(mappedResources, { status: 200 });
+        }
+    } catch (error) {
         return NextResponse.json({ message: 'API Error', error }, { status: 500 });
     }
 }

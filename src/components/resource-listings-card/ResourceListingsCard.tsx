@@ -1,14 +1,14 @@
 import CategoryPill from '../category-pill/CategoryPill';
 import styles from './resource-listings-card.module.css'
 import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
-import { Resource } from '@/shared.types';
+import { GetResourceDto } from '@/shared.types';
 
 interface ResourceListingsCardProps {
-    resource: Resource;
+    resource: GetResourceDto;
     onDelete: (id: number | undefined) => Promise<void>;
 }
 
-const renderCategory = (resource: Resource) => {
+const renderCategory = (resource: GetResourceDto) => {
     if (resource?.categoryName !== "" &&
         resource?.categoryName !== undefined &&
         resource?.categoryName !== null) {
@@ -41,6 +41,7 @@ const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps)
                 {/*<!-- Percentage Component -->*/}
                 <div className={styles["resources-listing-card__progress-bar"]}>
                     <div className={styles["resources-listing-card__progress-bar__name"]}>Percentage Reviewed</div>
+                    <div className={styles["resources-listing-card__progress-bar__value"]}>{resource.percentageCompleted}</div>
                     <div className={styles["resources-listing-card__progress-bar__image"]}></div>
                 </div>
                 {renderCategory(resource)}

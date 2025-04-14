@@ -1,3 +1,12 @@
+export interface GetResourceDto {
+    resourceId?: number,
+    name: string,
+    description?: string,
+    categoryId?: number,
+    categoryName? : string,
+    percentageCompleted? : number
+}
+
 export interface Resource {
     resourceId?: number,
     name: string,
