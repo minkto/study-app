@@ -1,11 +1,11 @@
-import { Resource } from '@/shared.types';
+import { GetResourceDto } from '@/shared.types';
 import ResourceListingsCard from '../resource-listings-card/ResourceListingsCard';
 import styles from './resource-listings.module.css'
 import { useEffect, useState } from 'react';
 
 const ResourceListings = () => {
 
-  const [resources, setResources] = useState<Resource[]>([]);
+  const [resources, setResources] = useState<GetResourceDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const getResources = async () => {
