@@ -40,5 +40,6 @@ export interface Status
 export interface SvgIcon 
 {
     width?: number,
-    height?: number
+    height?: number,
+    className? : string
 }

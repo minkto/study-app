@@ -1,0 +1,17 @@
+.search-filter-options
+{
+    display: flex; 
+}
+
+.search-filter-options__btn{
+    display: flex;
+    align-items: center;
+    width: auto;
+    background-color: #EEEEEE;
+    padding: 0.5em;
+    border-radius: 5px;
+    border: none;
+    word-wrap: normal;
+    margin: 0.5em 0.5em 0.5em 0.5em;
+    white-space: nowrap;
+}
