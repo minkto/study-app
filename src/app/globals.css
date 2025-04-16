@@ -134,3 +134,14 @@ button.form-field {
   border: none;
   margin: 0.5em 0 0.5em 0;
 }
+
+
+/*******************************
+*
+* Icon
+*
+*******************************/
+.icon-wrapper
+{
+  margin: 0 5px 0 0;
+}
