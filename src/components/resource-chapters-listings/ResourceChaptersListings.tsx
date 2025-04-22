@@ -1,9 +1,11 @@
 import { Chapter } from "@/shared.types";
 import { CellContext, createColumnHelper, flexRender, getCoreRowModel, Row, RowData, useReactTable } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
 import { ChapterStatuses } from "@/constants/constants";
+import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
+import { useSearchParams } from "next/navigation";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -23,6 +25,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         [ChapterStatuses.COMPLETED]: { text: "Completed", class: "progress--completed" },
     };
 
+    const searchParams = useSearchParams();
     const [data, setData] = useState<Chapter[]>([]);
     const columnHelper = createColumnHelper<Chapter>();
     const columns = [
@@ -78,7 +81,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                                 onClick: async () => {
                                     try {
                                         await deleteChapter(chapterId);
-                                        await fetchChapters(resourceId);
+                                        await fetchChapters();
                                     } catch (error) {
                                         console.error("Failed to delete chapter:", error);
                                     }
@@ -97,20 +100,23 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         getCoreRowModel: getCoreRowModel(),
     });
 
-    const fetchChapters = async (resourceId: string | undefined) => {
+    const fetchChapters = useCallback(async () => {
         try {
-            if (resourceId === undefined) {
-                console.log("Could not find resource Id from the URL");
+            const searchTermParam = searchParams?.get("search-term");
+            const searchUrl = searchTermParam ? `?search-term=${searchTermParam}` : "";
+
+            if (!resourceId) {
                 return;
             }
-            const response = await fetch(`/api/resources/${resourceId}/chapters`);
+
+            const response = await fetch(`/api/resources/${resourceId}/chapters${searchUrl}`);
             const data = await response.json();
             setData(data);
+
+        } catch (error) {
+            console.error("Error fetching chapters:", error);
         }
-        catch (error) {
-            console.log("An error has occurred in the API: ", error);
-        }
-    };
+    }, [resourceId, searchParams]);
 
     const deleteChapter = async (chapterId: number | undefined) => {
         try {
@@ -128,12 +134,13 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     };
     
     useEffect(() => {
-        fetchChapters(resourceId);
-    }, [resourceId]);
+        fetchChapters();
+    }, [fetchChapters]);
 
     console.log('Chapter Data: ', data);
 
     return (<div className="chapter-listings">
+        <ListingsSearchBar onSearchSubmit={fetchChapters}/>
         <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
             <thead>
                 {table.getHeaderGroups().map(headerGroup => (

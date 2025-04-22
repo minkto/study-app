@@ -1,11 +1,13 @@
-import { getChaptersByResourceId } from "@/db/chapters/getChaptersByResourceId";
-import { NextResponse } from "next/server";
+import { getChaptersByResource } from "@/db/chapters/getChaptersByResource";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(_request: Request, { params }: { params: Promise<{ "resource-id": number }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ "resource-id": number }> }) {
     try {
         const slug = (await params);
+        const searchParams = request.nextUrl.searchParams;
+        const searchTermQuery = searchParams?.get('search-term')?.trim();
 
-        const chapters = await getChaptersByResourceId(slug["resource-id"]);
+        const chapters = await getChaptersByResource(slug["resource-id"],searchTermQuery);
         if (chapters === null || chapters === undefined) {
             return NextResponse.json({ message: "Could not find chapter with resource id." }, { status: 404 });
         }
