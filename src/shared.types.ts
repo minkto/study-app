@@ -21,8 +21,8 @@ export interface Chapter {
     statusId?: number,
     name: string,
     url?: string,
-    originalDateCompleted?: Date  | null,
-    lastDateCompleted?: Date  | null,
+    originalDateCompleted?: Date  | null| undefined,
+    lastDateCompleted?: Date  | null| undefined,
     daysSinceCompleted?: number
 }
 
@@ -42,4 +42,11 @@ export interface SvgIcon
     width?: number,
     height?: number,
     className? : string
+}
+
+export interface ListingSearchQuery
+{
+    sortBy? : string,
+    sortOrder? : string,
+    searchTerm?: string
 }
