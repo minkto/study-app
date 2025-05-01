@@ -1,6 +1,6 @@
 import { Chapter } from "@/shared.types";
 import { CellContext, createColumnHelper, flexRender, getCoreRowModel, Row, RowData, SortingState, useReactTable } from "@tanstack/react-table";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
 import { ChapterStatuses } from "@/constants/constants";
@@ -19,23 +19,69 @@ interface ResourceChaptersListingsProps {
     resourceId?: string
 }
 
-const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
+const statusMapping = {
+    [ChapterStatuses.NOT_STARTED]: { text: "Not Started", class: "progress--not-started" },
+    [ChapterStatuses.IN_PROGRESS]: { text: "In Progress", class: "progress--in-progress" },
+    [ChapterStatuses.COMPLETED]: { text: "Completed", class: "progress--completed" },
+};
 
-    const statusMapping = {
-        [ChapterStatuses.NOT_STARTED]: { text: "Not Started", class: "progress--not-started" },
-        [ChapterStatuses.IN_PROGRESS]: { text: "In Progress", class: "progress--in-progress" },
-        [ChapterStatuses.COMPLETED]: { text: "Completed", class: "progress--completed" },
-    };
+const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
     const [data, setData] = useState<Chapter[]>([]);
-
+    const columnHelper = createColumnHelper<Chapter>();
     const [sorting, setSorting] = useState<SortingState>([])
 
-    const columnHelper = createColumnHelper<Chapter>();
-    const columns = [
+    const constructQueryString = useCallback(() => {
+        const params = new URLSearchParams(searchParams?.toString());
+        const sortBy = sorting[0]?.id;
+        const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
+        if (sorting.length === 0) {
+            params.delete("sortBy");
+            params.delete("sortOrder");
+        } else {
+            params.set("sortBy", sortBy!);
+            params.set("sortOrder", sortOrder);
+        }
+
+        return params.size > 0 ? "?" + params.toString() : "";
+    }, [searchParams, sorting]);
+
+    const fetchChapters = useCallback(async () => {
+        try {
+
+            if (!resourceId) {
+                return;
+            }
+
+            const response = await fetch(`/api/resources/${resourceId}/chapters${constructQueryString()}`);
+            const data = await response.json();
+            setData(data);
+
+        } catch (error) {
+            console.error("Error fetching chapters:", error);
+        }
+    }, [resourceId, constructQueryString]);
+
+    const deleteChapter = useCallback(async (chapterId: number | undefined) => {
+        try {
+            if (resourceId === undefined) {
+                console.log("Could not find Chapter Id from the URL");
+                return;
+            }
+            const response = await fetch(`/api/chapters/${chapterId}`, { method: 'DELETE' });
+            const data = await response.json();
+            setData(data);
+        }
+        catch (error) {
+            console.log("An error has occurred in the API: ", error);
+        }
+    }, [resourceId]);
+    
+    const columns = useMemo(() => [
         columnHelper.accessor('name', {
             cell: info => info.getValue(),
             header: () => <span>Name</span>,
@@ -112,7 +158,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             enableSorting: false,
             enableHiding: false,
         }
-    ];
+    ], [columnHelper, deleteChapter, fetchChapters]);
 
     const table = useReactTable({
         data,
@@ -127,53 +173,6 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         enableMultiSort: false,
         enableSortingRemoval: true,
     });
-
-    const constructQueryString = useCallback(() => {
-        const params = new URLSearchParams(searchParams?.toString());
-        const sortBy = sorting[0]?.id;
-        const sortOrder = sorting[0]?.desc ? "desc" : "asc";
-
-        if (sorting.length === 0) {
-            params.delete("sortBy");
-            params.delete("sortOrder");
-        } else {
-            params.set("sortBy", sortBy!);
-            params.set("sortOrder", sortOrder);
-        }
-
-        return params.size > 0 ? "?" + params.toString() : "";
-    }, [searchParams, sorting]);
-
-    const fetchChapters = useCallback(async () => {
-        try {
-
-            if (!resourceId) {
-                return;
-            }
-
-            const response = await fetch(`/api/resources/${resourceId}/chapters${constructQueryString()}`);
-            const data = await response.json();
-            setData(data);
-
-        } catch (error) {
-            console.error("Error fetching chapters:", error);
-        }
-    }, [resourceId, constructQueryString]);
-
-    const deleteChapter = async (chapterId: number | undefined) => {
-        try {
-            if (resourceId === undefined) {
-                console.log("Could not find Chapter Id from the URL");
-                return;
-            }
-            const response = await fetch(`/api/chapters/${chapterId}`, { method: 'DELETE' });
-            const data = await response.json();
-            setData(data);
-        }
-        catch (error) {
-            console.log("An error has occurred in the API: ", error);
-        }
-    };
 
     // Upon Component Mount, fetch the chapters.
     useEffect(() => {
