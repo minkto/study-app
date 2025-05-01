@@ -1,13 +1,20 @@
 import { getChaptersByResource } from "@/db/chapters/getChaptersByResource";
+import { ListingSearchQuery } from "@/shared.types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ "resource-id": number }> }) {
     try {
         const slug = (await params);
         const searchParams = request.nextUrl.searchParams;
-        const searchTermQuery = searchParams?.get('search-term')?.trim();
 
-        const chapters = await getChaptersByResource(slug["resource-id"],searchTermQuery);
+        const listingSearchQuery : ListingSearchQuery = 
+        {
+            searchTerm: searchParams?.get('search-term')?.trim(),
+            sortBy: searchParams?.get('sortBy')?.trim(),
+            sortOrder:  searchParams?.get('sortOrder')?.trim()
+        };
+
+        const chapters = await getChaptersByResource(slug["resource-id"],listingSearchQuery);
         if (chapters === null || chapters === undefined) {
             return NextResponse.json({ message: "Could not find chapter with resource id." }, { status: 404 });
         }

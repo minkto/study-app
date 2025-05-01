@@ -1,11 +1,13 @@
 import { Chapter } from "@/shared.types";
-import { CellContext, createColumnHelper, flexRender, getCoreRowModel, Row, RowData, useReactTable } from "@tanstack/react-table";
+import { CellContext, createColumnHelper, flexRender, getCoreRowModel, Row, RowData, SortingState, useReactTable } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
 import { ChapterStatuses } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { isStringEmpty } from "@/utils/stringUtils";
+import { getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -26,12 +28,18 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     };
 
     const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
     const [data, setData] = useState<Chapter[]>([]);
+
+    const [sorting, setSorting] = useState<SortingState>([])
+
     const columnHelper = createColumnHelper<Chapter>();
     const columns = [
         columnHelper.accessor('name', {
             cell: info => info.getValue(),
             header: () => <span>Name</span>,
+            enableSorting: true
         }),
         columnHelper.accessor('statusId', {
             cell: (info) => {
@@ -45,31 +53,41 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             meta: {
                 tdClassName: (info) => {
                     const value = info.getValue();
-                    return styles[statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]; //
+                    return styles[statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"];
                 }
-            }
+            },
+            enableSorting: true,
         }),
         columnHelper.accessor('originalDateCompleted', {
+            id: "originaldatecompleted",
             cell: (info) => {
                 const date = info.getValue();
-                return date ? new Date(date).toLocaleDateString() : 'N/A';
+                return date ? new Date(date).toLocaleDateString() : null;
+
             },
             header: () => <span>Original Date Completed</span>,
+            enableSorting: true,
+            sortingFn: nullableDateTimeSortingFn
+
         }),
         columnHelper.accessor('lastDateCompleted', {
+            id: "lastdatecompleted",
             cell: (info) => {
                 const date = info.getValue();
-                return date ? new Date(date).toLocaleDateString() : 'N/A';
+                return date ? new Date(date).toLocaleDateString() : null;
             },
             header: () => <span>Last Date Completed</span>,
+            enableSorting: true,
+            sortingFn: nullableDateTimeSortingFn
         }),
         columnHelper.accessor('daysSinceCompleted', {
             cell: info => info.getValue(),
             header: () => <span>Days Since Last Completed</span>,
+            enableSorting: false
         }),
         {
             id: 'menuOptions',
-            header: () => null,
+            header: () => null ,
             cell: ({ row }: { row: Row<Chapter> }) => {
                 const chapterId = row.original.chapterId
                 return (
@@ -77,7 +95,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                         [
                             { label: "Edit Chapter", href: `chapters/${chapterId}/edit-chapter` },
                             {
-                                label: "Delete Chapter",  
+                                label: "Delete Chapter",
                                 onClick: async () => {
                                     try {
                                         await deleteChapter(chapterId);
@@ -90,33 +108,57 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                         ]
                     } />
                 )
-            }
+            },
+            enableSorting: false,
+            enableHiding: false,
         }
     ];
 
     const table = useReactTable({
         data,
         columns,
+        state:
+        {
+            sorting,
+        },
+        manualSorting: true,
+        onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
+        enableMultiSort: false,
+        enableSortingRemoval: true,
     });
+
+    const constructQueryString = useCallback(() => {
+        const params = new URLSearchParams(searchParams?.toString());
+        const sortBy = sorting[0]?.id;
+        const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
+        if (sorting.length === 0) {
+            params.delete("sortBy");
+            params.delete("sortOrder");
+        } else {
+            params.set("sortBy", sortBy!);
+            params.set("sortOrder", sortOrder);
+        }
+
+        return params.size > 0 ? "?" + params.toString() : "";
+    }, [searchParams, sorting]);
 
     const fetchChapters = useCallback(async () => {
         try {
-            const searchTermParam = searchParams?.get("search-term");
-            const searchUrl = searchTermParam ? `?search-term=${searchTermParam}` : "";
 
             if (!resourceId) {
                 return;
             }
 
-            const response = await fetch(`/api/resources/${resourceId}/chapters${searchUrl}`);
+            const response = await fetch(`/api/resources/${resourceId}/chapters${constructQueryString()}`);
             const data = await response.json();
             setData(data);
 
         } catch (error) {
             console.error("Error fetching chapters:", error);
         }
-    }, [resourceId, searchParams]);
+    }, [resourceId, constructQueryString]);
 
     const deleteChapter = async (chapterId: number | undefined) => {
         try {
@@ -124,7 +166,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                 console.log("Could not find Chapter Id from the URL");
                 return;
             }
-            const response = await fetch(`/api/chapters/${chapterId}`, {method: 'DELETE'});
+            const response = await fetch(`/api/chapters/${chapterId}`, { method: 'DELETE' });
             const data = await response.json();
             setData(data);
         }
@@ -132,23 +174,77 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             console.log("An error has occurred in the API: ", error);
         }
     };
-    
+
+    // Upon Component Mount, fetch the chapters.
     useEffect(() => {
         fetchChapters();
     }, [fetchChapters]);
 
-    console.log('Chapter Data: ', data);
+    // Upon Column Change, set the query string
+    useEffect(() => {
+        const queryString = constructQueryString();
+        if (queryString) {
+            router.push(queryString);
+        }
+        else {
+            router.replace(`${pathname}${queryString}`);
+        }
+
+    }, [sorting, constructQueryString, router, pathname]);
+
+    // Upon Component Mount, set the sorting.
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams?.toString());
+        const sortByValue = params.get('sortBy') ?? "";
+        const sortOrderValue = params.get('sortOrder');
+
+        if (!isStringEmpty(sortByValue) && !isStringEmpty(sortOrderValue)) {
+            const newSorting = [{
+                id: sortByValue,
+                desc: sortOrderValue?.toLowerCase() === 'desc'
+            }];
+
+            setSorting(newSorting);
+        }
+    }, [searchParams]);
 
     return (<div className="chapter-listings">
-        <ListingsSearchBar onSearchSubmit={fetchChapters}/>
+        <ListingsSearchBar onSearchSubmit={fetchChapters} />
         <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
             <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id}>
                         {headerGroup.headers.map(header => (
                             <th className={styles["table-head-cell"]} key={header.id}>
-                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header,
-                                    header.getContext()
+                                {header.isPlaceholder ? null : (
+                                    <button
+                                        className={
+                                            header.column.getCanSort()
+                                                ? 'cursor-pointer select-none'
+                                                : ''
+                                        }
+                                        onClick={header.column.getToggleSortingHandler()}
+                                        title={
+                                            header.column.getCanSort()
+                                                ? (() => {
+                                                    const nextOrder = header.column.getNextSortingOrder();
+                                                    return getSortDirectionTitle(nextOrder);
+                                                })()
+                                                : undefined
+                                        }
+                                    >
+
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                        {
+                                            {
+                                                asc: ' 🔼',
+                                                desc: ' 🔽',
+                                            }[header.column.getIsSorted() as string] ?? null
+                                        }
+                                    </button>
                                 )}
                             </th>
                         ))}

@@ -1,17 +1,27 @@
-import { Chapter } from "@/shared.types";
+import { Chapter, ListingSearchQuery } from "@/shared.types";
 import { queryData } from "../dbHelper";
 
-export async function getChaptersByResource(resourceId: number, searchTerm: string | null | undefined) {
+export async function getChaptersByResource(resourceId: number, listingSearchQuery: ListingSearchQuery | null | undefined) {
 
-    let queryParams = [ resourceId, `%${searchTerm}%`];
+    let queryParams = [ resourceId, `%${listingSearchQuery?.searchTerm}%`];
     let query = "SELECT * FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
 
-    if (searchTerm === undefined || searchTerm === null || searchTerm === "" ) {
+    if (listingSearchQuery?.searchTerm === undefined || listingSearchQuery.searchTerm === null || listingSearchQuery.searchTerm === "" ) {
         query = "SELECT * FROM chapters WHERE resource_id = $1";
         queryParams = [resourceId];
     }
 
+    if (listingSearchQuery?.sortBy && listingSearchQuery?.sortOrder ) {
+        query += ` ORDER BY ${mapOrderByColumnsToSql(listingSearchQuery?.sortBy)} ${mapSortOrderColumnsToSql(listingSearchQuery?.sortOrder) } `;
+    }
+    else
+    {
+        query += ` ORDER BY chapter_id desc `;
+    }
+
+
     const queryResult = await queryData(query, queryParams);
+
 
     if (queryResult?.length > 0) {
         const chapters = queryResult.map<Chapter>((x) => (
@@ -30,3 +40,33 @@ export async function getChaptersByResource(resourceId: number, searchTerm: stri
 
     return null;
 }
+
+const mapOrderByColumnsToSql = (sortByValue : string) =>
+{
+    switch(sortByValue?.toLowerCase())
+    {
+        case "name":
+            return "name";
+        case "statusid":
+            return "status_id";
+        case "originaldatecompleted":
+            return "original_date_completed";
+        case "lastdatecompleted":
+            return "last_date_completed";
+        default:
+            return "name";
+    }
+}
+
+const mapSortOrderColumnsToSql = (sortOrderValue : string) =>
+    {
+        switch(sortOrderValue?.toLowerCase())
+        {
+            case "asc":
+                return "asc";
+            case "desc":
+                return "desc";
+            default:
+                return "asc";
+        }
+    }
