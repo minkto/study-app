@@ -48,5 +48,6 @@ export interface ListingSearchQuery
 {
     sortBy? : string,
     sortOrder? : string,
-    searchTerm?: string
+    searchTerm?: string,
+    page?:string
 }

@@ -1,9 +1,9 @@
 import { Chapter } from "@/shared.types";
-import { CellContext, createColumnHelper, flexRender, getCoreRowModel, Row, RowData, SortingState, useReactTable } from "@tanstack/react-table";
+import { CellContext, createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, PaginationState, Row, RowData, SortingState, useReactTable } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
-import { ChapterStatuses } from "@/constants/constants";
+import { ChapterStatuses, ListingPageSizes } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { isStringEmpty } from "@/utils/stringUtils";
@@ -32,7 +32,13 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     const router = useRouter();
     const [data, setData] = useState<Chapter[]>([]);
     const columnHelper = createColumnHelper<Chapter>();
-    const [sorting, setSorting] = useState<SortingState>([])
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS)
+    });
+    const [pageCount, setPageCount] = useState(0);
+
 
     const constructQueryString = useCallback(() => {
         const params = new URLSearchParams(searchParams?.toString());
@@ -47,8 +53,12 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             params.set("sortOrder", sortOrder);
         }
 
+        if(pagination.pageIndex > 0 || (pagination.pageIndex === 0 && params.get("page") !== null)) {
+            params.set("page", (pagination.pageIndex + 1).toString());
+        }
+
         return params.size > 0 ? "?" + params.toString() : "";
-    }, [searchParams, sorting]);
+    }, [searchParams, sorting, pagination.pageIndex]);
 
     const fetchChapters = useCallback(async () => {
         try {
@@ -59,8 +69,8 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
 
             const response = await fetch(`/api/resources/${resourceId}/chapters${constructQueryString()}`);
             const data = await response.json();
-            setData(data);
-
+            setData(data.chapters);
+            setPageCount(data.chaptersCount);
         } catch (error) {
             console.error("Error fetching chapters:", error);
         }
@@ -163,13 +173,18 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     const table = useReactTable({
         data,
         columns,
+        pageCount,
         state:
         {
             sorting,
+            pagination
         },
         manualSorting: true,
+        manualPagination: true,
         onSortingChange: setSorting,
+        onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         enableMultiSort: false,
         enableSortingRemoval: true,
     });
@@ -208,7 +223,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     }, [searchParams]);
 
     return (<div className="chapter-listings">
-        <ListingsSearchBar onSearchSubmit={fetchChapters} />
+        <ListingsSearchBar onSearchSubmit={ ()=> setPagination({ ...pagination, pageIndex: 0 })} />
         <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
             <thead>
                 {table.getHeaderGroups().map(headerGroup => (
@@ -266,6 +281,15 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                 ))}
             </tbody>
         </table>
+        <div className={styles["pagination-container"]} >
+            <button onClick={() => table.firstPage()}  disabled={!table.getCanPreviousPage()}>{'<<'} </button>
+            <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>{'<'}</button>
+            <div>
+                Page {table.getState().pagination.pageIndex  + 1 } of {table?.getPageCount() === 0 || isNaN(table?.getPageCount())? 1 : table.getPageCount().toLocaleString()}
+            </div> 
+            <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>{'>'}</button>
+            <button onClick={() => table.lastPage()} disabled={!table.getCanNextPage()}>{'>>'}</button>
+        </div>
     </div>);
 };
 
