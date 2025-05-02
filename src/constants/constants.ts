@@ -2,7 +2,7 @@ export const FormState =
 {
     ADD: 0,
     EDIT: 1
-}
+};
 
 export const ChapterStatuses =
 {
@@ -10,4 +10,9 @@ export const ChapterStatuses =
     IN_PROGRESS: 1,
     COMPLETED: 2,
     INVALID: 3
+};
+
+export const ListingPageSizes =
+{
+    CHAPTERS: "5",
 };

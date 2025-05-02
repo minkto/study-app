@@ -11,12 +11,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         {
             searchTerm: searchParams?.get('search-term')?.trim(),
             sortBy: searchParams?.get('sortBy')?.trim(),
-            sortOrder:  searchParams?.get('sortOrder')?.trim()
+            sortOrder:  searchParams?.get('sortOrder')?.trim(),
+            page: searchParams?.get('page')?.trim()
         };
 
         const chapters = await getChaptersByResource(slug["resource-id"],listingSearchQuery);
         if (chapters === null || chapters === undefined) {
-            return NextResponse.json({ message: "Could not find chapter with resource id." }, { status: 404 });
+            return NextResponse.json({ message: "Could not find chapter with resource id." ,chapters: [], chaptersCount: 0}, { status: 404 });
         }
 
         return NextResponse.json(chapters, { status: 200 });
