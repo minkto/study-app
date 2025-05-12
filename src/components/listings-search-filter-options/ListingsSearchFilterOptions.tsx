@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import IconChevronDown from '../icons/icon-chevron-down/IconChevronDown';
 import IconFilter from '../icons/icon-filter/IconFilter';
 import styles from './listings-search-filter-options.module.css'
@@ -7,32 +7,52 @@ interface FilterOption {
     id: number;
     label: string;
     checked: boolean;
-    filterGroupProperty: 'statusGroup' | 'daysSinceLastCompletedGroup';
 }
 
+interface FilterGroup {
+    groupId: number;
+    title?: string;
+    options: FilterOption[];
+    toggled?: boolean;
+}
 
-interface FilterGroups {
-    statusGroup: FilterOption[];
-    daysSinceLastCompletedGroup: FilterOption[];
+interface FilterGroupList {
+    groups: FilterGroup[];
 }
 
 export const ListingsSearchFilterOptions = () => {
 
     const [filtersMenuOpen, setFiltersMenuOpen] = useState(false);
-    const [filtersToUse, setFiltersToUse] = useState<FilterGroups>(
+    const [filtersToUse, setFiltersToUse] = useState<FilterGroupList>(
         {
-            statusGroup: [
-                { id: 0, label: "Not Started", checked: false, filterGroupProperty: 'statusGroup' },
-                { id: 1, label: "In Progress", checked: false, filterGroupProperty: 'statusGroup' },
-                { id: 2, label: "Completed", checked: false, filterGroupProperty: 'statusGroup' },
-            ],
-            daysSinceLastCompletedGroup: [
-                { id: 0, label: "Less Than 10 Days", checked: false, filterGroupProperty: 'daysSinceLastCompletedGroup' },
-                { id: 1, label: "Less Than 20 Days", checked: false, filterGroupProperty: 'daysSinceLastCompletedGroup' },
-                { id: 3, label: "Less Than 30 Days", checked: false, filterGroupProperty: 'daysSinceLastCompletedGroup' },
-                { id: 4, label: "Equal to 30 Days", checked: false, filterGroupProperty: 'daysSinceLastCompletedGroup' },
-                { id: 5, label: "Greater Than 30 Days", checked: false, filterGroupProperty: 'daysSinceLastCompletedGroup' },
-            ]
+            groups:
+                [
+                    {
+                        groupId: 0,
+                        title: "Status",
+                        options: [
+                            { id: 0, label: "Not Started", checked: false },
+                            { id: 1, label: "In Progress", checked: false },
+                            { id: 2, label: "Completed", checked: false },
+                        ],
+                        toggled: true
+                    },
+
+                    {
+                        groupId: 1,
+                        title: "Days Since Last Completed",
+                        options: [
+                            { id: 0, label: "Less Than 10 Days", checked: false },
+                            { id: 1, label: "Less Than 20 Days", checked: false },
+                            { id: 2, label: "Less Than 30 Days", checked: false },
+                            { id: 3, label: "Equal to 30 Days", checked: false },
+                            { id: 4, label: "Greater Than 30 Days", checked: false },
+                        ],
+                        toggled: true
+                    },
+
+                ]
+
         }
     )
 
@@ -40,56 +60,51 @@ export const ListingsSearchFilterOptions = () => {
         setFiltersMenuOpen(!filtersMenuOpen);
     }
 
-    const setCheckboxOption = (id: number, groupId: keyof FilterGroups) => {
-        setFiltersToUse(prevFilter => {
-            return {
-                ...prevFilter,
-                [groupId]: prevFilter[groupId].map((filter: FilterOption) => filter.id === id ?
-                    { ...filter, checked: !filter.checked } : filter)
-            }
-        });
+    const setCheckboxOption = (id: number, groupId: number) => {
+
+        const newFiltersToUse: FilterGroupList = { ...filtersToUse };
+        const groupToChange = newFiltersToUse.groups[groupId];
+        const optionToChange = groupToChange.options.filter(x => x.id === id)[0];
+
+        optionToChange.checked = !optionToChange.checked;
+
+        setFiltersToUse(newFiltersToUse);
+    }
+
+    const toggleFilterMenuGroup = (groupId: number) => {
+        const newFiltersToUse: FilterGroupList = { ...filtersToUse };
+        const groupToChange = newFiltersToUse.groups[groupId];
+
+        groupToChange.toggled = !groupToChange.toggled
+
+        setFiltersToUse(newFiltersToUse);
     }
 
     return (<div className={styles["search-filter-options"]}>
         {filtersMenuOpen &&
             <div className={styles["filter-by-menu"]}>
                 <div className={styles["filter-by-menu-pointer"]}></div>
+                {filtersToUse.groups.map(x => (
+                    <div key={x.groupId} className={`${styles["filter-by-menu-group"]} ${!x.toggled ? styles["filter-by-menu-group--hidden"] : ""}`}                    >
+                        <div className={styles["filter-by-menu-group-heading"]} onClick={() => toggleFilterMenuGroup(x.groupId)}>
+                            <IconChevronDown className={styles["icon-wrapper"]} width={20} height={20} />
+                            <h3 className={styles['filter-by-menu-group-heading__title']}>{x.title}</h3>
+                        </div>
 
-                <div className={styles["filter-by-menu-group"]}>
-                    <div className={styles["filter-by-menu-group-heading"]}>
-                        <IconChevronDown className={"icon-wrapper"} width={20} height={20} />
-                        <h3 className={styles['filter-by-menu-group-heading__title']}>Status</h3>
+                        <ul>
+                            {x.options?.map(y => (
+                                <li key={y.id} onClick={() => setCheckboxOption(y.id, x.groupId)} className={styles["filter-by-group__option"]}>
+                                    <input type='checkbox' checked={y.checked} onChange={(e) => { e.stopPropagation() }} />
+                                    <label>{y.label}</label>
+                                </li>)
+                            )}
+                        </ul>
                     </div>
-
-                    <ul>
-                        {filtersToUse.statusGroup?.map(x => (
-                            <li key={x.id} onClick={() => setCheckboxOption(x.id, 'statusGroup')} className={styles["filter-by-group__option"]}>
-                                <input type='checkbox' checked={x.checked} onChange={(e) => { e.stopPropagation() }} />
-                                <label>{x.label}</label>
-                            </li>)
-                        )}
-                    </ul>
-                </div>
-
-                <div className={styles["filter-by-menu-group"]}>
-                    <div className={styles["filter-by-menu-group-heading"]}>
-                        <IconChevronDown className={"icon-wrapper"} width={20} height={20} />
-                        <h3 className={styles['filter-by-menu-group-heading__title']}>Days Since Last Completed</h3>
-                    </div>
-                    <ul>
-                        {filtersToUse.daysSinceLastCompletedGroup?.map(x => (
-                            <li key={x.id} onClick={() => setCheckboxOption(x.id, 'daysSinceLastCompletedGroup')} className={styles["filter-by-group__option"]}>
-                                <input type='checkbox' checked={x.checked} onChange={(e) => { e.stopPropagation() }} />
-                                <label>{x.label}</label>
-                            </li>)
-                        )}
-                    </ul>
-                </div>
+                ))}
             </div>
         }
 
         <button onClick={showFiltersMenu} className={styles["search-filter-options__btn"]}><IconFilter className={"icon-wrapper"} width={20} height={20} />Filter By</button>
-        <button className={styles["search-filter-options__btn"]}><IconChevronDown className={"icon-wrapper"} width={20} height={20} />Sort By</button>
     </div>)
 }
 

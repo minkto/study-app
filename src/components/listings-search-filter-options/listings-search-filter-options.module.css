@@ -17,19 +17,40 @@
 }
 
 .filter-by-menu {
-    padding: 10px;
     position: absolute;
     top: 60px;
+    right: 0;
     background-color: aquamarine;
     z-index: 1;
+    padding: 10px;
     border-radius: 5px;
-
 }
 
 .filter-by-menu-group {
     margin: 5px 5px 15px 5px;
     white-space: nowrap;
+    transition: all 0.3s ease-in-out;
+    max-height: 500px;
+    overflow: hidden;
 }
+
+.filter-by-menu-group--hidden {
+    opacity: 1;
+    max-height: 40px;
+    transition: all 0.3s ease-in-out;
+}
+
+.filter-by-menu-group ul {
+    transition: all 0.3s ease-in-out;
+}
+
+.filter-by-menu-group--hidden ul {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all 0.3s ease-in-out;
+}
+
 
 
 .filter-by-menu-group-heading {
@@ -44,7 +65,6 @@
     flex-grow: 2;
 
 }
-
 
 .filter-by-menu-group ul li {
     list-style: none;
@@ -64,6 +84,7 @@
     margin: 0;
     position: absolute;
     top: -18px;
+    right: 10px;
     width: 0;
     height: 0;
     border-bottom: 10px solid aquamarine;
@@ -71,4 +92,13 @@
     border-left: 10px solid #009dff00;
     border-right: 10px solid #009dff00;
     z-index: -1;
+}
+
+.filter-by-menu-group .filter-by-menu-group-heading .icon-wrapper {
+    transform: rotate(0deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+.filter-by-menu-group--hidden .filter-by-menu-group-heading .icon-wrapper {
+    transform: rotate(-90deg);
 }
