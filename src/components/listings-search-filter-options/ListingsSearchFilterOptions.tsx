@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import IconChevronDown from '../icons/icon-chevron-down/IconChevronDown';
 import IconFilter from '../icons/icon-filter/IconFilter';
 import styles from './listings-search-filter-options.module.css'
@@ -23,6 +23,7 @@ interface FilterGroupList {
 export const ListingsSearchFilterOptions = () => {
 
     const [filtersMenuOpen, setFiltersMenuOpen] = useState(false);
+    const filterMenuRef = useRef<HTMLDivElement>(null);
     const [filtersToUse, setFiltersToUse] = useState<FilterGroupList>(
         {
             groups:
@@ -56,12 +57,11 @@ export const ListingsSearchFilterOptions = () => {
         }
     )
 
-    const showFiltersMenu = () => {
+    const toggleFiltersMenu = useCallback(() => {
         setFiltersMenuOpen(!filtersMenuOpen);
-    }
+    }, [filtersMenuOpen]);
 
     const setCheckboxOption = (id: number, groupId: number) => {
-
         const newFiltersToUse: FilterGroupList = { ...filtersToUse };
         const groupToChange = newFiltersToUse.groups[groupId];
         const optionToChange = groupToChange.options.filter(x => x.id === id)[0];
@@ -80,9 +80,28 @@ export const ListingsSearchFilterOptions = () => {
         setFiltersToUse(newFiltersToUse);
     }
 
+    useEffect(() => {
+        const onClickOutsideMenu = (e: MouseEvent | KeyboardEvent) => {
+            if (filterMenuRef.current && !filterMenuRef.current.contains(e.target as Node)) {
+                toggleFiltersMenu();
+            }
+        }
+
+        if (filtersMenuOpen) {
+            document.addEventListener('mousedown', onClickOutsideMenu);
+            document.addEventListener('keydown', onClickOutsideMenu);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', onClickOutsideMenu);
+            document.removeEventListener('keydown', onClickOutsideMenu);
+        }
+
+    }, [toggleFiltersMenu, filtersMenuOpen]);
+
     return (<div className={styles["search-filter-options"]}>
         {filtersMenuOpen &&
-            <div className={styles["filter-by-menu"]}>
+            <div className={styles["filter-by-menu"]} ref={filterMenuRef} >
                 <div className={styles["filter-by-menu-pointer"]}></div>
                 {filtersToUse.groups.map(x => (
                     <div key={x.groupId} className={`${styles["filter-by-menu-group"]} ${!x.toggled ? styles["filter-by-menu-group--hidden"] : ""}`}                    >
@@ -104,7 +123,7 @@ export const ListingsSearchFilterOptions = () => {
             </div>
         }
 
-        <button onClick={showFiltersMenu} className={styles["search-filter-options__btn"]}><IconFilter className={"icon-wrapper"} width={20} height={20} />Filter By</button>
+        <button onClick={toggleFiltersMenu} className={styles["search-filter-options__btn"]}><IconFilter className={"icon-wrapper"} width={20} height={20} />Filter By</button>
     </div>)
 }
 
