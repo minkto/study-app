@@ -3,6 +3,7 @@ import IconChevronDown from '../icons/icon-chevron-down/IconChevronDown';
 import IconFilter from '../icons/icon-filter/IconFilter';
 import styles from './listings-search-filter-options.module.css'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { ChapterListingsFilterQueryKeys } from '@/constants/constants';
 
 interface FilterOption {
     id: number;
@@ -22,11 +23,6 @@ interface FilterGroupList {
     groups: FilterGroup[];
 }
 
-const ChapterListingsFilterQueryKeys =
-{
-    STATUS: "status",
-    DAYS_SINCE_LAST_COMPLETED: "daysSinceLastCompleted"
-}
 
 export const ListingsSearchFilterOptions = () => {
 
