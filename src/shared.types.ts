@@ -50,4 +50,11 @@ export interface ListingSearchQuery
     sortOrder? : string,
     searchTerm?: string,
     page?:string
+    filters? : ListingSearchQueryFilters;
+}
+
+export interface ListingSearchQueryFilters
+{
+    status? : string[];
+    daysSinceLastCompleted? : string[];
 }
