@@ -1,28 +1,23 @@
-import { Chapter, ListingSearchQuery } from "@/shared.types";
+import { Chapter, ListingSearchQuery, ListingSearchQueryFilters } from "@/shared.types";
 import { queryData } from "../dbHelper";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { ListingPageSizes } from "@/constants/constants";
 
 export async function getChaptersByResource(resourceId: number, listingSearchQuery: ListingSearchQuery | null | undefined) {
-    let countQuery = "SELECT COUNT(*) FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
-    let countQueryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`];
-    const pageSize = parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS);
-
-
-    if (isStringEmpty(listingSearchQuery?.searchTerm)) {
-        countQuery = "SELECT COUNT(*) FROM chapters WHERE resource_id = $1";
-        countQueryParams = [resourceId];
-    }
-
-    const countQueryResult = await queryData(countQuery, countQueryParams);
-    const totalPageCount = Math.ceil(Number(countQueryResult[0].count / pageSize));
 
     let queryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`];
     let query = "SELECT * FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
 
+    const pageSize = parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS);
+    const totalPageCount = await calculatePageCount(resourceId, listingSearchQuery, pageSize);
+
     if (isStringEmpty(listingSearchQuery?.searchTerm)) {
         query = "SELECT * FROM chapters WHERE resource_id = $1";
         queryParams = [resourceId];
+    }
+
+    if (listingSearchQuery?.filters?.status !== undefined) {
+        query += ` ${ buildFilterQuery(listingSearchQuery?.filters)}`;
     }
 
     if (!isStringEmpty(listingSearchQuery?.sortBy) && !isStringEmpty(listingSearchQuery?.sortOrder)) {
@@ -59,6 +54,60 @@ export async function getChaptersByResource(resourceId: number, listingSearchQue
     return null;
 }
 
+const calculatePageCount = async (resourceId: number, listingSearchQuery: ListingSearchQuery | null | undefined, pageSize: number) => {
+    let countQuery = "SELECT COUNT(*) FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
+    let countQueryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`];
+
+
+    if (isStringEmpty(listingSearchQuery?.searchTerm)) {
+        countQuery = "SELECT COUNT(*) FROM chapters WHERE resource_id = $1";
+        countQueryParams = [resourceId];
+    }
+
+    if (listingSearchQuery?.filters?.status !== undefined) {
+        countQuery += ` ${ buildFilterQuery(listingSearchQuery?.filters)}`;
+    }
+
+
+    const countQueryResult = await queryData(countQuery, countQueryParams);
+    const totalPageCount = Math.ceil(Number(countQueryResult[0].count / pageSize));
+    return totalPageCount;
+}
+
+const buildFilterQuery = (filters: ListingSearchQueryFilters) => {
+
+    let queryFilter = "";
+
+    if(filters.status !== undefined && filters.status.length > 0)
+    {
+       queryFilter += `AND status_id IN(${filters.status?.map(x => `${mapStatusFilter(x)}`)})`;
+    }
+
+    if (filters.daysSinceLastCompleted !== undefined && filters.daysSinceLastCompleted.length > 0) {
+        const daysSinceLastCompletedQuery = filters.daysSinceLastCompleted?.map(
+            (x) => (`AND ${daysSinceLastCompletedFilter(x)} `)).join(' ');
+
+        return queryFilter += daysSinceLastCompletedQuery;
+    }
+
+    return queryFilter;
+}
+
+const mapStatusFilter = (value: string | undefined): string => {
+    switch (value) {
+        case "Not Started":
+            return "0";
+        case "In Progress":
+            return "1";
+        case "Completed":
+            return "2";
+        default:
+            "";
+    }
+
+    return "";
+}
+
 const mapOrderByColumnsToSql = (sortByValue: string | undefined) => {
     switch (sortByValue?.toLowerCase()) {
         case "name":
@@ -83,4 +132,23 @@ const mapSortOrderColumnsToSql = (sortOrderValue: string | undefined) => {
         default:
             return "asc";
     }
+}
+
+const daysSinceLastCompletedFilter = (value: string | undefined): string => {
+    switch (value) {
+        case "Less Than 10 Days":
+            return "CURRENT_DATE  - last_date_completed :: date < 10";
+        case "Less Than 20 Days":
+            return "CURRENT_DATE  - last_date_completed :: date < 20";
+        case "Less Than 30 Days":
+            return "CURRENT_DATE  - last_date_completed :: date < 30";
+        case "Equal to 30 Days":
+            return "CURRENT_DATE  - last_date_completed :: date = 0";
+        case "Greater Than 30 Days":
+            return "CURRENT_DATE  - last_date_completed :: date > 30";
+        default:
+            "";
+    }
+
+    return "";
 }

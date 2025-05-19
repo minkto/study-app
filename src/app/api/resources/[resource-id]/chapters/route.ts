@@ -1,3 +1,4 @@
+import { ChapterListingsFilterQueryKeys } from "@/constants/constants";
 import { getChaptersByResource } from "@/db/chapters/getChaptersByResource";
 import { ListingSearchQuery } from "@/shared.types";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,7 +13,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             searchTerm: searchParams?.get('search-term')?.trim(),
             sortBy: searchParams?.get('sortBy')?.trim(),
             sortOrder:  searchParams?.get('sortOrder')?.trim(),
-            page: searchParams?.get('page')?.trim()
+            page: searchParams?.get('page')?.trim(),
+            filters: 
+            {
+                status :  searchParams?.getAll(ChapterListingsFilterQueryKeys.STATUS),
+                daysSinceLastCompleted :  searchParams?.getAll(ChapterListingsFilterQueryKeys.DAYS_SINCE_LAST_COMPLETED),
+            }
         };
 
         const chapters = await getChaptersByResource(slug["resource-id"],listingSearchQuery);

@@ -16,3 +16,9 @@ export const ListingPageSizes =
 {
     CHAPTERS: "5",
 };
+
+export const ChapterListingsFilterQueryKeys =
+{
+    STATUS: "status",
+    DAYS_SINCE_LAST_COMPLETED: "daysSinceLastCompleted"
+}
