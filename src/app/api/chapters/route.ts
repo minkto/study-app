@@ -12,6 +12,8 @@ export async function POST(request: Request) {
             resourceId: res["resourceId"],
             statusId: res["statusId"],
             url: res["url"],
+            originalDateCompleted: res["originalDateCompleted"],
+            lastDateCompleted : res["lastDateCompleted"]
         };
 
         const result = await createChapter(chapter);
