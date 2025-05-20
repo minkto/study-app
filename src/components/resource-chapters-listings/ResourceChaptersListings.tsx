@@ -8,6 +8,7 @@ import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
+import { TZDate } from "@date-fns/tz";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -118,7 +119,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             id: "originaldatecompleted",
             cell: (info) => {
                 const date = info.getValue();
-                return date ? new Date(date).toLocaleDateString() : null;
+                return date ? new TZDate(date,Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString() : null;
 
             },
             header: () => <span>Original Date Completed</span>,
@@ -130,7 +131,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             id: "lastdatecompleted",
             cell: (info) => {
                 const date = info.getValue();
-                return date ? new Date(date).toLocaleDateString() : null;
+                return date ? new TZDate(date,Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString() : null;
             },
             header: () => <span>Last Date Completed</span>,
             enableSorting: true,

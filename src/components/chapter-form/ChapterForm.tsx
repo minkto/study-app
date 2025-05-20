@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, ReactElement, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { startOfDay } from 'date-fns';
+import { UTCDate } from "@date-fns/utc";
 
 interface ChapterFormProps {
     resourceId: string;
@@ -24,8 +26,8 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
     const [formData, setFormData] = useState<Chapter>({
         name: "",
         url: "",
-        lastDateCompleted: new Date(),
-        originalDateCompleted: new Date(),
+        lastDateCompleted: startOfDay(new UTCDate()),
+        originalDateCompleted: startOfDay(new UTCDate()),
         statusId: -1,
         resourceId: -1,
         chapterId: -1
@@ -33,8 +35,8 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
 
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
     const [statuses, setStatuses] = useState<Status[]>([]);
-    const [originalDateCompleted, setOriginalDateCompleted] = useState<Date | null>();
-    const [lastDateCompleted, setLastDateCompleted] = useState<Date | null>();
+    const [originalDateCompleted, setOriginalDateCompleted] = useState<Date | null | undefined>(startOfDay(new UTCDate()));
+    const [lastDateCompleted, setLastDateCompleted] = useState<Date | null | undefined>(startOfDay(new UTCDate()));
 
     const router = useRouter();
 
@@ -70,8 +72,8 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
         const statusValue = Number(formData?.statusId);
 
         if (statusValue === ChapterStatuses.COMPLETED) {
-            formData.originalDateCompleted = originalDateCompleted;
-            formData.lastDateCompleted = lastDateCompleted;
+            formData.originalDateCompleted = originalDateCompleted ? new UTCDate(originalDateCompleted) : null;
+            formData.lastDateCompleted = lastDateCompleted ? new UTCDate(lastDateCompleted) : null;
         }
         else {
             formData.originalDateCompleted = null;
@@ -92,7 +94,12 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                         name="originalDateCompleted"
                         className="form-field"
                         selected={originalDateCompleted}
-                        onChange={(date) => setOriginalDateCompleted(date)} />
+                        dateFormat="dd/MM/yyyy"
+                        onChange={(date) => {
+                            if (date) {
+                                setOriginalDateCompleted(startOfDay(date));
+                            }
+                        }} />
 
                     {formErrors.originalDateCompletedError ? (<p className='form-field__error-message'>{formErrors.originalDateCompletedError}</p>) : null}
                 </div>
@@ -104,7 +111,12 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                         name="lastDateCompleted"
                         className="form-field"
                         selected={lastDateCompleted}
-                        onChange={(date) => setLastDateCompleted(date)} />
+                        dateFormat="dd/MM/yyyy"
+                        onChange={(date) => {
+                            if (date) {
+                                setLastDateCompleted(startOfDay(date));
+                            }
+                        }} />
 
                     {formErrors.lastDateCompletedError ? (<p className='form-field__error-message'>{formErrors.lastDateCompletedError}</p>) : null}
                 </div>
@@ -218,7 +230,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                                 )}
                         </select>
                     </div>
-                    {formState === FormState.EDIT ? renderDateFields() : null}
+                    {renderDateFields()}
                     <div className="form-field-wrapper centered-fields">
                         <button disabled={buttonDisabled} className={"form-field"} type='submit'>Save</button>
                     </div>
