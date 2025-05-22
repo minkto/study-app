@@ -6,13 +6,13 @@ import { ListingPageSizes } from "@/constants/constants";
 export async function getChaptersByResource(resourceId: number, listingSearchQuery: ListingSearchQuery | null | undefined) {
 
     let queryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`];
-    let query = "SELECT * FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
+    let query = "SELECT *, COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC') :: date - original_date_completed:: date  AS integer),0) days_since_last_completed  FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
 
     const pageSize = parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS);
     const totalPageCount = await calculatePageCount(resourceId, listingSearchQuery, pageSize);
 
     if (isStringEmpty(listingSearchQuery?.searchTerm)) {
-        query = "SELECT * FROM chapters WHERE resource_id = $1";
+        query = "SELECT *, COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC') :: date - original_date_completed:: date  AS integer),0) days_since_last_completed  FROM chapters WHERE resource_id = $1";
         queryParams = [resourceId];
     }
 
@@ -45,6 +45,7 @@ export async function getChaptersByResource(resourceId: number, listingSearchQue
                 name: x.name,
                 lastDateCompleted: x.last_date_completed,
                 originalDateCompleted: x.original_date_completed,
+                daysSinceCompleted: x.days_since_last_completed
             }
         ));
 
@@ -118,6 +119,8 @@ const mapOrderByColumnsToSql = (sortByValue: string | undefined) => {
             return "original_date_completed";
         case "lastdatecompleted":
             return "last_date_completed";
+        case "dayssincecompleted":
+            return "days_since_last_completed";
         default:
             return "name";
     }
