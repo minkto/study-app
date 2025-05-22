@@ -140,7 +140,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         columnHelper.accessor('daysSinceCompleted', {
             cell: info => info.getValue(),
             header: () => <span>Days Since Last Completed</span>,
-            enableSorting: false
+            enableSorting: true
         }),
         {
             id: 'menuOptions',
