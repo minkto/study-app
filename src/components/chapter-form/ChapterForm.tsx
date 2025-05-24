@@ -14,9 +14,17 @@ interface ChapterFormProps {
     formState: number;
 }
 
+interface ChapterFormErrors 
+{
+    nameError: string;
+    urlError: string;
+    originalDateCompletedError: string;
+    lastDateCompletedError: string; 
+}
+
 const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => {
 
-    const [formErrors, setFormErrors] = useState({
+    const [formErrors, setFormErrors] = useState<ChapterFormErrors>({
         nameError: "",
         urlError: "",
         originalDateCompletedError: "",
@@ -46,16 +54,70 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
 
     const isFormValid = (): boolean => {
         let result = true;
+
+        let errorResults: ChapterFormErrors =
+        {
+            nameError: "",
+            urlError: "",
+            originalDateCompletedError: "",
+            lastDateCompletedError: ""
+        }
+
         if (!formData.name) {
-            setFormErrors({ ...formErrors, nameError: "The 'Name' field is a mandatory field." });
+            errorResults.nameError = "The 'Name' field is a mandatory field.";
             result = false;
         }
-        else {
-            setFormErrors({ ...formErrors, nameError: "" });
+
+        if(!isOriginalAndLastDateCompletedValid(errorResults))
+        {
+            result = false;
         }
+
+        setFormErrors(errorResults);
 
         return result;
     };
+
+    const isOriginalAndLastDateCompletedValid = (errorResults : ChapterFormErrors) : boolean => 
+    {
+        let result = true;
+        if(Number(formData.statusId) !== ChapterStatuses.COMPLETED)
+        {
+            return result;
+        }
+
+        if (Number(formData.statusId) === ChapterStatuses.COMPLETED &&
+            formData.originalDateCompleted &&
+            formData.lastDateCompleted) {
+
+            if (formData.originalDateCompleted > formData.lastDateCompleted) {
+                errorResults.originalDateCompletedError = "The 'Original Date Completed' cannot be after the 'Last Date Completed'.";
+                result = false;
+            }
+
+            if (formData.originalDateCompleted > new UTCDate()) {
+                errorResults.originalDateCompletedError = "The 'Original Date Completed' cannot be set to a day in the future.";
+                result = false;
+            }
+
+            if (formData.lastDateCompleted > new UTCDate()) {
+                errorResults.lastDateCompletedError = "The 'Last Date Completed' cannot be set to a day in the future.";
+                result = false;
+            }
+
+            if (formData.lastDateCompleted < formData.originalDateCompleted) {
+                errorResults.lastDateCompletedError = "The 'Last Date Completed' cannot be before the 'Original Date Completed'.";
+                result = false;
+            }
+        }
+
+        else {
+            errorResults.originalDateCompletedError = "The 'Original Date Completed' and 'Last Date Completed' must be set.";
+            result = false;
+        }
+
+        return result;
+    }
 
     const setFormDataDefaultValues = () => {
         // If nothing was changed on dropdown, take the first value.
