@@ -58,3 +58,9 @@ export interface ListingSearchQueryFilters
     status? : string[];
     daysSinceLastCompleted? : string[];
 }
+
+export interface ValidationModel
+{
+    isValid : boolean;
+    message : string;
+}

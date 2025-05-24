@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, ReactElement, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { startOfDay } from 'date-fns';
+import { isAfter, isBefore, startOfDay } from 'date-fns';
 import { UTCDate } from "@date-fns/utc";
 
 interface ChapterFormProps {
@@ -55,7 +55,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
     const isFormValid = (): boolean => {
         let result = true;
 
-        let errorResults: ChapterFormErrors =
+        const errorResults: ChapterFormErrors =
         {
             nameError: "",
             urlError: "",
@@ -81,39 +81,33 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
     const isOriginalAndLastDateCompletedValid = (errorResults : ChapterFormErrors) : boolean => 
     {
         let result = true;
-        if(Number(formData.statusId) !== ChapterStatuses.COMPLETED)
-        {
-            return result;
-        }
 
-        if (Number(formData.statusId) === ChapterStatuses.COMPLETED &&
-            formData.originalDateCompleted &&
-            formData.lastDateCompleted) {
+        if (Number(formData.statusId) === ChapterStatuses.COMPLETED) {
+            if(!formData.originalDateCompleted || !formData.lastDateCompleted) {                  
+                errorResults.originalDateCompletedError = "The 'Original Date Completed' and 'Last Date Completed' must be set.";
+                result = false;
+                return result;
+            }
 
-            if (formData.originalDateCompleted > formData.lastDateCompleted) {
+            if (isAfter( formData.originalDateCompleted , formData.lastDateCompleted)) {
                 errorResults.originalDateCompletedError = "The 'Original Date Completed' cannot be after the 'Last Date Completed'.";
                 result = false;
             }
 
-            if (formData.originalDateCompleted > new UTCDate()) {
+            if (isAfter(formData.originalDateCompleted , new UTCDate())) {
                 errorResults.originalDateCompletedError = "The 'Original Date Completed' cannot be set to a day in the future.";
                 result = false;
             }
 
-            if (formData.lastDateCompleted > new UTCDate()) {
+            if (isAfter(formData.lastDateCompleted , new UTCDate())) {
                 errorResults.lastDateCompletedError = "The 'Last Date Completed' cannot be set to a day in the future.";
                 result = false;
             }
 
-            if (formData.lastDateCompleted < formData.originalDateCompleted) {
+            if (isBefore(formData.lastDateCompleted , formData.originalDateCompleted)) {
                 errorResults.lastDateCompletedError = "The 'Last Date Completed' cannot be before the 'Original Date Completed'.";
                 result = false;
             }
-        }
-
-        else {
-            errorResults.originalDateCompletedError = "The 'Original Date Completed' and 'Last Date Completed' must be set.";
-            result = false;
         }
 
         return result;
