@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         const validationModel = validateChapter(chapter);
         if(!validationModel.isValid)
         {
-            return NextResponse.json(validationModel, { status: 400 });
+            return NextResponse.json({message: validationModel.message}, { status: 400 });
         }
 
         const result = await createChapter(chapter);

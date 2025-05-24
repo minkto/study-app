@@ -1,25 +1,18 @@
 import { ChapterStatuses, FormState } from "@/constants/constants";
-import { Chapter, Status } from "@/shared.types";
+import { Chapter, ChapterFormErrors, Status } from "@/shared.types";
 import Form from "next/form";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, ReactElement, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { isAfter, isBefore, startOfDay } from 'date-fns';
+import { startOfDay } from 'date-fns';
 import { UTCDate } from "@date-fns/utc";
+import { validateChapter } from "@/services/validateChaptersService";
 
 interface ChapterFormProps {
     resourceId: string;
     chapterId?: string;
     formState: number;
-}
-
-interface ChapterFormErrors 
-{
-    nameError: string;
-    urlError: string;
-    originalDateCompletedError: string;
-    lastDateCompletedError: string; 
 }
 
 const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => {
@@ -53,65 +46,15 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
     }
 
     const isFormValid = (): boolean => {
-        let result = true;
+        const validationModel = validateChapter(formData);
 
-        const errorResults: ChapterFormErrors =
+        if(!validationModel.isValid)
         {
-            nameError: "",
-            urlError: "",
-            originalDateCompletedError: "",
-            lastDateCompletedError: ""
+            setFormErrors(validationModel?.formErrors);
         }
 
-        if (!formData.name) {
-            errorResults.nameError = "The 'Name' field is a mandatory field.";
-            result = false;
-        }
-
-        if(!isOriginalAndLastDateCompletedValid(errorResults))
-        {
-            result = false;
-        }
-
-        setFormErrors(errorResults);
-
-        return result;
+        return validationModel.isValid;
     };
-
-    const isOriginalAndLastDateCompletedValid = (errorResults : ChapterFormErrors) : boolean => 
-    {
-        let result = true;
-
-        if (Number(formData.statusId) === ChapterStatuses.COMPLETED) {
-            if(!formData.originalDateCompleted || !formData.lastDateCompleted) {                  
-                errorResults.originalDateCompletedError = "The 'Original Date Completed' and 'Last Date Completed' must be set.";
-                result = false;
-                return result;
-            }
-
-            if (isAfter( formData.originalDateCompleted , formData.lastDateCompleted)) {
-                errorResults.originalDateCompletedError = "The 'Original Date Completed' cannot be after the 'Last Date Completed'.";
-                result = false;
-            }
-
-            if (isAfter(formData.originalDateCompleted , new UTCDate())) {
-                errorResults.originalDateCompletedError = "The 'Original Date Completed' cannot be set to a day in the future.";
-                result = false;
-            }
-
-            if (isAfter(formData.lastDateCompleted , new UTCDate())) {
-                errorResults.lastDateCompletedError = "The 'Last Date Completed' cannot be set to a day in the future.";
-                result = false;
-            }
-
-            if (isBefore(formData.lastDateCompleted , formData.originalDateCompleted)) {
-                errorResults.lastDateCompletedError = "The 'Last Date Completed' cannot be before the 'Original Date Completed'.";
-                result = false;
-            }
-        }
-
-        return result;
-    }
 
     const setFormDataDefaultValues = () => {
         // If nothing was changed on dropdown, take the first value.

@@ -49,7 +49,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
         const validationModel = validateChapter(chapter);
         if(!validationModel.isValid)
         {
-            return NextResponse.json(validationModel, { status: 400 });
+            return NextResponse.json({message: validationModel.message}, { status: 400 });
         }
 
         const result = await updateChapter(chapter);
