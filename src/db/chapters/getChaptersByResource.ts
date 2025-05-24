@@ -6,13 +6,13 @@ import { ListingPageSizes } from "@/constants/constants";
 export async function getChaptersByResource(resourceId: number, listingSearchQuery: ListingSearchQuery | null | undefined) {
 
     let queryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`];
-    let query = "SELECT *, COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC') :: date - original_date_completed:: date  AS integer),0) days_since_last_completed  FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
+    let query = "SELECT *, COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date - (last_date_completed AT TIME ZONE 'UTC')::date  AS integer), 0) AS days_since_last_completed FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
 
     const pageSize = parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS);
     const totalPageCount = await calculatePageCount(resourceId, listingSearchQuery, pageSize);
 
     if (isStringEmpty(listingSearchQuery?.searchTerm)) {
-        query = "SELECT *, COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC') :: date - original_date_completed:: date  AS integer),0) days_since_last_completed  FROM chapters WHERE resource_id = $1";
+        query = "SELECT *, COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date - (last_date_completed AT TIME ZONE 'UTC')::date  AS integer), 0) AS days_since_last_completed  FROM chapters WHERE resource_id = $1";
         queryParams = [resourceId];
     }
 
