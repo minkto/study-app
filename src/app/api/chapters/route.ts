@@ -1,4 +1,5 @@
 import { createChapter } from "@/db/chapters/createChapter";
+import { validateChapter } from "@/services/validateChaptersService";
 import { Chapter } from "@/shared.types";
 import { NextResponse } from "next/server";
 
@@ -15,6 +16,12 @@ export async function POST(request: Request) {
             originalDateCompleted: res["originalDateCompleted"],
             lastDateCompleted : res["lastDateCompleted"]
         };
+
+        const validationModel = validateChapter(chapter);
+        if(!validationModel.isValid)
+        {
+            return NextResponse.json({message: validationModel.message}, { status: 400 });
+        }
 
         const result = await createChapter(chapter);
         return NextResponse.json(result, { status: 200 });

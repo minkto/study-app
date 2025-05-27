@@ -58,3 +58,18 @@ export interface ListingSearchQueryFilters
     status? : string[];
     daysSinceLastCompleted? : string[];
 }
+
+export interface ChapterValidationModel
+{
+    isValid : boolean;
+    message : string;
+    formErrors : ChapterFormErrors
+}
+
+export interface ChapterFormErrors 
+{
+    nameError: string;
+    urlError: string;
+    originalDateCompletedError: string;
+    lastDateCompletedError: string; 
+}

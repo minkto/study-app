@@ -1,5 +1,5 @@
 import { ChapterStatuses, FormState } from "@/constants/constants";
-import { Chapter, Status } from "@/shared.types";
+import { Chapter, ChapterFormErrors, Status } from "@/shared.types";
 import Form from "next/form";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, ReactElement, useEffect, useState } from "react";
@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { startOfDay } from 'date-fns';
 import { UTCDate } from "@date-fns/utc";
+import { validateChapter } from "@/services/validateChaptersService";
 
 interface ChapterFormProps {
     resourceId: string;
@@ -16,7 +17,7 @@ interface ChapterFormProps {
 
 const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => {
 
-    const [formErrors, setFormErrors] = useState({
+    const [formErrors, setFormErrors] = useState<ChapterFormErrors>({
         nameError: "",
         urlError: "",
         originalDateCompletedError: "",
@@ -45,16 +46,14 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
     }
 
     const isFormValid = (): boolean => {
-        let result = true;
-        if (!formData.name) {
-            setFormErrors({ ...formErrors, nameError: "The 'Name' field is a mandatory field." });
-            result = false;
-        }
-        else {
-            setFormErrors({ ...formErrors, nameError: "" });
+        const validationModel = validateChapter(formData);
+
+        if(!validationModel.isValid)
+        {
+            setFormErrors(validationModel?.formErrors);
         }
 
-        return result;
+        return validationModel.isValid;
     };
 
     const setFormDataDefaultValues = () => {

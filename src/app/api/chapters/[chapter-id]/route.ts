@@ -1,6 +1,7 @@
 import { deleteChapter } from "@/db/chapters/deleteChapter";
 import { getChapter } from "@/db/chapters/getChapter";
 import { updateChapter } from "@/db/chapters/updateChapter";
+import { validateChapter } from "@/services/validateChaptersService";
 import { Chapter } from "@/shared.types";
 import { NextResponse } from "next/server";
 
@@ -45,6 +46,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
             originalDateCompleted: res["originalDateCompleted"]
         }
 
+        const validationModel = validateChapter(chapter);
+        if(!validationModel.isValid)
+        {
+            return NextResponse.json({message: validationModel.message}, { status: 400 });
+        }
 
         const result = await updateChapter(chapter);
 
