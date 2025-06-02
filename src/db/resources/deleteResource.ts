@@ -1,13 +1,20 @@
-import { queryDataRowCount } from "../dbHelper";
+import { queryWithTranscation } from "../dbHelper";
 
 export async function deleteResource(id: number) {
     try {
         const query =
-        {
-            text: "DELETE FROM resources WHERE resource_id = $1",
-            values: [id]
-        }
-        const result = queryDataRowCount(query)
+            [
+                {
+                    text: "DELETE FROM chapters WHERE resource_id = $1",
+                    values: [id]
+                },
+                {
+                    text: "DELETE FROM resources WHERE resource_id = $1",
+                    values: [id]
+                },
+            ]
+
+        const result = queryWithTranscation(query);
         return result;
 
     } catch (error) {
