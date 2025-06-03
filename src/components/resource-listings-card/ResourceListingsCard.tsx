@@ -3,6 +3,8 @@ import styles from './resource-listings-card.module.css'
 import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
 import { GetResourceDto } from '@/shared.types';
 import { useEffect, useState } from 'react';
+import DashboardModal from '../dashboard-modal-portal/DashboardModalPortal';
+import ConfirmationModal from '../modals/confirmation-modal/ConfirmationModal';
 
 interface ResourceListingsCardProps {
     resource: GetResourceDto;
@@ -26,20 +28,38 @@ const renderCategory = (resource: GetResourceDto) => {
 const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps) => {
 
     const [progressBarWidth, setProgressBarWidth] = useState("0%");
+    const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
+
+    const handleModalVisibility = () => {
+        setDeleteModalVisible(!deleteModalVisible);
+    }
 
     useEffect(() => {
         setProgressBarWidth(`calc(${resource.percentageCompleted}%)`);
     }, [resource.percentageCompleted]);
-    
+
     return (
         <div className={styles["resources-listing-card"]}>
+            <DashboardModal show={deleteModalVisible}>
+                <ConfirmationModal
+                    headingText='Delete Resource'
+                    text={`Are you sure you would like to delete this resource.`}
+                    subText='NOTE: All chapters will also be deleted.'
+                    confirmText='Yes, Delete'
+                    onClose={handleModalVisibility} isActive={deleteModalVisible}
+                    onConfirm={() => onDelete(resource.resourceId)} />
+            </DashboardModal>
             <div className={styles["resources-listing-card__row"]}>
                 <h2 className={styles["resources-listing-card__name"]}>{resource.name}</h2>
                 {<CardDropdownMenu links={
                     [
                         { href: `resources/${resource.resourceId}/chapters`, label: "View Chapters" },
                         { href: `resources/${resource.resourceId}/edit-resource`, label: "Edit Resource" },
-                        { onClick: () => onDelete(resource.resourceId), label: "Delete Resource" },
+                        {
+                            onClick: () => {
+                                handleModalVisibility();
+                            }, label: "Delete Resource"
+                        },
                     ]
                 } />}
             </div>

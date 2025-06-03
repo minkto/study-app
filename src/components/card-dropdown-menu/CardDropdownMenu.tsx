@@ -30,7 +30,13 @@ const CardDropdownMenu = ({ links }: CardDropdownMenuProps) => {
                     {i.href ? (
                         <a href={i.href} className={styles["dropdown-menu__link"]}>{i.label}</a>
                     ) : (
-                        <button onClick={i.onClick} className={styles["dropdown-menu__button"]}>{i.label}</button>
+                        <button onClick={() => {
+                            if (i.onClick !== undefined) {
+                                i?.onClick();
+                            }
+                            toggleDropdown();
+                        }
+                        } className={styles["dropdown-menu__button"]}>{i.label}</button>
                     )}
                 </li>
             ))
