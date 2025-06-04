@@ -9,6 +9,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
 import { TZDate } from "@date-fns/tz";
+import DashboardModalPortal from "../dashboard-modal-portal/DashboardModalPortal";
+import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -39,6 +41,11 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         pageSize: parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS)
     });
     const [pageCount, setPageCount] = useState(0);
+    const [selectedChapter,setSelectedChapter] = useState<Chapter>();
+    const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
+    const handleModalVisibility = () => {
+        setDeleteModalVisible(!deleteModalVisible);
+    }
 
 
     const constructQueryString = useCallback(() => {
@@ -155,8 +162,8 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                                 label: "Delete Chapter",
                                 onClick: async () => {
                                     try {
-                                        await deleteChapter(chapterId);
-                                        await fetchChapters();
+                                        setSelectedChapter(row.original);
+                                        handleModalVisibility();
                                     } catch (error) {
                                         console.error("Failed to delete chapter:", error);
                                     }
@@ -224,6 +231,23 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     }, [searchParams]);
 
     return (<div className="chapter-listings">
+        <DashboardModalPortal show={deleteModalVisible}>
+            <ConfirmationModal 
+            onClose={handleModalVisibility} 
+            onConfirm={async() => {
+                if(selectedChapter !== undefined)
+                {
+                    await deleteChapter(selectedChapter?.chapterId);
+                    await fetchChapters(); 
+                }           
+            }}
+            isActive={deleteModalVisible}
+            text={`Are you sure you would like to delete this Chapter?`}
+            subText={`${selectedChapter?.name}`}
+            confirmText="Yes, Delete"
+            headingText="Delete Chapter"
+            />
+        </DashboardModalPortal>
         <ListingsSearchBar onSearchSubmit={ ()=> setPagination({ ...pagination, pageIndex: 0 })} />
         <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
             <thead>

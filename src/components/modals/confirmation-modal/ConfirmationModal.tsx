@@ -32,6 +32,9 @@ const ConfirmationModal = ({
         if (onConfirm !== undefined) {
             onConfirm();
         }
+        if (onClose !== undefined) {
+            onClose();
+        }
     }
 
     useEffect(() => {
