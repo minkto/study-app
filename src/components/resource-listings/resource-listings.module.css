@@ -1,6 +1,7 @@
 .resources-listing {
     border: 1px solid black;
+    display: grid;
+    gap: 1.5em;
+    grid-template-columns: repeat(3, 1fr);
     padding: 5px;
-    overflow-y: scroll;
-    max-height: 500px;
 }

@@ -61,6 +61,8 @@ const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps)
                 } />}
             </div>
 
+            {renderCategory(resource)}
+
             <div className={styles["resources-listing-card__row"]}>
                 {/*<!-- Percentage Component -->*/}
                 <div className={styles["resources-listing-card__progress-bar"]}>
@@ -71,14 +73,11 @@ const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps)
                     </div>
 
                 </div>
-                {renderCategory(resource)}
             </div>
             <div className={styles["resources-listing-card__description"]}>
                 <p className={styles["max-lines"]}>{resource?.description}</p>
                 <div className={styles["resources-listing-card__description-container"]}></div>
             </div>
-
-            <div className={styles["resources-listing-card__description-overlay"]}></div>
         </div>
     );
 }
