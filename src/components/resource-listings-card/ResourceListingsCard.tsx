@@ -3,8 +3,9 @@ import styles from './resource-listings-card.module.css'
 import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
 import { GetResourceDto } from '@/shared.types';
 import { useEffect, useState } from 'react';
-import DashboardModal from '../dashboard-modal-portal/DashboardModalPortal';
+import DashboardModalPortal from '../dashboard-modal-portal/DashboardModalPortal';
 import ConfirmationModal from '../modals/confirmation-modal/ConfirmationModal';
+import { useModalVisibility } from '@/hooks/useModalVisibility';
 
 interface ResourceListingsCardProps {
     resource: GetResourceDto;
@@ -28,11 +29,7 @@ const renderCategory = (resource: GetResourceDto) => {
 const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps) => {
 
     const [progressBarWidth, setProgressBarWidth] = useState("0%");
-    const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
-
-    const handleModalVisibility = () => {
-        setDeleteModalVisible(!deleteModalVisible);
-    }
+    const { isVisible: deleteModalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
 
     useEffect(() => {
         setProgressBarWidth(`calc(${resource.percentageCompleted}%)`);
@@ -40,15 +37,15 @@ const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps)
 
     return (
         <div className={styles["resources-listing-card"]}>
-            <DashboardModal show={deleteModalVisible}>
+            <DashboardModalPortal show={deleteModalVisible}>
                 <ConfirmationModal
                     headingText='Delete Resource'
                     text={`Are you sure you would like to delete this resource.`}
                     subText='NOTE: All chapters will also be deleted.'
                     confirmText='Yes, Delete'
-                    onClose={handleModalVisibility} isActive={deleteModalVisible}
+                    onClose={hide} isActive={deleteModalVisible}
                     onConfirm={() => onDelete(resource.resourceId)} />
-            </DashboardModal>
+            </DashboardModalPortal>
             <div className={styles["resources-listing-card__row"]}>
                 <h2 className={styles["resources-listing-card__name"]}>{resource.name}</h2>
                 {<CardDropdownMenu links={
