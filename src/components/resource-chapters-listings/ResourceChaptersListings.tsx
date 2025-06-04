@@ -11,6 +11,7 @@ import { getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableU
 import { TZDate } from "@date-fns/tz";
 import DashboardModalPortal from "../dashboard-modal-portal/DashboardModalPortal";
 import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
+import { useModalVisibility } from "@/hooks/useModalVisibility";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -42,12 +43,9 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     });
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter,setSelectedChapter] = useState<Chapter>();
-    const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
-    const handleModalVisibility = () => {
-        setDeleteModalVisible(!deleteModalVisible);
-    }
+    const { isVisible: deleteModalVisible, toggle: handleModalVisibility, show, hide } = useModalVisibility();
 
-
+    
     const constructQueryString = useCallback(() => {
         const params = new URLSearchParams(searchParams?.toString());
         const sortBy = sorting[0]?.id;
@@ -233,7 +231,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     return (<div className="chapter-listings">
         <DashboardModalPortal show={deleteModalVisible}>
             <ConfirmationModal 
-            onClose={handleModalVisibility} 
+            onClose={hide} 
             onConfirm={async() => {
                 if(selectedChapter !== undefined)
                 {
