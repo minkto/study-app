@@ -1,13 +1,13 @@
 import styles from './category-pill.module.css'
 
 
-interface CategoryPillProps
-{
+interface CategoryPillProps {
     title?: string
 }
 
-const CategoryPill = ({title} : CategoryPillProps) => {
+const CategoryPill = ({ title }: CategoryPillProps) => {
     return (<div className={styles["resources-listing-card-category__pill"]}>
+        <div className={styles["resources-listing-card-category-pill__color-tag"]}></div>
         <p className={styles["resources-listing-card-category-pill__text"]}>
             {title}
         </p>

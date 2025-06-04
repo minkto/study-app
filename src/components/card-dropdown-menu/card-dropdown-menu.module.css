@@ -12,6 +12,7 @@
     top: 100%;
     right: 100%;
     position: absolute;
+    z-index: 1000;
 }
 
 .dropdown-menu__options-button {
@@ -26,17 +27,14 @@
     border-radius: 5px;
 }
 
-
 .dropdown-menu__list {
     list-style: none;
 }
-
 
 .dropdown-menu__link {
     display: block;
     padding: 10px;
     width: 100%;
-
 }
 
 .dropdown-menu__button {
