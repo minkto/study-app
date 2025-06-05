@@ -1,7 +1,7 @@
 import { getResource } from "@/db/resources/getResource"
 import getResourcePercentageComplete from "@/db/resources/getResourcePercentageComplete";
-import { getResoures } from "@/db/resources/getResources";
-import { GetResourceDto } from "@/shared.types";
+import { getResources } from "@/db/resources/getResources";
+import { GetResourceDto, ListingSearchQuery } from "@/shared.types";
 
 export const getResourceDto = async (resourceId: number): Promise<GetResourceDto | null> => {
     const resource = await getResource(resourceId);
@@ -25,14 +25,15 @@ export const getResourceDto = async (resourceId: number): Promise<GetResourceDto
     return null;
 }
 
-export const getResourcesDto = async (): Promise<GetResourceDto[] | null> => {
+export const getResourcesDto = async (queryParams: ListingSearchQuery): Promise<GetResourceDto[] | null> => {
 
-    const mappedResources = await getResoures();
+    const mappedResources = await getResources(queryParams);
+
     if (Array.isArray(mappedResources)) {
         const mappedDto: GetResourceDto[] = await Promise.all(
             mappedResources.map(async (x) => {
                 const percentageCompleted = await getResourcePercentageComplete(x?.resourceId ?? 0);
-                return {          
+                return {
                     name: x.name,
                     description: x.description,
                     resourceId: x.resourceId,
