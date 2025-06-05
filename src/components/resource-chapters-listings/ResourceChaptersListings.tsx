@@ -1,17 +1,18 @@
 import { Chapter } from "@/shared.types";
-import { CellContext, createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, PaginationState, Row, RowData, SortingState, useReactTable } from "@tanstack/react-table";
+import { CellContext, createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, Row, RowData, useReactTable } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
-import { ChapterStatuses, ListingPageSizes } from "@/constants/constants";
+import { ChapterStatuses } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { isStringEmpty } from "@/utils/stringUtils";
 import { getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
 import { TZDate } from "@date-fns/tz";
 import DashboardModalPortal from "../dashboard-modal-portal/DashboardModalPortal";
 import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
 import { useModalVisibility } from "@/hooks/useModalVisibility";
+import Link from "next/link";
+import IconPlus from "../icons/icon-plus/IconPlus";
+import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -31,40 +32,12 @@ const statusMapping = {
 
 const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
 
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-    const router = useRouter();
     const [data, setData] = useState<Chapter[]>([]);
     const columnHelper = createColumnHelper<Chapter>();
-    const [sorting, setSorting] = useState<SortingState>([]);
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS)
-    });
     const [pageCount, setPageCount] = useState(0);
-    const [selectedChapter,setSelectedChapter] = useState<Chapter>();
+    const [selectedChapter, setSelectedChapter] = useState<Chapter>();
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, show, hide } = useModalVisibility();
-
-    
-    const constructQueryString = useCallback(() => {
-        const params = new URLSearchParams(searchParams?.toString());
-        const sortBy = sorting[0]?.id;
-        const sortOrder = sorting[0]?.desc ? "desc" : "asc";
-
-        if (sorting.length === 0) {
-            params.delete("sortBy");
-            params.delete("sortOrder");
-        } else {
-            params.set("sortBy", sortBy!);
-            params.set("sortOrder", sortOrder);
-        }
-
-        if(pagination.pageIndex > 0 || (pagination.pageIndex === 0 && params.get("page") !== null)) {
-            params.set("page", (pagination.pageIndex + 1).toString());
-        }
-
-        return params.size > 0 ? "?" + params.toString() : "";
-    }, [searchParams, sorting, pagination.pageIndex]);
+    const { constructQueryString, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams();
 
     const fetchChapters = useCallback(async () => {
         try {
@@ -96,7 +69,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             console.log("An error has occurred in the API: ", error);
         }
     }, [resourceId]);
-    
+
     const columns = useMemo(() => [
         columnHelper.accessor('name', {
             cell: info => info.getValue(),
@@ -124,7 +97,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             id: "originaldatecompleted",
             cell: (info) => {
                 const date = info.getValue();
-                return date ? new TZDate(date,Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString() : null;
+                return date ? new TZDate(date, Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString() : null;
 
             },
             header: () => <span>Original Date Completed</span>,
@@ -136,7 +109,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             id: "lastdatecompleted",
             cell: (info) => {
                 const date = info.getValue();
-                return date ? new TZDate(date,Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString() : null;
+                return date ? new TZDate(date, Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString() : null;
             },
             header: () => <span>Last Date Completed</span>,
             enableSorting: true,
@@ -149,7 +122,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         }),
         {
             id: 'menuOptions',
-            header: () => null ,
+            header: () => null,
             cell: ({ row }: { row: Row<Chapter> }) => {
                 const chapterId = row.original.chapterId
                 return (
@@ -200,53 +173,28 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         fetchChapters();
     }, [fetchChapters]);
 
-    // Upon Column Change, set the query string
-    useEffect(() => {
-        const queryString = constructQueryString();
-        if (queryString) {
-            router.push(queryString);
-        }
-        else {
-            router.replace(`${pathname}${queryString}`);
-        }
-
-    }, [sorting, constructQueryString, router, pathname]);
-
-    // Upon Component Mount, set the sorting.
-    useEffect(() => {
-        const params = new URLSearchParams(searchParams?.toString());
-        const sortByValue = params.get('sortBy') ?? "";
-        const sortOrderValue = params.get('sortOrder');
-
-        if (!isStringEmpty(sortByValue) && !isStringEmpty(sortOrderValue)) {
-            const newSorting = [{
-                id: sortByValue,
-                desc: sortOrderValue?.toLowerCase() === 'desc'
-            }];
-
-            setSorting(newSorting);
-        }
-    }, [searchParams]);
 
     return (<div className="chapter-listings">
         <DashboardModalPortal show={deleteModalVisible}>
-            <ConfirmationModal 
-            onClose={hide} 
-            onConfirm={async() => {
-                if(selectedChapter !== undefined)
-                {
-                    await deleteChapter(selectedChapter?.chapterId);
-                    await fetchChapters(); 
-                }           
-            }}
-            isActive={deleteModalVisible}
-            text={`Are you sure you would like to delete this Chapter?`}
-            subText={`${selectedChapter?.name}`}
-            confirmText="Yes, Delete"
-            headingText="Delete Chapter"
+            <ConfirmationModal
+                onClose={hide}
+                onConfirm={async () => {
+                    if (selectedChapter !== undefined) {
+                        await deleteChapter(selectedChapter?.chapterId);
+                        await fetchChapters();
+                    }
+                }}
+                isActive={deleteModalVisible}
+                text={`Are you sure you would like to delete this Chapter?`}
+                subText={`${selectedChapter?.name}`}
+                confirmText="Yes, Delete"
+                headingText="Delete Chapter"
             />
         </DashboardModalPortal>
-        <ListingsSearchBar onSearchSubmit={ ()=> setPagination({ ...pagination, pageIndex: 0 })} />
+        <ListingsSearchBar onSearchSubmit={() => setPagination({ ...pagination, pageIndex: 0 })}>
+            <Link className='dashboard-primary-btn' href={'chapters/add-chapter'}><IconPlus width={24} height={24} />Add</Link>
+        </ListingsSearchBar>
+
         <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
             <thead>
                 {table.getHeaderGroups().map(headerGroup => (
@@ -305,11 +253,11 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             </tbody>
         </table>
         <div className={styles["pagination-container"]} >
-            <button onClick={() => table.firstPage()}  disabled={!table.getCanPreviousPage()}>{'<<'} </button>
+            <button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>{'<<'} </button>
             <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>{'<'}</button>
             <div>
-                Page {table.getState().pagination.pageIndex  + 1 } of {table?.getPageCount() === 0 || isNaN(table?.getPageCount())? 1 : table.getPageCount().toLocaleString()}
-            </div> 
+                Page {table.getState().pagination.pageIndex + 1} of {table?.getPageCount() === 0 || isNaN(table?.getPageCount()) ? 1 : table.getPageCount().toLocaleString()}
+            </div>
             <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>{'>'}</button>
             <button onClick={() => table.lastPage()} disabled={!table.getCanNextPage()}>{'>>'}</button>
         </div>

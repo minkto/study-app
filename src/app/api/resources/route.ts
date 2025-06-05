@@ -2,13 +2,24 @@ import { createResource } from "@/db/resources/createResource";
 import { getResource } from "@/db/resources/getResource";
 import { updateResource } from "@/db/resources/updateResource";
 import { getResourcesDto } from "@/services/resourceService";
-import { Resource } from "@/shared.types";
-import { NextResponse } from "next/server";
+import { ListingSearchQuery, Resource } from "@/shared.types";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
 
     try {
-        const mappedResources = await getResourcesDto();
+
+        const searchParams = request.nextUrl.searchParams;
+        const listingSearchQuery: ListingSearchQuery =
+        {
+            searchTerm: searchParams?.get('search-term')?.trim(),
+            sortBy: searchParams?.get('sortBy')?.trim(),
+            sortOrder: searchParams?.get('sortOrder')?.trim(),
+            page: searchParams?.get('page')?.trim(),
+        };
+
+        const mappedResources = await getResourcesDto(listingSearchQuery);
+
         if (mappedResources === null || mappedResources === undefined) {
             return NextResponse.json({ message: "No resources found." }, { status: 404 });
         }
