@@ -1,10 +1,16 @@
 import { ListingSearchQuery, Resource } from "@/shared.types";
 import { queryData } from "../dbHelper";
 import { isStringEmpty } from "@/utils/stringUtils";
+import { buildOrderByFilter } from "../queryBuilder";
 
 export async function getResources(listingSearchQuery: ListingSearchQuery) {
 
     try {
+
+        const columnsToSql: Map<string, string> = new Map([
+            ["name", "name"],
+            ["categoryname", "category_name"]
+        ]);
 
         let query = `SELECT 
                         r.*,
@@ -25,8 +31,9 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
             queryParams = [];
         }
 
-        const resourcesDb = await queryData(query, queryParams);
+        query += buildOrderByFilter(columnsToSql, listingSearchQuery?.sortBy, listingSearchQuery?.sortOrder, "r.resource_id");
 
+        const resourcesDb = await queryData(query, queryParams);
         const mappedResources = resourcesDb.map<Resource>((x) => (
             {
                 name: x.name,
@@ -34,7 +41,6 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
                 resourceId: x.resource_id,
                 categoryName: x.category_name
             }));
-
 
         return mappedResources;
     }
