@@ -2,8 +2,17 @@ import { Chapter, ListingSearchQuery, ListingSearchQueryFilters } from "@/shared
 import { queryData } from "../dbHelper";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { ListingPageSizes } from "@/constants/constants";
+import { buildOrderByFilter } from "../queryBuilder";
 
 export async function getChaptersByResource(resourceId: number, listingSearchQuery: ListingSearchQuery | null | undefined) {
+
+    const columnsToSql : Map<string,string> = new Map([
+        ["name","name"],
+        ["statusid","status_id"],
+        ["originaldatecompleted","original_date_completed"],
+        ["lastdatecompleted","last_date_completed"],
+        ["dayssincecompleted","days_since_last_completed"], 
+    ]);
 
     let queryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`];
     let query = "SELECT *, COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date - (last_date_completed AT TIME ZONE 'UTC')::date  AS integer), 0) AS days_since_last_completed FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
@@ -20,12 +29,7 @@ export async function getChaptersByResource(resourceId: number, listingSearchQue
         query += ` ${ buildFilterQuery(listingSearchQuery?.filters)}`;
     }
 
-    if (!isStringEmpty(listingSearchQuery?.sortBy) && !isStringEmpty(listingSearchQuery?.sortOrder)) {
-        query += ` ORDER BY ${mapOrderByColumnsToSql(listingSearchQuery?.sortBy)} ${mapSortOrderColumnsToSql(listingSearchQuery?.sortOrder)} `;
-    }
-    else {
-        query += ` ORDER BY chapter_id desc `;
-    }
+    query += buildOrderByFilter(columnsToSql,listingSearchQuery?.sortBy,listingSearchQuery?.sortOrder,"chapter_id");
 
     if (listingSearchQuery?.page) {
         query += ` LIMIT ${pageSize} OFFSET ${pageSize * (Number(listingSearchQuery.page) - 1)}`;
@@ -107,34 +111,6 @@ const mapStatusFilter = (value: string | undefined): string => {
     }
 
     return "";
-}
-
-const mapOrderByColumnsToSql = (sortByValue: string | undefined) => {
-    switch (sortByValue?.toLowerCase()) {
-        case "name":
-            return "name";
-        case "statusid":
-            return "status_id";
-        case "originaldatecompleted":
-            return "original_date_completed";
-        case "lastdatecompleted":
-            return "last_date_completed";
-        case "dayssincecompleted":
-            return "days_since_last_completed";
-        default:
-            return "name";
-    }
-}
-
-const mapSortOrderColumnsToSql = (sortOrderValue: string | undefined) => {
-    switch (sortOrderValue?.toLowerCase()) {
-        case "asc":
-            return "asc";
-        case "desc":
-            return "desc";
-        default:
-            return "asc";
-    }
 }
 
 const daysSinceLastCompletedFilter = (value: string | undefined): string => {

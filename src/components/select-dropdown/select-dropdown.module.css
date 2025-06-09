@@ -1,0 +1,27 @@
+.listing-dropdown {
+    appearance: base-select;
+    border: 2px solid #ddd;
+    background: #EEEEEE;
+    padding: 5px;
+    font-size: 1.2rem;
+    transition: 0.4s;
+    min-width: 200px;
+    align-self: center;
+    margin: 0.5em 0.5em 0.5em 0.5em;
+    align-items: center;
+}
+
+.listing-dropdown:hover,
+.listing-dropdown:focus {
+    background: #ddd;
+}
+
+.listing-dropdown option {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    border: 2px solid #ddd;
+    background: #EEEEEE;
+    padding: 10px;
+    transition: 0.4s;
+}

@@ -4,7 +4,13 @@ import { PaginationState, SortingState } from "@tanstack/react-table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-export function useDataTableQueryParams(pageSize = ListingPageSizes.CHAPTERS ) {
+interface SortQueryFilters 
+{
+    sortByValue: string;
+    sortOrderValue: string;
+}
+
+export function useDataTableQueryParams(pageSize = ListingPageSizes.CHAPTERS) {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [pagination, setPagination] = useState<PaginationState>({
@@ -47,29 +53,41 @@ export function useDataTableQueryParams(pageSize = ListingPageSizes.CHAPTERS ) {
     }
 
     const setupInitialSort = () => {
-        const params = new URLSearchParams(searchParams?.toString());
-        const sortByValue = params.get('sortBy') ?? "";
-        const sortOrderValue = params.get('sortOrder');
+        const sortQueryFilters = getSortByQueryParamValues();
 
-        if (!isStringEmpty(sortByValue) && !isStringEmpty(sortOrderValue)) {
+        if (!isStringEmpty(sortQueryFilters.sortByValue) && !isStringEmpty(sortQueryFilters.sortOrderValue)) {
             const newSorting = [{
-                id: sortByValue,
-                desc: sortOrderValue?.toLowerCase() === 'desc'
+                id: sortQueryFilters.sortByValue,
+                desc: sortQueryFilters.sortOrderValue.toLowerCase() === 'desc'
             }];
 
             setSorting(newSorting);
         }
     }
 
-    // Upon Column Change, set the query string
+    const getSortByQueryParamValues = () : SortQueryFilters => 
+    {
+        const params = new URLSearchParams(searchParams?.toString());
+        const sortByValue = params.get('sortBy') ?? "";
+        const sortOrderValue = params.get('sortOrder') ?? "";
+
+        return {
+            sortByValue : sortByValue,
+            sortOrderValue : sortOrderValue
+        }
+    }
+
+    // Only redirect when sorting changes and it's not the initial sort
     useEffect(() => {
-        redirectWithQueryParams();
-    }, [sorting, constructQueryString, router, pathname]);
+        if (sorting.length > 0) {
+            redirectWithQueryParams();
+        }
+    }, [sorting]);
 
     // Upon Component Mount, set the sorting.
     useEffect(() => {
         setupInitialSort();
-    }, [searchParams]);
+    }, []);
 
     return {
         constructQueryString,
@@ -79,5 +97,6 @@ export function useDataTableQueryParams(pageSize = ListingPageSizes.CHAPTERS ) {
         setPagination,
         sorting,
         pagination,
+        searchParams
     };
 }
