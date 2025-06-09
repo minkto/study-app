@@ -37,7 +37,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, show, hide } = useModalVisibility();
-    const { constructQueryString, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams();
+    const { constructQueryString,redirectWithQueryParams,searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams();
 
     const fetchChapters = useCallback(async () => {
         try {
@@ -171,8 +171,12 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     // Upon Component Mount, fetch the chapters.
     useEffect(() => {
         fetchChapters();
-    }, [fetchChapters]);
+     }, [searchParams]);
 
+    useEffect(() => {
+        redirectWithQueryParams();
+      }, [sorting,pagination]);
+    
 
     return (<div className="chapter-listings">
         <DashboardModalPortal show={deleteModalVisible}>
