@@ -3,7 +3,7 @@ import { CellContext, createColumnHelper, flexRender, getCoreRowModel, getPagina
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
-import { ChapterStatuses } from "@/constants/constants";
+import { ChapterStatuses, FilterByQueryKeys } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
 import { getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
 import { TZDate } from "@date-fns/tz";
@@ -13,6 +13,7 @@ import { useModalVisibility } from "@/hooks/useModalVisibility";
 import Link from "next/link";
 import IconPlus from "../icons/icon-plus/IconPlus";
 import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
+import ListingsSearchFilterOptions from "../listings-search-filter-options/ListingsSearchFilterOptions";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -37,7 +38,41 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, show, hide } = useModalVisibility();
-    const { constructQueryString,redirectWithQueryParams,searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams();
+    const { constructQueryString, redirectWithQueryParams, searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams();
+    
+    const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS,FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];
+    const filterByList =
+    {
+        groups:
+            [
+                {
+                    groupId: 0,
+                    queryKey: FilterByQueryKeys.ChapterListings.STATUS,
+                    title: "Status",
+                    options: [
+                        { id: 0, label: "Not Started", checked: false },
+                        { id: 1, label: "In Progress", checked: false },
+                        { id: 2, label: "Completed", checked: false },
+                    ],
+                    toggled: true
+                },
+
+                {
+                    groupId: 1,
+                    queryKey: FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED,
+                    title: "Days Since Last Completed",
+                    options: [
+                        { id: 0, label: "Less Than 10 Days", checked: false },
+                        { id: 1, label: "Less Than 20 Days", checked: false },
+                        { id: 2, label: "Less Than 30 Days", checked: false },
+                        { id: 3, label: "Equal to 30 Days", checked: false },
+                        { id: 4, label: "Greater Than 30 Days", checked: false },
+                    ],
+                    toggled: true
+                },
+
+            ]
+    };
 
     const fetchChapters = useCallback(async () => {
         try {
@@ -171,12 +206,12 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     // Upon Component Mount, fetch the chapters.
     useEffect(() => {
         fetchChapters();
-     }, [searchParams]);
+    }, [searchParams]);
 
     useEffect(() => {
         redirectWithQueryParams();
-      }, [sorting,pagination]);
-    
+    }, [sorting, pagination]);
+
 
     return (<div className="chapter-listings">
         <DashboardModalPortal show={deleteModalVisible}>
@@ -197,6 +232,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         </DashboardModalPortal>
         <ListingsSearchBar onSearchSubmit={() => setPagination({ ...pagination, pageIndex: 0 })}>
             <Link className='dashboard-primary-btn' href={'chapters/add-chapter'}><IconPlus width={24} height={24} />Add</Link>
+            <ListingsSearchFilterOptions filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
         </ListingsSearchBar>
 
         <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>

@@ -1,4 +1,4 @@
-import { ListingSearchQuery, Resource } from "@/shared.types";
+import { ListingSearchQuery, ListingSearchQueryFilters, Resource } from "@/shared.types";
 import { queryData } from "../dbHelper";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { buildOrderByFilter } from "../queryBuilder";
@@ -31,6 +31,10 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
             queryParams = [];
         }
 
+        if (listingSearchQuery?.filters?.category !== undefined) {
+            query += ` ${ buildFilterQuery(listingSearchQuery?.filters)}`;
+        }
+    
         query += buildOrderByFilter(columnsToSql, listingSearchQuery?.sortBy, listingSearchQuery?.sortOrder, "r.resource_id");
 
         const resourcesDb = await queryData(query, queryParams);
@@ -47,4 +51,16 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
     catch (error) {
         return { message: 'Database error', error };
     }
+}
+
+const buildFilterQuery = (filters: ListingSearchQueryFilters) => {
+
+    let queryFilter = "";
+
+    if(filters.category !== undefined && filters.category.length > 0)
+    {
+       queryFilter += `WHERE c.name IN(${filters.category?.map(x => `'${x}'`)})`;
+    }
+
+    return queryFilter;
 }
