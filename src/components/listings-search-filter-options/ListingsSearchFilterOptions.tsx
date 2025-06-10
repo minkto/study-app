@@ -3,7 +3,6 @@ import IconChevronDown from '../icons/icon-chevron-down/IconChevronDown';
 import IconFilter from '../icons/icon-filter/IconFilter';
 import styles from './listings-search-filter-options.module.css'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ChapterListingsFilterQueryKeys } from '@/constants/constants';
 
 interface FilterOption {
     id: number;
@@ -23,50 +22,22 @@ interface FilterGroupList {
     groups: FilterGroup[];
 }
 
+interface ListingsSearchFilterOptionsProps 
+{
+    filterGroups :  FilterGroupList;
+    filterQueryKeys? : string[];
+}
 
-export const ListingsSearchFilterOptions = () => {
+
+export const ListingsSearchFilterOptions = ({filterGroups,filterQueryKeys} : ListingsSearchFilterOptionsProps) => {
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
-
+    const [filtersToUse, setFiltersToUse] = useState<FilterGroupList>(filterGroups);
     const [filtersMenuOpen, setFiltersMenuOpen] = useState(false);
     const filterMenuRef = useRef<HTMLDivElement>(null);
-    const [filtersToUse, setFiltersToUse] = useState<FilterGroupList>(
-        {
-            groups:
-                [
-                    {
-                        groupId: 0,
-                        queryKey: ChapterListingsFilterQueryKeys.STATUS,
-                        title: "Status",
-                        options: [
-                            { id: 0, label: "Not Started", checked: false },
-                            { id: 1, label: "In Progress", checked: false },
-                            { id: 2, label: "Completed", checked: false },
-                        ],
-                        toggled: true
-                    },
-
-                    {
-                        groupId: 1,
-                        queryKey: ChapterListingsFilterQueryKeys.DAYS_SINCE_LAST_COMPLETED,
-                        title: "Days Since Last Completed",
-                        options: [
-                            { id: 0, label: "Less Than 10 Days", checked: false },
-                            { id: 1, label: "Less Than 20 Days", checked: false },
-                            { id: 2, label: "Less Than 30 Days", checked: false },
-                            { id: 3, label: "Equal to 30 Days", checked: false },
-                            { id: 4, label: "Greater Than 30 Days", checked: false },
-                        ],
-                        toggled: true
-                    },
-
-                ]
-
-        }
-    )
-
+    
     const setQueryParamsFromFilterOption = (toggleState: boolean, queryLabel: string, querykey: string) => {
         const params = new URLSearchParams(searchParams?.toString());
         if (toggleState) {
@@ -79,9 +50,13 @@ export const ListingsSearchFilterOptions = () => {
         router.replace(`${pathname}?${params?.toString()}`);
     }
 
-    const setCurrentFiltersFromQueryParams = () => {
-        setOnMountFilters(ChapterListingsFilterQueryKeys.STATUS);
-        setOnMountFilters(ChapterListingsFilterQueryKeys.DAYS_SINCE_LAST_COMPLETED);
+    const setInitialFiltersFromQueryParams = () => {
+        if(filterQueryKeys !== undefined)
+        {
+            filterQueryKeys.forEach(filterQueryKey => {
+                setOnMountFilters(filterQueryKey);  
+            });
+        }
     }
 
     /**
@@ -115,7 +90,7 @@ export const ListingsSearchFilterOptions = () => {
     }
 
     const setCheckboxOption = (id: number, groupId: number) => {
-        const newFiltersToUse: FilterGroupList = { ...filtersToUse };
+        const newFiltersToUse: FilterGroupList  = { ...filtersToUse  };
         const groupToChange = newFiltersToUse.groups[groupId];
         const optionToChange = groupToChange.options.find(x => x.id === id);
 
@@ -131,7 +106,7 @@ export const ListingsSearchFilterOptions = () => {
     }, [filtersMenuOpen]);
 
     const toggleFilterMenuGroup = (groupId: number) => {
-        const newFiltersToUse: FilterGroupList = { ...filtersToUse };
+        const newFiltersToUse: FilterGroupList = { ...filtersToUse  };
         const groupToChange = newFiltersToUse.groups[groupId];
 
         if (groupToChange) {
@@ -141,7 +116,7 @@ export const ListingsSearchFilterOptions = () => {
     }
 
     useEffect(() => {
-        setCurrentFiltersFromQueryParams();
+        setInitialFiltersFromQueryParams();
     }, []);
 
     useEffect(() => {
