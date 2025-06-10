@@ -8,10 +8,12 @@ import Link from 'next/link';
 import IconPlus from '../icons/icon-plus/IconPlus';
 import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
 import SelectDropdown from '../select-dropdown/SelectDropdown';
+import ListingsSearchFilterOptions from '../listings-search-filter-options/ListingsSearchFilterOptions';
+import { FilterByQueryKeys } from '@/constants/constants';
 
 const ResourceListings = () => {
 
-  const { setSorting, sorting, constructQueryString, redirectWithQueryParams } = useDataTableQueryParams();
+  const { setSorting, sorting, constructQueryString, redirectWithQueryParams,searchParams } = useDataTableQueryParams();
   const [data, setData] = useState<GetResourceDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const columnHelper = createColumnHelper<GetResourceDto>();
@@ -23,6 +25,25 @@ const ResourceListings = () => {
       { label: "Category A-Z", value: "categoryName-asc" },
       { label: "Category Z-A", value: "categoryName-desc" },
     ];
+
+  const filterQueryParamKeys = [FilterByQueryKeys.ResourceListings.CATEGORY];
+  const filterByList =
+  {
+    groups:
+      [
+        {
+          groupId: 0,
+          queryKey: "Category",
+          title: "Category",
+          options: [
+            { id: 0, label: "C#", checked: false },
+            { id: 1, label: "SQL", checked: false },
+          ],
+          toggled: true
+        },
+
+      ]
+  };
 
   const columns = [
     columnHelper.accessor('name', {
@@ -108,7 +129,7 @@ const ResourceListings = () => {
 
   useEffect(() => {
     getResources();
-  }, [sorting]);
+  }, [searchParams]);
 
   useEffect(() => {
     redirectWithQueryParams();
@@ -119,6 +140,7 @@ const ResourceListings = () => {
     <div className={styles["resources-listing-wrapper"]}>
       <ListingsSearchBar onSearchSubmit={getResources}>
         <Link className='dashboard-primary-btn' href={'resources/add-resource'}><IconPlus width={24} height={24} />Add</Link>
+        <ListingsSearchFilterOptions filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
         <SelectDropdown getDefaultValue={getInitialSortByOption} onChangeCallback={setSortOrder} dropdownOptions={sortByOptions} ></SelectDropdown>
       </ListingsSearchBar>
 
