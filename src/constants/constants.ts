@@ -17,8 +17,15 @@ export const ListingPageSizes =
     CHAPTERS: "5",
 };
 
-export const ChapterListingsFilterQueryKeys =
+export const FilterByQueryKeys =
 {
-    STATUS: "status",
-    DAYS_SINCE_LAST_COMPLETED: "daysSinceLastCompleted"
-}
+    ChapterListings:
+    {
+        STATUS: "status",
+        DAYS_SINCE_LAST_COMPLETED: "daysSinceLastCompleted"
+    },
+    ResourceListings:
+    {
+        CATEGORY: "Category",
+    }
+};

@@ -1,3 +1,4 @@
+import { FilterByQueryKeys } from "@/constants/constants";
 import { createResource } from "@/db/resources/createResource";
 import { getResource } from "@/db/resources/getResource";
 import { updateResource } from "@/db/resources/updateResource";
@@ -16,6 +17,10 @@ export async function GET(request: NextRequest) {
             sortBy: searchParams?.get('sortBy')?.trim(),
             sortOrder: searchParams?.get('sortOrder')?.trim(),
             page: searchParams?.get('page')?.trim(),
+            filters: 
+            {
+                category :  searchParams?.getAll(FilterByQueryKeys.ResourceListings.CATEGORY),
+            }
         };
 
         const mappedResources = await getResourcesDto(listingSearchQuery);

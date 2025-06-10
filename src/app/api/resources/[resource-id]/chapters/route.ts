@@ -1,4 +1,4 @@
-import { ChapterListingsFilterQueryKeys } from "@/constants/constants";
+import { FilterByQueryKeys } from "@/constants/constants";
 import { getChaptersByResource } from "@/db/chapters/getChaptersByResource";
 import { ListingSearchQuery } from "@/shared.types";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,8 +16,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             page: searchParams?.get('page')?.trim(),
             filters: 
             {
-                status :  searchParams?.getAll(ChapterListingsFilterQueryKeys.STATUS),
-                daysSinceLastCompleted :  searchParams?.getAll(ChapterListingsFilterQueryKeys.DAYS_SINCE_LAST_COMPLETED),
+                status :  searchParams?.getAll(FilterByQueryKeys.ChapterListings.STATUS),
+                daysSinceLastCompleted :  searchParams?.getAll(FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED),
             }
         };
 

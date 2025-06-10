@@ -57,6 +57,7 @@ export interface ListingSearchQueryFilters
 {
     status? : string[];
     daysSinceLastCompleted? : string[];
+    category? : string[];
 }
 
 export interface ChapterValidationModel
