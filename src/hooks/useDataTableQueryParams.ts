@@ -10,12 +10,12 @@ interface SortQueryFilters
     sortOrderValue: string;
 }
 
-export function useDataTableQueryParams(pageSize = ListingPageSizes.CHAPTERS) {
+export function useDataTableQueryParams(pageSize = ListingPageSizes.DEFAULT) {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize: parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || pageSize)
+        pageSize: parseInt(pageSize)
     });
 
     const searchParams = useSearchParams();

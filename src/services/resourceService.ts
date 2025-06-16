@@ -1,7 +1,7 @@
 import { getResource } from "@/db/resources/getResource"
 import getResourcePercentageComplete from "@/db/resources/getResourcePercentageComplete";
-import { getResources } from "@/db/resources/getResources";
-import { GetResourceDto, ListingSearchQuery } from "@/shared.types";
+import { calculatePageCount, getResources } from "@/db/resources/getResources";
+import { GetResourceDto, GetResourcesDto, ListingSearchQuery } from "@/shared.types";
 
 export const getResourceDto = async (resourceId: number): Promise<GetResourceDto | null> => {
     const resource = await getResource(resourceId);
@@ -25,7 +25,7 @@ export const getResourceDto = async (resourceId: number): Promise<GetResourceDto
     return null;
 }
 
-export const getResourcesDto = async (queryParams: ListingSearchQuery): Promise<GetResourceDto[] | null> => {
+export const getResourcesDto = async (queryParams: ListingSearchQuery) : Promise<GetResourcesDto | null > => {
 
     const mappedResources = await getResources(queryParams);
 
@@ -43,7 +43,10 @@ export const getResourcesDto = async (queryParams: ListingSearchQuery): Promise<
             })
         );
 
-        return mappedDto;
+        return {
+            resources : mappedDto,
+            pageCount: await calculatePageCount(queryParams)
+        };
     }
     return null;
 }

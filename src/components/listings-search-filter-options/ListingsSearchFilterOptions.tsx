@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import IconChevronDown from '../icons/icon-chevron-down/IconChevronDown';
 import IconFilter from '../icons/icon-filter/IconFilter';
 import styles from './listings-search-filter-options.module.css'
@@ -22,14 +22,14 @@ interface FilterGroupList {
     groups: FilterGroup[];
 }
 
-interface ListingsSearchFilterOptionsProps 
-{
-    filterGroups :  FilterGroupList;
-    filterQueryKeys? : string[];
+interface ListingsSearchFilterOptionsProps {
+    filterGroups: FilterGroupList;
+    filterQueryKeys?: string[];
+    onFilterChange?: () => void;
 }
 
 
-export const ListingsSearchFilterOptions = ({filterGroups,filterQueryKeys} : ListingsSearchFilterOptionsProps) => {
+export const ListingsSearchFilterOptions = ({ filterGroups, filterQueryKeys, onFilterChange }: ListingsSearchFilterOptionsProps) => {
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -37,6 +37,7 @@ export const ListingsSearchFilterOptions = ({filterGroups,filterQueryKeys} : Lis
     const [filtersToUse, setFiltersToUse] = useState<FilterGroupList>(filterGroups);
     const [filtersMenuOpen, setFiltersMenuOpen] = useState(false);
     const filterMenuRef = useRef<HTMLDivElement>(null);
+    const [isPending, startTransition] = useTransition();
     
     const setQueryParamsFromFilterOption = (toggleState: boolean, queryLabel: string, querykey: string) => {
         const params = new URLSearchParams(searchParams?.toString());
@@ -51,10 +52,9 @@ export const ListingsSearchFilterOptions = ({filterGroups,filterQueryKeys} : Lis
     }
 
     const setInitialFiltersFromQueryParams = () => {
-        if(filterQueryKeys !== undefined)
-        {
+        if (filterQueryKeys !== undefined) {
             filterQueryKeys.forEach(filterQueryKey => {
-                setOnMountFilters(filterQueryKey);  
+                setOnMountFilters(filterQueryKey);
             });
         }
     }
@@ -90,14 +90,21 @@ export const ListingsSearchFilterOptions = ({filterGroups,filterQueryKeys} : Lis
     }
 
     const setCheckboxOption = (id: number, groupId: number) => {
-        const newFiltersToUse: FilterGroupList  = { ...filtersToUse  };
+        const newFiltersToUse: FilterGroupList = { ...filtersToUse };
         const groupToChange = newFiltersToUse.groups[groupId];
         const optionToChange = groupToChange.options.find(x => x.id === id);
 
         if (optionToChange) {
             optionToChange.checked = !optionToChange.checked;
             setQueryParamsFromFilterOption(optionToChange?.checked, optionToChange.label, groupToChange.queryKey);
+
             setFiltersToUse(newFiltersToUse);
+
+            if (onFilterChange) {
+                startTransition(() => {
+                    onFilterChange();
+                });
+            }
         }
     }
 
@@ -106,11 +113,11 @@ export const ListingsSearchFilterOptions = ({filterGroups,filterQueryKeys} : Lis
     }, [filtersMenuOpen]);
 
     const toggleFilterMenuGroup = (groupId: number) => {
-        const newFiltersToUse: FilterGroupList = { ...filtersToUse  };
+        const newFiltersToUse: FilterGroupList = { ...filtersToUse };
         const groupToChange = newFiltersToUse.groups[groupId];
 
         if (groupToChange) {
-            groupToChange.toggled = !groupToChange.toggled
+            groupToChange.toggled = !groupToChange.toggled;
             setFiltersToUse(newFiltersToUse);
         }
     }

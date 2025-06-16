@@ -14,7 +14,9 @@ export const ChapterStatuses =
 
 export const ListingPageSizes =
 {
+    DEFAULT: "5",
     CHAPTERS: "5",
+    RESOURCES: "2"
 };
 
 export const FilterByQueryKeys =
