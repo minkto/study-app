@@ -4,7 +4,12 @@ export interface GetResourceDto {
     description?: string,
     categoryId?: number,
     categoryName? : string,
-    percentageCompleted? : number
+    percentageCompleted? : number;
+}
+
+export interface GetResourcesDto {
+    resources?: GetResourceDto[];
+    pageCount?: number;
 }
 
 export interface Resource {

@@ -14,6 +14,7 @@ import Link from "next/link";
 import IconPlus from "../icons/icon-plus/IconPlus";
 import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
 import ListingsSearchFilterOptions from "../listings-search-filter-options/ListingsSearchFilterOptions";
+import { ListingsPagination } from "../listings-pagination/ListingsPagination";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -38,7 +39,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, show, hide } = useModalVisibility();
-    const { constructQueryString, redirectWithQueryParams, searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams();
+    const { constructQueryString, redirectWithQueryParams, searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams(process.env.CHAPTERS_MAX_PAGE_SIZE);
     
     const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS,FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];
     const filterByList =
@@ -230,9 +231,9 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                 headingText="Delete Chapter"
             />
         </DashboardModalPortal>
-        <ListingsSearchBar onSearchSubmit={() => setPagination({ ...pagination, pageIndex: 0 })}>
+        <ListingsSearchBar  onSearchSubmit={() => setPagination({ ...pagination, pageIndex: 0 })}>
             <Link className='dashboard-primary-btn' href={'chapters/add-chapter'}><IconPlus width={24} height={24} />Add</Link>
-            <ListingsSearchFilterOptions filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
+            <ListingsSearchFilterOptions onFilterChange={() => {table.firstPage();}}  filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
         </ListingsSearchBar>
 
         <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
@@ -292,15 +293,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                 ))}
             </tbody>
         </table>
-        <div className={styles["pagination-container"]} >
-            <button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>{'<<'} </button>
-            <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>{'<'}</button>
-            <div>
-                Page {table.getState().pagination.pageIndex + 1} of {table?.getPageCount() === 0 || isNaN(table?.getPageCount()) ? 1 : table.getPageCount().toLocaleString()}
-            </div>
-            <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>{'>'}</button>
-            <button onClick={() => table.lastPage()} disabled={!table.getCanNextPage()}>{'>>'}</button>
-        </div>
+            <ListingsPagination table={table} />
     </div>);
 };
 
