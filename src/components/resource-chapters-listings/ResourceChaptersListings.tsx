@@ -3,7 +3,7 @@ import { CellContext, createColumnHelper, flexRender, getCoreRowModel, getPagina
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
-import { ChapterStatuses, FilterByQueryKeys } from "@/constants/constants";
+import { ChapterStatuses, FilterByQueryKeys, ListingPageSizes } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
 import { getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
 import { TZDate } from "@date-fns/tz";
@@ -15,10 +15,13 @@ import IconPlus from "../icons/icon-plus/IconPlus";
 import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
 import ListingsSearchFilterOptions from "../listings-search-filter-options/ListingsSearchFilterOptions";
 import { ListingsPagination } from "../listings-pagination/ListingsPagination";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css';
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
         tdClassName?: (cell: CellContext<TData, TValue>) => string,
+        thClassName?: string
     }
 };
 
@@ -34,14 +37,16 @@ const statusMapping = {
 
 const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
 
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const [data, setData] = useState<Chapter[]>([]);
     const columnHelper = createColumnHelper<Chapter>();
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, show, hide } = useModalVisibility();
     const { constructQueryString, redirectWithQueryParams, searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams(process.env.CHAPTERS_MAX_PAGE_SIZE);
-    
-    const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS,FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];
+
+    const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS, FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];
     const filterByList =
     {
         groups:
@@ -75,8 +80,22 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             ]
     };
 
+    const setupLoading = (load: boolean) => {
+
+        if (load) {
+            setIsLoading(true);
+            setDataLoaded(false);
+        }
+
+        else {
+            setIsLoading(false);
+            setDataLoaded(true);
+        }
+    }
+
     const fetchChapters = useCallback(async () => {
         try {
+            setupLoading(true);
 
             if (!resourceId) {
                 return;
@@ -89,10 +108,14 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         } catch (error) {
             console.error("Error fetching chapters:", error);
         }
+        finally {
+            setupLoading(false);
+        }
     }, [resourceId, constructQueryString]);
 
     const deleteChapter = useCallback(async (chapterId: number | undefined) => {
         try {
+            setupLoading(true);
             if (resourceId === undefined) {
                 console.log("Could not find Chapter Id from the URL");
                 return;
@@ -104,13 +127,20 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         catch (error) {
             console.log("An error has occurred in the API: ", error);
         }
+        finally {
+            setupLoading(false);
+        }
     }, [resourceId]);
 
     const columns = useMemo(() => [
         columnHelper.accessor('name', {
             cell: info => info.getValue(),
             header: () => <span>Name</span>,
-            enableSorting: true
+            enableSorting: true,
+            meta: {
+                tdClassName: () => styles["col-name"],
+                thClassName: styles["col-name"],
+            }
         }),
         columnHelper.accessor('statusId', {
             cell: (info) => {
@@ -124,8 +154,10 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             meta: {
                 tdClassName: (info) => {
                     const value = info.getValue();
-                    return styles[statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"];
-                }
+                    return `${styles["col-status"]} ${styles[statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`;
+                },
+                thClassName: styles["col-status"],
+
             },
             enableSorting: true,
         }),
@@ -137,6 +169,11 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
 
             },
             header: () => <span>Original Date Completed</span>,
+            meta: {
+                tdClassName: () => styles["col-date"],
+                thClassName: styles["col-date"],
+
+            },
             enableSorting: true,
             sortingFn: nullableDateTimeSortingFn
 
@@ -148,12 +185,20 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                 return date ? new TZDate(date, Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString() : null;
             },
             header: () => <span>Last Date Completed</span>,
+            meta: {
+                tdClassName: () => styles["col-date"],
+                thClassName: styles["col-date"]
+            },
             enableSorting: true,
             sortingFn: nullableDateTimeSortingFn
         }),
         columnHelper.accessor('daysSinceCompleted', {
             cell: info => info.getValue(),
             header: () => <span>Days Since Last Completed</span>,
+            meta: {
+                tdClassName: () => styles["col-days"],
+                thClassName: styles["col-days"],
+            },
             enableSorting: true
         }),
         {
@@ -180,6 +225,11 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                     } />
                 )
             },
+
+            meta: {
+                tdClassName: () => styles["col-menu"],
+                thClassName: styles["col-menu"],
+            },
             enableSorting: false,
             enableHiding: false,
         }
@@ -196,7 +246,10 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         },
         manualSorting: true,
         manualPagination: true,
-        onSortingChange: setSorting,
+        onSortingChange: (updater) => {
+            setupLoading(true);
+            setSorting(updater);
+        },
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -213,88 +266,127 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         redirectWithQueryParams();
     }, [sorting, pagination]);
 
+    // Set loading to false after data has been loaded and component has re-rendered
+    useEffect(() => {
+        if (dataLoaded) {
+            // Use setTimeout to ensure the render cycle is complete
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 0);
+        }
+    }, [dataLoaded]);
 
-    return (<div className="chapter-listings">
-        <DashboardModalPortal show={deleteModalVisible}>
-            <ConfirmationModal
-                onClose={hide}
-                onConfirm={async () => {
-                    if (selectedChapter !== undefined) {
-                        await deleteChapter(selectedChapter?.chapterId);
-                        await fetchChapters();
-                    }
-                }}
-                isActive={deleteModalVisible}
-                text={`Are you sure you would like to delete this Chapter?`}
-                subText={`${selectedChapter?.name}`}
-                confirmText="Yes, Delete"
-                headingText="Delete Chapter"
-            />
-        </DashboardModalPortal>
-        <ListingsSearchBar  onSearchSubmit={() => setPagination({ ...pagination, pageIndex: 0 })}>
-            <Link className='dashboard-primary-btn' href={'chapters/add-chapter'}><IconPlus width={24} height={24} />Add</Link>
-            <ListingsSearchFilterOptions onFilterChange={() => {table.firstPage();}}  filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
-        </ListingsSearchBar>
 
-        <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
-            <thead>
-                {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id}>
-                        {headerGroup.headers.map(header => (
-                            <th className={styles["table-head-cell"]} key={header.id}>
-                                {header.isPlaceholder ? null : (
-                                    <button
-                                        className={
-                                            header.column.getCanSort()
-                                                ? 'cursor-pointer select-none'
-                                                : ''
-                                        }
-                                        onClick={header.column.getToggleSortingHandler()}
-                                        title={
-                                            header.column.getCanSort()
-                                                ? (() => {
-                                                    const nextOrder = header.column.getNextSortingOrder();
-                                                    return getSortDirectionTitle(nextOrder);
-                                                })()
-                                                : undefined
-                                        }
-                                    >
+    return (
+        <div className="chapter-listings">
+            <DashboardModalPortal show={deleteModalVisible}>
+                <ConfirmationModal
+                    onClose={hide}
+                    onConfirm={async () => {
+                        if (selectedChapter !== undefined) {
+                            await deleteChapter(selectedChapter?.chapterId);
+                            await fetchChapters();
+                        }
+                    }}
+                    isActive={deleteModalVisible}
+                    text={`Are you sure you would like to delete this Chapter?`}
+                    subText={`${selectedChapter?.name}`}
+                    confirmText="Yes, Delete"
+                    headingText="Delete Chapter"
+                />
+            </DashboardModalPortal>
+            <ListingsSearchBar
+                handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
+                onSearchSubmit={() => { setPagination({ ...pagination, pageIndex: 0 }) }}>
 
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
+                <Link className='dashboard-primary-btn' href={'chapters/add-chapter'}><IconPlus width={24} height={24} />Add</Link>
+                <ListingsSearchFilterOptions
+                    onFilterChange={() => { table.firstPage(); }}
+                    handleBeforeOnFilterChange={() => setupLoading(true)}
+                    filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
+            </ListingsSearchBar>
+
+            <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
+                <thead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers.map(header => {
+                                const thClass = header.column.columnDef.meta?.thClassName;
+                                return (
+                                    <th className={`${styles["table-head-cell"]} ${thClass}`} key={header.id}>
+
+                                        {header.isPlaceholder ? null : (
+                                            <button
+                                                className={
+                                                    header.column.getCanSort()
+                                                        ? 'cursor-pointer select-none'
+                                                        : ''
+                                                }
+                                                onClick={header.column.getToggleSortingHandler()}
+                                                title={
+                                                    header.column.getCanSort()
+                                                        ? (() => {
+                                                            const nextOrder = header.column.getNextSortingOrder();
+                                                            return getSortDirectionTitle(nextOrder);
+                                                        })()
+                                                        : undefined
+                                                }
+                                            >
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                                {{
+                                                    asc: ' 🔼',
+                                                    desc: ' 🔽',
+                                                }[header.column.getIsSorted() as string] ?? null}
+                                            </button>
                                         )}
-                                        {
-                                            {
-                                                asc: ' 🔼',
-                                                desc: ' 🔽',
-                                            }[header.column.getIsSorted() as string] ?? null
-                                        }
-                                    </button>
-                                )}
-                            </th>
-                        ))}
-                    </tr>
-                ))}
-            </thead>
-            <tbody>
-                {table.getRowModel().rows.map(row => (
-                    <tr className={`${styles["table-row"]}`} key={row.id}>
-                        {row.getVisibleCells().map(cell => {
-                            const tdClass = cell.column.columnDef.meta?.tdClassName
-                                ? cell.column.columnDef.meta.tdClassName(cell.getContext())
-                                : "";
-
-                            return (<td className={`${styles["table-row-data"]} ${tdClass}`} key={cell.id}>
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </td>)
-                        })}
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-            <ListingsPagination table={table} />
-    </div>);
+                                    </th>
+                                )
+                            }
+                            )}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody>
+                    {!dataLoaded ? (
+                        // Skeleton rows
+                        [...Array(Number(process.env.CHAPTERS_MAX_PAGE_SIZE ?? ListingPageSizes.CHAPTERS))].map((_, i) => (
+                            <tr className={styles["table-row"]} key={`skeleton-${i}`}>
+                                {table.getVisibleFlatColumns().map((col, j) => (
+                                    <td className={styles["table-row-data"]} key={`skeleton-cell-${j}`}>
+                                        <div style={{ width: '100%' }}>
+                                            <Skeleton height={53} />
+                                        </div>
+                                    </td>
+                                ))}
+                            </tr>
+                        ))
+                    ) : (
+                        // Actual rows
+                        table.getRowModel().rows.map(row => (
+                            <tr className={styles["table-row"]} key={row.id}>
+                                {row.getVisibleCells().map(cell => {
+                                    const tdClass = cell.column.columnDef.meta?.tdClassName
+                                        ? cell.column.columnDef.meta.tdClassName(cell.getContext())
+                                        : "";
+                                    return (
+                                        <td
+                                            className={`${styles["table-row-data"]} ${tdClass}`}
+                                            key={cell.id}
+                                        >
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
+            <ListingsPagination handleBeforeButtonClick={() => setupLoading(true)} table={table} />
+        </div>);
 };
 
 export default ResourceChaptersListings;
