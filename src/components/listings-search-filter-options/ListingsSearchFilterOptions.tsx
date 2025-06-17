@@ -26,10 +26,11 @@ interface ListingsSearchFilterOptionsProps {
     filterGroups: FilterGroupList;
     filterQueryKeys?: string[];
     onFilterChange?: () => void;
+    handleBeforeOnFilterChange?: () => void; 
 }
 
 
-export const ListingsSearchFilterOptions = ({ filterGroups, filterQueryKeys, onFilterChange }: ListingsSearchFilterOptionsProps) => {
+export const ListingsSearchFilterOptions = ({ filterGroups, filterQueryKeys, onFilterChange ,handleBeforeOnFilterChange}: ListingsSearchFilterOptionsProps) => {
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -93,6 +94,10 @@ export const ListingsSearchFilterOptions = ({ filterGroups, filterQueryKeys, onF
         const newFiltersToUse: FilterGroupList = { ...filtersToUse };
         const groupToChange = newFiltersToUse.groups[groupId];
         const optionToChange = groupToChange.options.find(x => x.id === id);
+
+        if (handleBeforeOnFilterChange) {
+            handleBeforeOnFilterChange();
+        }
 
         if (optionToChange) {
             optionToChange.checked = !optionToChange.checked;
