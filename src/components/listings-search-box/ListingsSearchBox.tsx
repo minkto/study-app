@@ -12,10 +12,11 @@ import styles from './listings-search-box.module.css'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 interface ListingsSearchBoxProps {
-  onSearchSubmit?: () => void
+  onSearchSubmit?: () => void;
+  handleBeforeOnSearchSubmit?: () => void;
 }
 
-export const ListingsSearchBox = ({ onSearchSubmit }: ListingsSearchBoxProps) => {
+export const ListingsSearchBox = ({ onSearchSubmit,handleBeforeOnSearchSubmit }: ListingsSearchBoxProps) => {
   const [isPending, startTransition] = useTransition();
   const [currentText, setCurrentText] = useState('');
   const router = useRouter();
@@ -28,6 +29,12 @@ export const ListingsSearchBox = ({ onSearchSubmit }: ListingsSearchBoxProps) =>
   }
 
   const handleOnSubmitSearch = () => {
+
+    if(handleBeforeOnSearchSubmit)
+    {
+      handleBeforeOnSearchSubmit();
+    }
+
     hasSubmitted.current = true;
 
     startTransition(() => {
