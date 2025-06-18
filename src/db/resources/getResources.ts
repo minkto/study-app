@@ -53,7 +53,7 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
 
 const buildPageLimit = (listingSearchQuery: ListingSearchQuery) => {
     
-    const pageSize = Number(ListingPageSizes.RESOURCES);
+    const pageSize = Number(process.env.RESOURCES_MAX_PAGE_SIZE ?? ListingPageSizes.RESOURCES);
     
     if (listingSearchQuery?.page) {
         return ` LIMIT ${pageSize} OFFSET ${pageSize * (Number(listingSearchQuery.page) - 1)}`;
@@ -88,7 +88,7 @@ const buildFilterQuery = (searchQuery?: ListingSearchQuery | undefined) => {
 export const calculatePageCount = async (
     listingSearchQuery: ListingSearchQuery | undefined) => {
 
-    const pageCount = Number(ListingPageSizes.RESOURCES);
+    const pageCount = Number(process.env.RESOURCES_MAX_PAGE_SIZE ?? ListingPageSizes.RESOURCES);
 
 
     let countQuery = `SELECT COUNT(*) 
