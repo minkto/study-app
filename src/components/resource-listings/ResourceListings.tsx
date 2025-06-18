@@ -2,7 +2,7 @@ import { GetResourceDto } from '@/shared.types';
 import ResourceListingsCard from '../resource-listings-card/ResourceListingsCard';
 import styles from './resource-listings.module.css'
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { createColumnHelper, getCoreRowModel,getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import ListingsSearchBar from '../listings-search-bar/ListingsSearchBar';
 import Link from 'next/link';
 import IconPlus from '../icons/icon-plus/IconPlus';
@@ -11,13 +11,15 @@ import SelectDropdown from '../select-dropdown/SelectDropdown';
 import ListingsSearchFilterOptions from '../listings-search-filter-options/ListingsSearchFilterOptions';
 import { FilterByQueryKeys, ListingPageSizes } from '@/constants/constants';
 import { ListingsPagination } from '../listings-pagination/ListingsPagination';
+import ResourceListingsCardSkeleton from '../loaders/skeleton-loaders/ResourceListingsCardSkeleton/ResourceListingsCardSkeleton';
 
 const ResourceListings = () => {
 
-  const { setSorting,setPagination, sorting,pagination, constructQueryString, redirectWithQueryParams,searchParams } = useDataTableQueryParams(ListingPageSizes.RESOURCES);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+  const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, searchParams } = useDataTableQueryParams(process.env.RESOURCES_MAX_PAGE_SIZE ?? ListingPageSizes.RESOURCES);
   const [pageCount, setPageCount] = useState(0);
   const [data, setData] = useState<GetResourceDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const columnHelper = createColumnHelper<GetResourceDto>();
   const sortByOptions =
     [
@@ -65,8 +67,8 @@ const ResourceListings = () => {
     pageCount,
     state:
     {
-        sorting,
-        pagination
+      sorting,
+      pagination
     },
     manualSorting: true,
     manualPagination: true,
@@ -78,8 +80,21 @@ const ResourceListings = () => {
     enableSortingRemoval: true,
   });
 
+  const setupLoading = (load: boolean) => {
+
+    if (load) {
+      setIsLoading(true);
+      setDataLoaded(false);
+    }
+
+    else {
+      setIsLoading(false);
+      setDataLoaded(true);
+    }
+  }
+  
   const getResources = useCallback(async () => {
-    setLoading(true);
+    setupLoading(true);
     try {
       const queryString = constructQueryString();
       const response = await fetch(`/api/resources${queryString}`);
@@ -94,12 +109,12 @@ const ResourceListings = () => {
     } catch (error) {
       console.error("An error has occurred while getting the resources: ", error);
     } finally {
-      setLoading(false);
+      setupLoading(false);
     }
   }, [constructQueryString]);
 
   const deleteResource = async (id: number | undefined): Promise<void> => {
-    setLoading(true);
+    setupLoading(true);
     try {
       const response = await fetch(`/api/resources/${id}`, {
         method: 'DELETE'
@@ -113,7 +128,7 @@ const ResourceListings = () => {
       console.log("An error has occured in deleting the Resource: ", error);
     }
     finally {
-      setLoading(false);
+      setupLoading(false);
     }
   }
 
@@ -146,24 +161,50 @@ const ResourceListings = () => {
     redirectWithQueryParams();
   }, [sorting, pagination.pageIndex]);
 
-  return loading ? <p>Loading...</p> : (
+  // Set loading to false after data has been loaded and component has re-rendered
+  useEffect(() => {
+    if (dataLoaded) {
+      // Use setTimeout to ensure the render cycle is complete
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 0);
+    }
+  }, [dataLoaded]);
+
+
+  return (
 
     <div className={styles["resources-listing-wrapper"]}>
-      <ListingsSearchBar onSearchSubmit={() => {table.firstPage(); }}>
+      <ListingsSearchBar handleBeforeOnSearchSubmit={() => { setupLoading(true) }} onSearchSubmit={() => { table.firstPage(); }}>
         <Link className='dashboard-primary-btn' href={'resources/add-resource'}><IconPlus width={24} height={24} />Add</Link>
-        <ListingsSearchFilterOptions onFilterChange={() => {table.firstPage();}} filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
-        <SelectDropdown getDefaultValue={getInitialSortByOption} onChangeCallback={setSortOrder} dropdownOptions={sortByOptions} ></SelectDropdown>
+        <ListingsSearchFilterOptions
+          handleBeforeOnFilterChange={() => setupLoading(true)}
+          onFilterChange={() => { table.firstPage(); }}
+          filterQueryKeys={filterQueryParamKeys}
+          filterGroups={filterByList} />
+
+        <SelectDropdown
+          getDefaultValue={getInitialSortByOption}
+          onChangeCallback={(e) => { setupLoading(true); setSortOrder(e); }}
+          dropdownOptions={sortByOptions} />
       </ListingsSearchBar>
 
       <div className={styles["resources-listing"]}>
-        {table.getRowModel().rows.map(r => (
-          <ResourceListingsCard
-            onDelete={deleteResource}
-            key={r.original.resourceId}
-            resource={r.original} />)
+        {!dataLoaded ? (
+          <ResourceListingsCardSkeleton count={3} />
+        ) : (
+
+          table.getRowModel().rows.map(r => (
+            <ResourceListingsCard
+              onDelete={deleteResource}
+              key={r.original.resourceId}
+              resource={r.original}
+            />
+          ))
         )}
+
       </div>
-      <ListingsPagination table={table} />
+      <ListingsPagination handleBeforeButtonClick={() => setupLoading(true)} table={table} />
     </div>)
 }
 
