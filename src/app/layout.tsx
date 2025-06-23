@@ -25,7 +25,6 @@ export default function RootLayout({
   return (
     <html lang="en">   
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <h1>Root 1 - App</h1>
         {children}
         <div id="dashboard-modal-portal"></div>
       </body>
