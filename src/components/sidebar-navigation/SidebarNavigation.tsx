@@ -19,13 +19,14 @@ export const SidebarNavigation = () => {
     }
 
     const closeSidebar = () => {
-        if (!sidebarToggle) {
-            setSidebarToggle(true);
+        if (sidebarToggle) {
+            setSidebarToggle(false);
         }
     }
 
     useEffect(() => {
         const handleOutsideFocus = (e: KeyboardEvent | MouseEvent) => {
+
             if (overlayRef.current === e.target) {
                 toggleSidebar();
             }
@@ -41,16 +42,16 @@ export const SidebarNavigation = () => {
             overlayRef.current?.removeEventListener('keydown', handleOutsideFocus);
             overlayRef.current?.removeEventListener('mousedown', handleOutsideFocus);
         }
-    }, [])
+    })
 
-    return (<aside className={styles[`sidebar${sidebarToggle ? "" : "--expanded"}`]}>
+    return (<aside className={styles[`sidebar${sidebarToggle ? "--expanded" : ""}`]}>
         <div className={styles["sidebar__container"]}>
             <div className={styles["sidebar__container-top"]}>
 
                 <div className={styles["sidebar__container-icon"]}>
                 </div>
 
-                <div className={styles[`sidebar__container-name${sidebarToggle ? "" : "--expanded"}`]}>
+                <div className={styles[`sidebar__container-name${sidebarToggle ? "--expanded" : ""}`]}>
                     <h2>Study App</h2>
                 </div>
 
