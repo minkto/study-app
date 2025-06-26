@@ -1,0 +1,36 @@
+.listings-search-bar {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+}
+
+.listings-search-bar-items {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+}
+
+@media screen and (max-width:1024px) {
+    .listings-search-bar {
+        flex-direction: column;
+    }
+
+    .listings-search-bar-items {
+        flex-wrap: wrap;
+        align-items: center;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .listings-search-bar {
+        font-size: var(--mobile-table-font-size);
+    }
+
+    .listings-search-bar-items select
+    {
+        margin: 10px 0 10px 0;       
+        font-size: var(--mobile-table-font-size); 
+    }
+}
