@@ -6,7 +6,7 @@
 .dropdown-menu__options {
     border-radius: 5px;
     border: 1px solid black;
-    min-width: 210px;
+    min-width: 100px;
     height: auto;
     background-color: rgb(255, 255, 255);
     top: 100%;
@@ -61,4 +61,11 @@
 
 .dropdown-menu__list-item:last-child {
     border-bottom: none;
+}
+
+.dropdown-menu__options.position-center
+{
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
 }
