@@ -3,6 +3,8 @@
     width: 5em;
     height: 100%;
     transition: 0.5s;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .sidebar--expanded {
@@ -10,6 +12,8 @@
     width: 20%;
     height: 100%;
     transition: 0.5s;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .sidebar__container-top {
@@ -74,6 +78,16 @@
     background-color: #FFFFFF;
 }
 
+.sidebar__container-menu
+{
+    margin-bottom: 2em;
+}
+
+.sidebar__container-menu-list
+{
+    list-style: none;
+}
+
 .sidebar__container-menu-list-item {
     padding: 0.5em;
     background-color: #FFFFFF;
@@ -108,11 +122,12 @@
 }
 
 .sidebar__container-menu-list-item>a:first-child {
-    gap: 1em;
+    gap: 0.5em;
 }
 
 .sidebar__container-menu-list-item>a>svg {
     width: 32px;
+    min-width: 32px;
     height: auto;
 }
 

@@ -12,6 +12,7 @@ import ListingsSearchFilterOptions from '../listings-search-filter-options/Listi
 import { FilterByQueryKeys, ListingPageSizes } from '@/constants/constants';
 import { ListingsPagination } from '../listings-pagination/ListingsPagination';
 import ResourceListingsCardSkeleton from '../loaders/skeleton-loaders/ResourceListingsCardSkeleton/ResourceListingsCardSkeleton';
+import { getCurrentSortOrder, getInitialSortByOption } from '@/utils/tableUtils';
 
 const ResourceListings = () => {
 
@@ -24,10 +25,10 @@ const ResourceListings = () => {
   const sortByOptions =
     [
       { label: "Sort By", value: "none" },
-      { label: "Name A-Z", value: "name-asc" },
-      { label: "Name Z-A", value: "name-desc" },
-      { label: "Category A-Z", value: "categoryName-asc" },
-      { label: "Category Z-A", value: "categoryName-desc" },
+      { label: "Name - Asc", value: "name-asc" },
+      { label: "Name - Desc", value: "name-desc" },
+      { label: "Category Asc", value: "categoryName-asc" },
+      { label: "Category Desc", value: "categoryName-desc" },
     ];
 
   const filterQueryParamKeys = [FilterByQueryKeys.ResourceListings.CATEGORY];
@@ -131,28 +132,7 @@ const ResourceListings = () => {
       setupLoading(false);
     }
   }
-
-  const setSortOrder = (e: ChangeEvent<HTMLSelectElement>) => {
-    const fullSelectValue = e.target.value;
-    if (fullSelectValue !== "none") {
-      const sortValue = fullSelectValue.split("-");
-      setSorting([{ id: sortValue[0], desc: (sortValue[1]?.toLowerCase() === 'desc') }])
-    }
-    else {
-      setSorting([]);
-    }
-  }
-
-  const getInitialSortByOption = () => {
-    if (sorting.length > 0) {
-      const sortBy = sorting[0].id;
-      const sortOrder = sorting[0].desc ? "desc" : "asc";
-      return (`${sortBy}-${sortOrder}`);
-    } else {
-      return ('none');
-    }
-  }
-
+  
   useEffect(() => {
     getResources();
   }, [searchParams]);
@@ -171,7 +151,6 @@ const ResourceListings = () => {
     }
   }, [dataLoaded]);
 
-
   return (
 
     <div className={styles["resources-listing-wrapper"]}>
@@ -184,8 +163,8 @@ const ResourceListings = () => {
           filterGroups={filterByList} />
 
         <SelectDropdown
-          getDefaultValue={getInitialSortByOption}
-          onChangeCallback={(e) => { setupLoading(true); setSortOrder(e); }}
+          getDefaultValue={() => getInitialSortByOption(sorting)}
+          onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
           dropdownOptions={sortByOptions} />
       </ListingsSearchBar>
 

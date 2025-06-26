@@ -11,7 +11,7 @@
     flex: 1;
     background-color: cadetblue;
     height: 100%;
-    padding: 5px;
+    padding: 1em;
     display: flex;
     flex-direction: column;
     overflow-y: auto;

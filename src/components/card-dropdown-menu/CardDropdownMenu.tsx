@@ -6,6 +6,7 @@ import IconMoreHorizontal from '../icons/icon-more-horizontal/IconMoreHorizontal
 interface CardDropdownMenuProps {
     onClose?: () => void;
     links?: DropdownMenuOption[];
+    positionCenter? : boolean;
 }
 
 interface DropdownMenuOption {
@@ -15,7 +16,7 @@ interface DropdownMenuOption {
 }
 
 
-const CardDropdownMenu = ({ links }: CardDropdownMenuProps) => {
+const CardDropdownMenu = ({ links,positionCenter }: CardDropdownMenuProps) => {
 
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -67,7 +68,7 @@ const CardDropdownMenu = ({ links }: CardDropdownMenuProps) => {
 
     return (
         <div className={styles["dropdown-menu"]}>
-            {dropdownMenuOpen ? <div className={styles['dropdown-menu__options']} ref={modalRef}>
+            {dropdownMenuOpen ? <div className={`${styles["dropdown-menu__options"]} ${positionCenter ? styles["position-center"] : ""}`} ref={modalRef}>
                 <ul className={styles['dropdown-menu__list']}>
                     {renderDropdownMenuOptions(links)}
                 </ul>

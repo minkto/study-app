@@ -5,7 +5,7 @@ import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
 import { ChapterStatuses, FilterByQueryKeys, ListingPageSizes } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
-import { getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
+import { getCurrentSortOrder, getInitialSortByOption, getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
 import { TZDate } from "@date-fns/tz";
 import DashboardModalPortal from "../dashboard-modal-portal/DashboardModalPortal";
 import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
@@ -17,16 +17,20 @@ import ListingsSearchFilterOptions from "../listings-search-filter-options/Listi
 import { ListingsPagination } from "../listings-pagination/ListingsPagination";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css';
+import { isStringEmpty } from "@/utils/stringUtils";
+import SelectDropdown from "../select-dropdown/SelectDropdown";
+import { useMobileScreenSize } from "@/hooks/useMobileScreenSize";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
-        tdClassName?: (cell: CellContext<TData, TValue>) => string,
-        thClassName?: string
+        tdClassName?: (cell: CellContext<TData, TValue>) => string;
+        thClassName?: string;
+        label?: string;
     }
 };
 
 interface ResourceChaptersListingsProps {
-    resourceId?: string
+    resourceId?: string;
 }
 
 const statusMapping = {
@@ -35,9 +39,25 @@ const statusMapping = {
     [ChapterStatuses.COMPLETED]: { text: "Completed", class: "progress--completed" },
 };
 
+const sortByOptions =
+[
+  { label: "Sort By", value: "none" },
+  { label: "Name - Asc", value: "name-asc" },
+  { label: "Name - Desc", value: "name-desc" },
+  { label: "Status - Asc", value: "statusId-asc" },
+  { label: "Status - Desc", value: "statusId-desc" },
+  { label: "Original Date Completed - Asc", value: "originaldatecompleted-asc" },
+  { label: "Original Date Completed - Desc", value: "originaldatecompleted-desc" },
+  { label: "Last Date Completed - Asc", value: "lastdatecompleted-asc" },
+  { label: "Last Date Completed - Desc", value: "lastdatecompleted-desc" },
+  { label: "Days Since Last Completed - Asc", value: "daysSinceCompleted-asc" },
+  { label: "Days Since Last Completed - Desc", value: "daysSinceCompleted-desc" },
+];
+
 const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const isMobileScreen = useMobileScreenSize();
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const [data, setData] = useState<Chapter[]>([]);
     const columnHelper = createColumnHelper<Chapter>();
@@ -139,7 +159,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             enableSorting: true,
             meta: {
                 tdClassName: () => styles["col-name"],
-                thClassName: styles["col-name"],
+                thClassName: styles["col-name"]
             }
         }),
         columnHelper.accessor('statusId', {
@@ -157,6 +177,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                     return `${styles["col-status"]} ${styles[statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`;
                 },
                 thClassName: styles["col-status"],
+                label: "Status"
 
             },
             enableSorting: true,
@@ -172,7 +193,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             meta: {
                 tdClassName: () => styles["col-date"],
                 thClassName: styles["col-date"],
-
+                label: "Original Date Completed"
             },
             enableSorting: true,
             sortingFn: nullableDateTimeSortingFn
@@ -187,7 +208,8 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             header: () => <span>Last Date Completed</span>,
             meta: {
                 tdClassName: () => styles["col-date"],
-                thClassName: styles["col-date"]
+                thClassName: styles["col-date"],
+                label: "Last Date Completed"
             },
             enableSorting: true,
             sortingFn: nullableDateTimeSortingFn
@@ -198,6 +220,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             meta: {
                 tdClassName: () => styles["col-days"],
                 thClassName: styles["col-days"],
+                label: "Days Since Last Completed"
             },
             enableSorting: true
         }),
@@ -207,7 +230,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             cell: ({ row }: { row: Row<Chapter> }) => {
                 const chapterId = row.original.chapterId
                 return (
-                    <CardDropdownMenu links={
+                    <CardDropdownMenu positionCenter={true} links={
                         [
                             { label: "Edit Chapter", href: `chapters/${chapterId}/edit-chapter` },
                             {
@@ -278,7 +301,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
 
 
     return (
-        <div className="chapter-listings">
+        <div className={`${styles["chapter-listings"]}`}>
             <DashboardModalPortal show={deleteModalVisible}>
                 <ConfirmationModal
                     onClose={hide}
@@ -304,6 +327,11 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                     onFilterChange={() => { table.firstPage(); }}
                     handleBeforeOnFilterChange={() => setupLoading(true)}
                     filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
+                {isMobileScreen ? <SelectDropdown
+                    getDefaultValue={() => getInitialSortByOption(sorting)}
+                    onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
+                    dropdownOptions={sortByOptions} /> : null}
+
             </ListingsSearchBar>
 
             <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
@@ -371,12 +399,24 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                                     const tdClass = cell.column.columnDef.meta?.tdClassName
                                         ? cell.column.columnDef.meta.tdClassName(cell.getContext())
                                         : "";
+
+                                    const label = cell.column.columnDef.meta?.label
+                                        ? `${cell.column.columnDef.meta.label}`
+                                        : "";
+
+                                    const value = cell.getValue() as string;
+
                                     return (
                                         <td
                                             className={`${styles["table-row-data"]} ${tdClass}`}
                                             key={cell.id}
                                         >
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            {!isStringEmpty(value) ? (<span className={`${styles["col-label-inline"]}`}>{label}</span>) : (null)}
+
+                                            <span>
+
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </span>
                                         </td>
                                     );
                                 })}
