@@ -5,7 +5,7 @@ import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
 import { ChapterStatuses, FilterByQueryKeys, ListingPageSizes } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
-import { getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
+import { getCurrentSortOrder, getInitialSortByOption, getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
 import { TZDate } from "@date-fns/tz";
 import DashboardModalPortal from "../dashboard-modal-portal/DashboardModalPortal";
 import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
@@ -18,6 +18,7 @@ import { ListingsPagination } from "../listings-pagination/ListingsPagination";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css';
 import { isStringEmpty } from "@/utils/stringUtils";
+import SelectDropdown from "../select-dropdown/SelectDropdown";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -36,6 +37,21 @@ const statusMapping = {
     [ChapterStatuses.IN_PROGRESS]: { text: "In Progress", class: "progress--in-progress" },
     [ChapterStatuses.COMPLETED]: { text: "Completed", class: "progress--completed" },
 };
+
+const sortByOptions =
+[
+  { label: "Sort By", value: "none" },
+  { label: "Name - Asc", value: "name-asc" },
+  { label: "Name - Desc", value: "name-desc" },
+  { label: "Status - Asc", value: "statusId-asc" },
+  { label: "Status - Desc", value: "statusId-desc" },
+  { label: "Original Date Completed - Asc", value: "originaldatecompleted-asc" },
+  { label: "Original Date Completed - Desc", value: "originaldatecompleted-desc" },
+  { label: "Last Date Completed - Asc", value: "lastdatecompleted-asc" },
+  { label: "Last Date Completed - Desc", value: "lastdatecompleted-desc" },
+  { label: "Days Since Last Completed - Asc", value: "daysSinceCompleted-asc" },
+  { label: "Days Since Last Completed - Desc", value: "daysSinceCompleted-desc" },
+];
 
 const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
 
@@ -309,6 +325,11 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                     onFilterChange={() => { table.firstPage(); }}
                     handleBeforeOnFilterChange={() => setupLoading(true)}
                     filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
+
+                <SelectDropdown
+                    getDefaultValue={() => getInitialSortByOption(sorting)}
+                    onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
+                    dropdownOptions={sortByOptions} />
             </ListingsSearchBar>
 
             <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
