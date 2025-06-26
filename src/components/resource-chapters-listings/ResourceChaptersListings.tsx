@@ -19,6 +19,7 @@ import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css';
 import { isStringEmpty } from "@/utils/stringUtils";
 import SelectDropdown from "../select-dropdown/SelectDropdown";
+import { useMobileScreenSize } from "@/hooks/useMobileScreenSize";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -56,6 +57,7 @@ const sortByOptions =
 const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const isMobileScreen = useMobileScreenSize();
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const [data, setData] = useState<Chapter[]>([]);
     const columnHelper = createColumnHelper<Chapter>();
@@ -299,7 +301,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
 
 
     return (
-        <div className="chapter-listings">
+        <div className={`${styles["chapter-listings"]}`}>
             <DashboardModalPortal show={deleteModalVisible}>
                 <ConfirmationModal
                     onClose={hide}
@@ -325,11 +327,11 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                     onFilterChange={() => { table.firstPage(); }}
                     handleBeforeOnFilterChange={() => setupLoading(true)}
                     filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
-
-                <SelectDropdown
+                {isMobileScreen ? <SelectDropdown
                     getDefaultValue={() => getInitialSortByOption(sorting)}
                     onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
-                    dropdownOptions={sortByOptions} />
+                    dropdownOptions={sortByOptions} /> : null}
+
             </ListingsSearchBar>
 
             <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>

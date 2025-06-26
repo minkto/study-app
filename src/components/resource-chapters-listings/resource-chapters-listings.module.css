@@ -1,3 +1,8 @@
+.chapter-listings
+{
+    overflow-x: auto;
+}
+
 .table-head-cell {
     background-color: #EEEEEE;
     font-size: var(--desktop-table-font-size);
