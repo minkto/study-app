@@ -19,7 +19,7 @@ export const SelectDropdown = ({ dropdownOptions, getDefaultValue, onChangeCallb
         if (getDefaultValue !== undefined) {
             setSelectedOption(getDefaultValue());
         }
-    }, [])
+    }, [getDefaultValue])
 
     return (
         <select className={styles['listing-dropdown']} value={selectedOption} name="sort-by" onChange={(e: ChangeEvent<HTMLSelectElement>) => {
