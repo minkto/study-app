@@ -17,16 +17,18 @@ import ListingsSearchFilterOptions from "../listings-search-filter-options/Listi
 import { ListingsPagination } from "../listings-pagination/ListingsPagination";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css';
+import { isStringEmpty } from "@/utils/stringUtils";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
-        tdClassName?: (cell: CellContext<TData, TValue>) => string,
-        thClassName?: string
+        tdClassName?: (cell: CellContext<TData, TValue>) => string;
+        thClassName?: string;
+        label?: string;
     }
 };
 
 interface ResourceChaptersListingsProps {
-    resourceId?: string
+    resourceId?: string;
 }
 
 const statusMapping = {
@@ -139,7 +141,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             enableSorting: true,
             meta: {
                 tdClassName: () => styles["col-name"],
-                thClassName: styles["col-name"],
+                thClassName: styles["col-name"]
             }
         }),
         columnHelper.accessor('statusId', {
@@ -157,6 +159,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                     return `${styles["col-status"]} ${styles[statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`;
                 },
                 thClassName: styles["col-status"],
+                label: "Status"
 
             },
             enableSorting: true,
@@ -172,7 +175,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             meta: {
                 tdClassName: () => styles["col-date"],
                 thClassName: styles["col-date"],
-
+                label: "Original Date Completed"
             },
             enableSorting: true,
             sortingFn: nullableDateTimeSortingFn
@@ -187,7 +190,8 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             header: () => <span>Last Date Completed</span>,
             meta: {
                 tdClassName: () => styles["col-date"],
-                thClassName: styles["col-date"]
+                thClassName: styles["col-date"],
+                label: "Last Date Completed"
             },
             enableSorting: true,
             sortingFn: nullableDateTimeSortingFn
@@ -198,6 +202,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             meta: {
                 tdClassName: () => styles["col-days"],
                 thClassName: styles["col-days"],
+                label: "Days Since Last Completed"
             },
             enableSorting: true
         }),
@@ -207,7 +212,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             cell: ({ row }: { row: Row<Chapter> }) => {
                 const chapterId = row.original.chapterId
                 return (
-                    <CardDropdownMenu links={
+                    <CardDropdownMenu positionCenter={true} links={
                         [
                             { label: "Edit Chapter", href: `chapters/${chapterId}/edit-chapter` },
                             {
@@ -371,12 +376,24 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                                     const tdClass = cell.column.columnDef.meta?.tdClassName
                                         ? cell.column.columnDef.meta.tdClassName(cell.getContext())
                                         : "";
+
+                                    const label = cell.column.columnDef.meta?.label
+                                        ? `${cell.column.columnDef.meta.label}`
+                                        : "";
+
+                                    const value = cell.getValue() as string;
+
                                     return (
                                         <td
                                             className={`${styles["table-row-data"]} ${tdClass}`}
                                             key={cell.id}
                                         >
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            {!isStringEmpty(value) ? (<span className={`${styles["col-label-inline"]}`}>{label}</span>) : (null)}
+
+                                            <span>
+
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </span>
                                         </td>
                                     );
                                 })}
