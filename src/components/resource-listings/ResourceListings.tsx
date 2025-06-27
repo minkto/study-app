@@ -13,6 +13,7 @@ import { FilterByQueryKeys, ListingPageSizes } from '@/constants/constants';
 import { ListingsPagination } from '../listings-pagination/ListingsPagination';
 import ResourceListingsCardSkeleton from '../loaders/skeleton-loaders/ResourceListingsCardSkeleton/ResourceListingsCardSkeleton';
 import { getCurrentSortOrder, getInitialSortByOption } from '@/utils/tableUtils';
+import ListingsNoResults from '../listings-no-results/ListingsNoResults';
 
 const ResourceListings = () => {
 
@@ -27,8 +28,8 @@ const ResourceListings = () => {
       { label: "Sort By", value: "none" },
       { label: "Name - Asc", value: "name-asc" },
       { label: "Name - Desc", value: "name-desc" },
-      { label: "Category Asc", value: "categoryName-asc" },
-      { label: "Category Desc", value: "categoryName-desc" },
+      { label: "Category - Asc", value: "categoryName-asc" },
+      { label: "Category - Desc", value: "categoryName-desc" },
     ];
 
   const filterQueryParamKeys = [FilterByQueryKeys.ResourceListings.CATEGORY];
@@ -103,9 +104,9 @@ const ResourceListings = () => {
       if (!response.ok) {
         throw new Error(`Failed to fetch resources: ${response.status}`);
       }
-      const data = await response.json();
-      setData(data.resources);
-      setPageCount(data.pageCount);
+      const result = await response.json();
+      setData(result.resources);
+      setPageCount(result.pageCount);
 
     } catch (error) {
       console.error("An error has occurred while getting the resources: ", error);
@@ -168,21 +169,22 @@ const ResourceListings = () => {
           dropdownOptions={sortByOptions} />
       </ListingsSearchBar>
 
-      <div className={styles["resources-listing"]}>
-        {!dataLoaded ? (
-          <ResourceListingsCardSkeleton count={3} />
-        ) : (
+      {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults /> :
+        <div className={styles["resources-listing"]}>
+          {!dataLoaded ? (
+            <ResourceListingsCardSkeleton count={3} />
+          ) : (
 
-          table.getRowModel().rows.map(r => (
-            <ResourceListingsCard
-              onDelete={deleteResource}
-              key={r.original.resourceId}
-              resource={r.original}
-            />
-          ))
-        )}
-
-      </div>
+            table.getRowModel().rows.map(r => (
+              <ResourceListingsCard
+                onDelete={deleteResource}
+                key={r.original.resourceId}
+                resource={r.original}
+              />
+            ))
+          )}
+        </div>
+      }
       <ListingsPagination handleBeforeButtonClick={() => setupLoading(true)} table={table} />
     </div>)
 }
