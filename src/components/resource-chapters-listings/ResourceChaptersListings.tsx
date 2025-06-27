@@ -20,6 +20,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { isStringEmpty } from "@/utils/stringUtils";
 import SelectDropdown from "../select-dropdown/SelectDropdown";
 import { useMobileScreenSize } from "@/hooks/useMobileScreenSize";
+import ListingsNoResults from "../listings-no-results/ListingsNoResults";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -334,7 +335,9 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
 
             </ListingsSearchBar>
 
-            <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
+            {data?.length === 0 && (dataLoaded && !isLoading)? <ListingsNoResults/>
+             :
+             <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
                 <thead>
                     {table.getHeaderGroups().map(headerGroup => (
                         <tr key={headerGroup.id}>
@@ -424,7 +427,8 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                         ))
                     )}
                 </tbody>
-            </table>
+            </table> 
+            }    
             <ListingsPagination handleBeforeButtonClick={() => setupLoading(true)} table={table} />
         </div>);
 };
