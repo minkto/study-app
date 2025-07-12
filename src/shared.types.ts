@@ -14,6 +14,7 @@ export interface GetResourcesDto {
 
 export interface Resource {
     resourceId?: number,
+    userId?: string | null;
     name: string,
     description?: string,
     categoryId?: number,
@@ -56,6 +57,7 @@ export interface ListingSearchQuery
     searchTerm?: string,
     page?:string
     filters? : ListingSearchQueryFilters;
+    userId? : string | null;
 }
 
 export interface ListingSearchQueryFilters

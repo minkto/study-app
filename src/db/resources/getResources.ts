@@ -1,4 +1,4 @@
-import { ListingSearchQuery, ListingSearchQueryFilters, Resource } from "@/shared.types";
+import { ListingSearchQuery, Resource } from "@/shared.types";
 import { queryData } from "../dbHelper";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { buildOrderByFilter } from "../queryBuilder";
@@ -12,7 +12,6 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
             ["name", "name"],
             ["categoryname", "category_name"]
         ]);
-
 
         let query = `SELECT 
                         r.*,
@@ -45,16 +44,16 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
         return mappedResources;
 
     }
-    
+
     catch (error) {
         return { message: 'Database error', error };
     }
 }
 
 const buildPageLimit = (listingSearchQuery: ListingSearchQuery) => {
-    
+
     const pageSize = Number(process.env.RESOURCES_MAX_PAGE_SIZE ?? ListingPageSizes.RESOURCES);
-    
+
     if (listingSearchQuery?.page) {
         return ` LIMIT ${pageSize} OFFSET ${pageSize * (Number(listingSearchQuery.page) - 1)}`;
     }
@@ -67,7 +66,7 @@ const buildFilterQuery = (searchQuery?: ListingSearchQuery | undefined) => {
     let queryFilter = "";
 
     if (!isStringEmpty(searchQuery?.searchTerm)) {
-        queryFilter = " WHERE r.name ILIKE $1 ";
+        queryFilter = ` WHERE r.name ILIKE $1`;
     }
 
     if (searchQuery !== undefined &&
@@ -75,11 +74,18 @@ const buildFilterQuery = (searchQuery?: ListingSearchQuery | undefined) => {
         searchQuery.filters.category !== undefined &&
         searchQuery.filters.category.length > 0) {
         if (isStringEmpty(searchQuery?.searchTerm)) {
-            queryFilter += ` WHERE c.name IN(${searchQuery.filters.category?.map(x => `'${x}'`)}) `;
+            queryFilter += ` WHERE c.name IN(${searchQuery.filters.category?.map(x => `'${x}'`)})`;
         }
         else {
-            queryFilter += ` AND c.name IN(${searchQuery.filters.category?.map(x => `'${x}'`)}) `;
+            queryFilter += ` AND c.name IN(${searchQuery.filters.category?.map(x => `'${x}'`)})`;
         }
+    }
+
+    if (isStringEmpty(queryFilter) && !isStringEmpty(searchQuery?.userId)) {
+        queryFilter = ` WHERE r.user_id = '${searchQuery?.userId}'`;
+    }
+    else if (!isStringEmpty(queryFilter)) {
+        queryFilter += ` AND r.user_id = '${searchQuery?.userId}'`;
     }
 
     return queryFilter;
