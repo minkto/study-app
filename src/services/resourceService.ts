@@ -3,8 +3,8 @@ import getResourcePercentageComplete from "@/db/resources/getResourcePercentageC
 import { calculatePageCount, getResources } from "@/db/resources/getResources";
 import { GetResourceDto, GetResourcesDto, ListingSearchQuery } from "@/shared.types";
 
-export const getResourceDto = async (resourceId: number): Promise<GetResourceDto | null> => {
-    const resource = await getResource(resourceId);
+export const getResourceDto = async (resourceId: number, userId: string | null): Promise<GetResourceDto | null> => {
+    const resource = await getResource(resourceId, userId);
 
     if (resource !== null && resource !== undefined) {
         const percentageCompleted = await getResourcePercentageComplete(resourceId);
@@ -25,7 +25,7 @@ export const getResourceDto = async (resourceId: number): Promise<GetResourceDto
     return null;
 }
 
-export const getResourcesDto = async (queryParams: ListingSearchQuery) : Promise<GetResourcesDto | null > => {
+export const getResourcesDto = async (queryParams: ListingSearchQuery): Promise<GetResourcesDto | null> => {
 
     const mappedResources = await getResources(queryParams);
 
@@ -44,7 +44,7 @@ export const getResourcesDto = async (queryParams: ListingSearchQuery) : Promise
         );
 
         return {
-            resources : mappedDto,
+            resources: mappedDto,
             pageCount: await calculatePageCount(queryParams)
         };
     }
