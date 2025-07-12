@@ -4,11 +4,19 @@ import { getResource } from "@/db/resources/getResource";
 import { updateResource } from "@/db/resources/updateResource";
 import { getResourcesDto } from "@/services/resourceService";
 import { ListingSearchQuery, Resource } from "@/shared.types";
+import { isStringEmpty } from "@/utils/stringUtils";
+import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
 
     try {
+
+        const { userId } = await auth();
+
+        if (isStringEmpty(userId)) {
+            return new Response("Unauthorized", { status: 401 });
+        }
 
         const searchParams = request.nextUrl.searchParams;
         const listingSearchQuery: ListingSearchQuery =
@@ -17,10 +25,11 @@ export async function GET(request: NextRequest) {
             sortBy: searchParams?.get('sortBy')?.trim(),
             sortOrder: searchParams?.get('sortOrder')?.trim(),
             page: searchParams?.get('page')?.trim(),
-            filters: 
+            filters:
             {
-                category :  searchParams?.getAll(FilterByQueryKeys.ResourceListings.CATEGORY),
-            }
+                category: searchParams?.getAll(FilterByQueryKeys.ResourceListings.CATEGORY),
+            },
+            userId: userId
         };
 
         const mappedResources = await getResourcesDto(listingSearchQuery);
@@ -38,12 +47,20 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
     try {
+        const { userId } = await auth();
+
+        if (isStringEmpty(userId)) {
+            return new Response("Unauthorized", { status: 401 });
+        }
+
         const res = await request.json();
+
         const newResource = await createResource(
             {
                 name: res["name"],
                 description: res["description"],
-                categoryId: res["categoryId"]
+                categoryId: res["categoryId"],
+                userId: userId
             });
 
         return NextResponse.json(newResource, { status: 200 });
@@ -57,8 +74,15 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
+        const { userId } = await auth();
+
+        if (isStringEmpty(userId)) {
+            return new Response("Unauthorized", { status: 401 });
+        }
+
         const res = await request.json();
-        const resourceFromDb = await getResource(res["resourceId"]);
+
+        const resourceFromDb = await getResource(res["resourceId"], userId);
 
         if (resourceFromDb === undefined ||
             resourceFromDb === null) {
@@ -71,6 +95,7 @@ export async function PUT(request: Request) {
             name: res["name"],
             description: res["description"],
             categoryId: res["categoryId"],
+            userId: userId
         };
 
         const resource = await updateResource(res["resourceId"], resourceFields);
