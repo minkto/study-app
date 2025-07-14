@@ -3,7 +3,7 @@ import { queryDataSingleRow } from "../dbHelper";
 
 export async function getChapter(chapterId: number, userId: string | null) {
     const queryResult = await queryDataSingleRow(
-        `SELECT * FROM chapters c
+        `SELECT c.* FROM chapters c
             INNER JOIN resources r ON r.resource_id = c.resource_id
         WHERE c.chapter_id = $1 AND r.user_id = $2`, [chapterId, userId]);
 

@@ -6,30 +6,43 @@ import { buildOrderByFilter } from "../queryBuilder";
 
 export async function getChaptersByResource(resourceId: number, listingSearchQuery: ListingSearchQuery | null | undefined) {
 
-    const columnsToSql : Map<string,string> = new Map([
-        ["name","name"],
-        ["statusid","status_id"],
-        ["originaldatecompleted","original_date_completed"],
-        ["lastdatecompleted","last_date_completed"],
-        ["dayssincecompleted","days_since_last_completed"], 
+    const columnsToSql: Map<string, string> = new Map([
+        ["name", "name"],
+        ["statusid", "status_id"],
+        ["originaldatecompleted", "original_date_completed"],
+        ["lastdatecompleted", "last_date_completed"],
+        ["dayssincecompleted", "days_since_last_completed"],
     ]);
 
-    let queryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`];
-    let query = "SELECT *, COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date - (last_date_completed AT TIME ZONE 'UTC')::date  AS integer), 0) AS days_since_last_completed FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
+    let queryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`, listingSearchQuery?.userId];
+    let query =
+        `SELECT 
+                c.*, 
+                COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date - (last_date_completed AT TIME ZONE 'UTC')::date  AS integer), 0) AS days_since_last_completed 
+        FROM chapters c
+	    INNER JOIN resources r ON c.resource_id = r.resource_id
+        WHERE r.resource_id = $1 AND c.name ILIKE $2 AND r.user_id = $3`;
 
     const pageSize = parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS);
     const totalPageCount = await calculatePageCount(resourceId, listingSearchQuery, pageSize);
 
     if (isStringEmpty(listingSearchQuery?.searchTerm)) {
-        query = "SELECT *, COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date - (last_date_completed AT TIME ZONE 'UTC')::date  AS integer), 0) AS days_since_last_completed  FROM chapters WHERE resource_id = $1";
-        queryParams = [resourceId];
+        query =
+        `SELECT 
+                c.*, 
+                COALESCE(CAST((CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date - (last_date_completed AT TIME ZONE 'UTC')::date  AS integer), 0) AS days_since_last_completed 
+        FROM chapters c
+	    INNER JOIN resources r ON c.resource_id = r.resource_id
+        WHERE r.resource_id = $1 AND r.user_id = $2`;
+
+        queryParams = [resourceId, listingSearchQuery?.userId];
     }
 
     if (listingSearchQuery?.filters?.status !== undefined) {
-        query += ` ${ buildFilterQuery(listingSearchQuery?.filters)}`;
+        query += ` ${buildFilterQuery(listingSearchQuery?.filters)}`;
     }
 
-    query += buildOrderByFilter(columnsToSql,listingSearchQuery?.sortBy,listingSearchQuery?.sortOrder,"chapter_id");
+    query += buildOrderByFilter(columnsToSql, listingSearchQuery?.sortBy, listingSearchQuery?.sortOrder, "c.chapter_id");
 
     if (listingSearchQuery?.page) {
         query += ` LIMIT ${pageSize} OFFSET ${pageSize * (Number(listingSearchQuery.page) - 1)}`;
@@ -60,19 +73,26 @@ export async function getChaptersByResource(resourceId: number, listingSearchQue
 }
 
 const calculatePageCount = async (resourceId: number, listingSearchQuery: ListingSearchQuery | null | undefined, pageSize: number) => {
-    let countQuery = "SELECT COUNT(*) FROM chapters WHERE resource_id = $1 AND name ILIKE $2";
-    let countQueryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`];
+    let countQuery =
+        `SELECT COUNT(c.*)  
+                    FROM chapters c
+	                    INNER JOIN resources r ON c.resource_id = r.resource_id
+	                WHERE r.resource_id = $1 AND c.name ILIKE $2 AND r.user_id = $3`;
+    let countQueryParams = [resourceId, `%${listingSearchQuery?.searchTerm}%`, listingSearchQuery?.userId];
 
 
     if (isStringEmpty(listingSearchQuery?.searchTerm)) {
-        countQuery = "SELECT COUNT(*) FROM chapters WHERE resource_id = $1";
-        countQueryParams = [resourceId];
+        countQuery =
+            `SELECT COUNT(c.*)  
+                    FROM chapters c
+	                    INNER JOIN resources r ON c.resource_id = r.resource_id
+	                WHERE r.resource_id = $1 AND r.user_id = $2`;
+        countQueryParams = [resourceId, listingSearchQuery?.userId];
     }
 
     if (listingSearchQuery?.filters?.status !== undefined) {
-        countQuery += ` ${ buildFilterQuery(listingSearchQuery?.filters)}`;
+        countQuery += ` ${buildFilterQuery(listingSearchQuery?.filters)}`;
     }
-
 
     const countQueryResult = await queryData(countQuery, countQueryParams);
     const totalPageCount = Math.ceil(Number(countQueryResult[0].count / pageSize));
@@ -83,9 +103,8 @@ const buildFilterQuery = (filters: ListingSearchQueryFilters) => {
 
     let queryFilter = "";
 
-    if(filters.status !== undefined && filters.status.length > 0)
-    {
-       queryFilter += `AND status_id IN(${filters.status?.map(x => `${mapStatusFilter(x)}`)})`;
+    if (filters.status !== undefined && filters.status.length > 0) {
+        queryFilter += `AND status_id IN(${filters.status?.map(x => `${mapStatusFilter(x)}`)})`;
     }
 
     if (filters.daysSinceLastCompleted !== undefined && filters.daysSinceLastCompleted.length > 0) {
