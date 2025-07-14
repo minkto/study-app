@@ -1,6 +1,8 @@
 import { FilterByQueryKeys } from "@/constants/constants";
 import { getChaptersByResource } from "@/db/chapters/getChaptersByResource";
 import { ListingSearchQuery } from "@/shared.types";
+import { isStringEmpty } from "@/utils/stringUtils";
+import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ "resource-id": number }> }) {
@@ -8,22 +10,29 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const slug = (await params);
         const searchParams = request.nextUrl.searchParams;
 
-        const listingSearchQuery : ListingSearchQuery = 
+        const { userId } = await auth();
+
+        if (isStringEmpty(userId)) {
+            return new Response("Unauthorized", { status: 401 });
+        }
+
+        const listingSearchQuery: ListingSearchQuery =
         {
             searchTerm: searchParams?.get('search-term')?.trim(),
             sortBy: searchParams?.get('sortBy')?.trim(),
-            sortOrder:  searchParams?.get('sortOrder')?.trim(),
+            sortOrder: searchParams?.get('sortOrder')?.trim(),
             page: searchParams?.get('page')?.trim(),
-            filters: 
+            filters:
             {
-                status :  searchParams?.getAll(FilterByQueryKeys.ChapterListings.STATUS),
-                daysSinceLastCompleted :  searchParams?.getAll(FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED),
-            }
+                status: searchParams?.getAll(FilterByQueryKeys.ChapterListings.STATUS),
+                daysSinceLastCompleted: searchParams?.getAll(FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED),
+            },
+            userId: userId
         };
 
-        const chapters = await getChaptersByResource(slug["resource-id"],listingSearchQuery);
+        const chapters = await getChaptersByResource(slug["resource-id"], listingSearchQuery);
         if (chapters === null || chapters === undefined) {
-            return NextResponse.json({ message: "Could not find chapter with resource id." ,chapters: [], chaptersCount: 0}, { status: 404 });
+            return NextResponse.json({ message: "Could not find chapters with resource id.", chapters: [], chaptersCount: 0 }, { status: 404 });
         }
 
         return NextResponse.json(chapters, { status: 200 });

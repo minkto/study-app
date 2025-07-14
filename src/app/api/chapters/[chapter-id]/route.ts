@@ -3,16 +3,23 @@ import { getChapter } from "@/db/chapters/getChapter";
 import { updateChapter } from "@/db/chapters/updateChapter";
 import { validateChapter } from "@/services/validateChaptersService";
 import { Chapter } from "@/shared.types";
+import { isStringEmpty } from "@/utils/stringUtils";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ "chapter-id": number }> }) {
     try {
-        const slug = (await params);
-        const chapter = await getChapter(slug["chapter-id"]);
+        const { userId } = await auth();
 
-        if(chapter === null || chapter === undefined)
-        {
-            return NextResponse.json({message: "Could not find chapter."}, { status: 404 });
+        if (isStringEmpty(userId)) {
+            return new Response("Unauthorized", { status: 401 });
+        }
+
+        const slug = (await params);
+        const chapter = await getChapter(slug["chapter-id"], userId);
+
+        if (chapter === null || chapter === undefined) {
+            return NextResponse.json({ message: "Could not find chapter." }, { status: 404 });
         }
 
         return NextResponse.json(chapter, { status: 200 });
@@ -26,13 +33,20 @@ export async function GET(_request: Request, { params }: { params: Promise<{ "ch
 
 export async function PUT(request: Request, { params }: { params: Promise<{ "chapter-id": number }> }) {
     try {
+
+        const { userId } = await auth();
+
+        if (isStringEmpty(userId)) {
+            return new Response("Unauthorized", { status: 401 });
+        }
+
         const res = await request.json();
         const slug = (await params);
-        const chapterFromDb = await getChapter(slug["chapter-id"]);
+        const chapterFromDb = await getChapter(slug["chapter-id"], userId);
 
         if (chapterFromDb === undefined ||
             chapterFromDb === null) {
-            return NextResponse.json({ message: "No resource was found." }, { status: 404 });
+            return NextResponse.json({ message: "No Chapter was found." }, { status: 404 });
         }
 
         const chapter: Chapter =
@@ -47,9 +61,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
         }
 
         const validationModel = validateChapter(chapter);
-        if(!validationModel.isValid)
-        {
-            return NextResponse.json({message: validationModel.message}, { status: 400 });
+        if (!validationModel.isValid) {
+            return NextResponse.json({ message: validationModel.message }, { status: 400 });
         }
 
         const result = await updateChapter(chapter);
@@ -66,7 +79,22 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ "chapter-id": number }> }) {
     try {
+
+        const { userId } = await auth();
+
+        if (isStringEmpty(userId)) {
+            return new Response("Unauthorized", { status: 401 });
+        }
+
         const slug = (await params);
+
+        const chapterFromDb = await getChapter(slug["chapter-id"], userId);
+
+        if (chapterFromDb === undefined ||
+            chapterFromDb === null) {
+            return NextResponse.json({ message: "No Chapter was found." }, { status: 404 });
+        }
+
         const result = await deleteChapter(slug["chapter-id"]);
 
         return NextResponse.json(result, { status: 200 });
@@ -76,5 +104,4 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
         return NextResponse.json({ message: 'API error:', error: error instanceof Error ? error.message : error },
             { status: 500 });
     }
-
 }
