@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
         const resourceExists = await resourceWithUserExists(res["resourceId"], userId);
         if (!resourceExists) {
-            return NextResponse.json({ message: "Forbidden: You do not own this resource." }, { status: 403 });
+            return NextResponse.json({ message: "Forbidden: You do not own this chapter." }, { status: 403 });
         }
 
         const result = await createChapter(chapter);
