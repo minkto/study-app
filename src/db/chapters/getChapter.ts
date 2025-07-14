@@ -1,8 +1,11 @@
 import { Chapter } from "@/shared.types";
 import { queryDataSingleRow } from "../dbHelper";
 
-export async function getChapter(chapterId: number) {
-    const queryResult = await queryDataSingleRow("SELECT * FROM chapters WHERE chapter_id = $1", [chapterId]);
+export async function getChapter(chapterId: number, userId: string | null) {
+    const queryResult = await queryDataSingleRow(
+        `SELECT * FROM chapters c
+            INNER JOIN resources r ON r.resource_id = c.resource_id
+        WHERE c.chapter_id = $1 AND r.user_id = $2`, [chapterId, userId]);
 
     if (queryResult !== null && queryResult !== undefined) {
         const chapter: Chapter =
