@@ -161,3 +161,15 @@ button.form-field {
 {
   margin: 0 5px 0 0;
 }
+
+
+/*******************************
+*
+* Clerk Customization
+*
+*******************************/
+input[type="password"].cl-formFieldInput__password,
+input[type="text"].cl-formFieldInput
+{
+  font-size: var(--mobile-table-font-size);
+}
