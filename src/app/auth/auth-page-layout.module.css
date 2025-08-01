@@ -1,0 +1,53 @@
+.auth-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.auth-section-image-wrapper {
+    height: 100%;
+}
+
+.auth-section-image-wrapper img {
+    width: auto;
+    height: 100%;
+}
+
+.auth-section-page-details {
+    margin: 0 auto;
+    align-self: center;
+}
+
+.auth-child-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+    align-items: center;
+}
+
+.auth-child-items h1 {
+    margin-top: 20px;
+}
+
+@media screen and (max-width:1024px) {
+
+    .auth-section-image-wrapper {
+        display: none;
+    }
+
+    .auth-container {
+        display: block;
+        overflow-y: auto;
+    }
+}
+
+@media screen and (max-height:500px) {
+    .auth-section-image-wrapper {
+        display: none;
+    }
+
+    .auth-container {
+        display: block;
+        overflow-y: auto;
+    }
+}
