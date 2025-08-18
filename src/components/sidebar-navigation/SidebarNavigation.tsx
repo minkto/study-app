@@ -9,6 +9,7 @@ import IconLogout from "../icons/icon-logout/IconLogout";
 import { useEffect, useRef, useState } from "react";
 import styles from './sidebar-navigation.module.css';
 import { SignOutButton } from "@clerk/nextjs";
+import IconAISpark from "../icons/icon-ai-spark/IconAISpark";
 
 export const SidebarNavigation = () => {
     const [sidebarToggle, setSidebarToggle] = useState(false);
@@ -71,6 +72,9 @@ export const SidebarNavigation = () => {
                         </li>
                         <li className={styles["sidebar__container-menu-list-item"]}>
                             <Link onClick={closeSidebar} href={"/dashboard/resources/"}><IconBook width={32} height={32} />Resources</Link>
+                        </li>
+                        <li className={styles["sidebar__container-menu-list-item"]}>
+                            <Link onClick={closeSidebar} href={"/dashboard/ai/helper/"}><IconAISpark width={32} height={32} />AI Helper</Link>
                         </li>
                         <li className={styles["sidebar__container-menu-list-item"]}>
                             <Link onClick={closeSidebar} href={"#"}><IconSettings width={32} height={32} />Settings</Link>
