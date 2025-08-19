@@ -5,11 +5,15 @@ import IconAISpark from "../icons/icon-ai-spark/IconAISpark";
 import IconArrowDown from "../icons/icon-arrow-down/IconArrowDown";
 import styles from "./ai-search-bar.module.css";
 
-const AISearchBar = () => {
+interface AISearchBarProps {
+    onSearchSubmit?: (text: string) => void;
+}
+
+
+const AISearchBar = ({ onSearchSubmit }: AISearchBarProps) => {
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [AISparkIconColor, setAISparkIconColor] = useState("ai-search-bar__icon--light-off");
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-    const [textValue, setTextValue] = useState("");
 
     const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const inputValue = event.target.value;
@@ -18,19 +22,27 @@ const AISearchBar = () => {
             ? "ai-search-bar__icon--light-off"
             : "ai-search-bar__icon--light-on");
 
-        setTextValue(inputValue);
+
         // Auto-resize text area logic
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto";
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
         }
+
+        //setTextValue(inputValue);
+        // if (onSearchSubmit) {
+        //     onSearchSubmit(event.target.value);
+        // }
     };
 
     const clearInput = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (textareaRef && textareaRef.current) {
-            setTextValue(textareaRef.current.value);
+            //setTextValue(textareaRef.current.value);
+            if (onSearchSubmit) {
+                onSearchSubmit(textareaRef.current.value);
+            }
         }
 
         if (textareaRef.current) {
