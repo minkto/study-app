@@ -1,3 +1,5 @@
+import AISearchBar from "@/components/ai-search-bar/AISearchBar";
+
 export default function Page() {
-    return <p>AI Helper Page</p>;
+    return (<AISearchBar />);
 }

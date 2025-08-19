@@ -45,9 +45,11 @@ export interface Status
 
 export interface SvgIcon 
 {
-    width?: number,
-    height?: number,
-    className? : string
+    width?: number;
+    height?: number;
+    className? : string;
+    useCurrentColor? : boolean;
+    removeStroke? : boolean;
 }
 
 export interface ListingSearchQuery
