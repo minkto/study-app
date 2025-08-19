@@ -83,3 +83,15 @@ export interface ChapterFormErrors
     originalDateCompletedError: string;
     lastDateCompletedError: string; 
 }
+
+
+export interface AIChatMessage
+{
+    requestMessage: string;
+    responseMessage: string;
+} 
+
+export interface AIChatMessages
+{
+    messages: AIChatMessage[];
+} 

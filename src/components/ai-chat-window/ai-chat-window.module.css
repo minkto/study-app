@@ -9,9 +9,13 @@
     min-height: 100px;
     display: flex;
     flex-direction: column;
-    align-items: end;
 }
 
+.ai-chat-window-request__messages
+{
+    display: flex;
+    flex-direction: column;
+}
 
 .ai-chat-window-request__message{
     padding: 0.5em;
@@ -20,8 +24,17 @@
     margin: 0.5em 1em;
     animation: fadeIn 0.3s ease-in-out;
     word-break: break-all;
+    align-self: self-end;
 }
 
+.ai-chat-window-response__message{
+    padding: 0.5em;
+    border-radius: 5px;
+    margin: 0.5em 1em;
+    animation: fadeIn 0.3s ease-in-out;
+    word-break: break-all;
+    align-self: self-start;
+}
 
 @keyframes fadeIn {
     from {
