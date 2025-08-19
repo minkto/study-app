@@ -1,5 +1,7 @@
-import AISearchBar from "@/components/ai-search-bar/AISearchBar";
+import AIChatContainer from "@/components/ai-chat-container/AIChatContainer";
 
 export default function Page() {
-    return (<AISearchBar />);
+    return (
+        <AIChatContainer/>
+    );
 }

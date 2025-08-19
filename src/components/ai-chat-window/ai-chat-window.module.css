@@ -1,0 +1,10 @@
+.ai-chat-window
+{
+    width: 100%;
+    background-color: white;
+    height: 100%;
+    margin-top: 1em;
+    border-radius: 5px;
+    border: 2px solid rgb(238, 238, 238);
+    min-height: 100px;
+}
