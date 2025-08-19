@@ -1,11 +1,7 @@
-import AIChatWindow from "@/components/ai-chat-window/AIChatWindow";
-import AISearchBar from "@/components/ai-search-bar/AISearchBar";
+import AIChatContainer from "@/components/ai-chat-container/AIChatContainer";
 
 export default function Page() {
     return (
-        <>
-            <AISearchBar />
-            <AIChatWindow />
-        </>
+        <AIChatContainer/>
     );
 }
