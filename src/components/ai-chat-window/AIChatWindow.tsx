@@ -2,7 +2,9 @@ import styles from "./ai-chat-window.module.css";
 
 const AIChatWindow = () => 
 {
-    return (<div className={styles["ai-chat-window"]}></div>)
+    return (
+    <div className={styles["ai-chat-window"]}>
+    </div>)
 }
 
 
