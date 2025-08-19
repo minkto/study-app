@@ -9,19 +9,32 @@
     min-height: 100px;
     display: flex;
     flex-direction: column;
-    align-items: end;
 }
 
+.ai-chat-window-messages
+{
+    display: flex;
+    flex-direction: column;
+}
 
-.ai-chat-window-request__message{
+.ai-chat-window-messages__request{
     padding: 0.5em;
     border-radius: 5px;
     background-color: rgb(238, 238, 238);
     margin: 0.5em 1em;
     animation: fadeIn 0.3s ease-in-out;
     word-break: break-all;
+    align-self: self-end;
 }
 
+.ai-chat-window-messages__response{
+    padding: 0.5em;
+    border-radius: 5px;
+    margin: 0.5em 1em;
+    animation: fadeIn 0.3s ease-in-out;
+    word-break: break-all;
+    align-self: self-start;
+}
 
 @keyframes fadeIn {
     from {
