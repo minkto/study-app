@@ -11,13 +11,13 @@
     flex-direction: column;
 }
 
-.ai-chat-window-request__messages
+.ai-chat-window-messages
 {
     display: flex;
     flex-direction: column;
 }
 
-.ai-chat-window-request__message{
+.ai-chat-window-messages__request{
     padding: 0.5em;
     border-radius: 5px;
     background-color: rgb(238, 238, 238);
@@ -27,7 +27,7 @@
     align-self: self-end;
 }
 
-.ai-chat-window-response__message{
+.ai-chat-window-messages__response{
     padding: 0.5em;
     border-radius: 5px;
     margin: 0.5em 1em;

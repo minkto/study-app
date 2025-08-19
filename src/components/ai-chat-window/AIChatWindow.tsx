@@ -10,9 +10,9 @@ const AIChatWindow = ({ chatMessages }: AIChatWindowProps) => {
         <div className={styles["ai-chat-window"]}>
             {chatMessages && chatMessages?.messages?.length > 0 ? (chatMessages.messages.map((message, index) =>
             (
-                <div key={index} className={styles["ai-chat-window-request__messages"]}>
-                    <p className={styles["ai-chat-window-request__message"]}>{message.requestMessage}</p>
-                    <p className={styles["ai-chat-window-response__message"]}>{message.responseMessage}</p>
+                <div key={index} className={styles["ai-chat-window-messages"]}>
+                    <p className={styles["ai-chat-window-messages__request"]}>{message.requestMessage}</p>
+                    <p className={styles["ai-chat-window-messages__response"]}>{message.responseMessage}</p>
                 </div>))) : null}
         </div>
     )
