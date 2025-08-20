@@ -1,0 +1,35 @@
+.loader {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: 0.5em;
+  border-radius: 50%;
+  background-color: #000;
+  box-shadow: 32px 0 #000, -32px 0 #000;
+  position: relative;
+  animation: flash 0.5s ease-out infinite alternate;
+}
+
+.ellipses-loader__wrapper
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0.5em;
+}      
+
+@keyframes flash {
+  0% {
+    background-color: #FFF2;
+    box-shadow: 32px 0 #FFF2, -32px 0 #000;
+  }
+  50% {
+    background-color: #000;
+    box-shadow: 32px 0 #FFF2, -32px 0 #FFF2;
+  }
+  100% {
+    background-color: #FFF2;
+    box-shadow: 32px 0 #000, -32px 0 #FFF2;
+  }
+}
