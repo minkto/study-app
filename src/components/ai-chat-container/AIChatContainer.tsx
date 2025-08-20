@@ -53,7 +53,7 @@ const AIChatContainer = () => {
 
     return (
         <div className={styles["ai-chat-container"]}>
-            <AISearchBar onSearchSubmit={handleOnSubmit} />
+            <AISearchBar onSearchSubmit={handleOnSubmit} isLoading={isLoading} />
             <AIChatWindow currentRequestMessage={currentRequestMessage} chatMessages={chatMessages} isLoading={isLoading} />
         </div>
     );
