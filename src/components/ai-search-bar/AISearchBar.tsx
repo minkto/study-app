@@ -7,10 +7,11 @@ import styles from "./ai-search-bar.module.css";
 
 interface AISearchBarProps {
     onSearchSubmit?: (text: string) => void;
+    isLoading?: boolean;
 }
 
 
-const AISearchBar = ({ onSearchSubmit }: AISearchBarProps) => {
+const AISearchBar = ({ onSearchSubmit,isLoading }: AISearchBarProps) => {
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [AISparkIconColor, setAISparkIconColor] = useState("ai-search-bar__icon--light-off");
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -58,9 +59,9 @@ const AISearchBar = ({ onSearchSubmit }: AISearchBarProps) => {
         <div className={styles["ai-search-bar"]}>
             <form onSubmit={(e) => clearInput(e)} className={styles["ai-search-bar__form"]}>
                 <div className={`${styles["ai-search-bar__icon"]} ${styles[AISparkIconColor]}`}><IconAISpark useCurrentColor={true} removeStroke={true} width={32} height={32} /></div>
-                <textarea ref={textareaRef} name="ai-search" onChange={handleInputChange} placeholder="Enter your resource idea..." className={styles["ai-search-bar__input"]} />
+                <textarea disabled={isLoading} ref={textareaRef} name="ai-search" onChange={handleInputChange} placeholder="Enter your resource idea..." className={styles["ai-search-bar__input"]} />
                 <div className={styles["ai-search-bar__button-wrapper"]}>
-                    <button disabled={buttonDisabled} className={styles["ai-search-bar__button"]}><IconArrowDown useCurrentColor={true} width={32} height={32} /></button>
+                    <button disabled={buttonDisabled || isLoading} className={styles["ai-search-bar__button"]}><IconArrowDown useCurrentColor={true} width={32} height={32} /></button>
                 </div>
             </form>
         </div>)
