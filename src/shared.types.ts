@@ -100,6 +100,7 @@ export interface AIChatMessages
 export interface AIChatApiResponse
 {
     resources?: AIChatResourceModel[];
+    errorMessage?: string;
 }
 
 export interface AIChatResourceModel

@@ -1,3 +1,5 @@
+import { ChatAIErrorMessages } from "@/constants/constants";
+import { isStringEmpty } from "@/utils/stringUtils";
 import OpenAI from "openai";
 import { zodToJsonSchema } from "openai/_vendor/zod-to-json-schema/zodToJsonSchema.mjs";
 import z from "zod";
@@ -66,4 +68,20 @@ export async function getResourceFromOpenAI(prompt: string) {
         console.error("API error:", error);
         return new Response("Internal Server Error", { status: 500 });
     }
+}
+
+export function validateOpenAIPromptValue(prompt: string)
+{
+    if (isStringEmpty(prompt)) {
+        return { success: false, error: ChatAIErrorMessages.EMPTY_PROMPT };
+    }
+
+    if (prompt.length > 1000)
+    {
+        return { success: false, error: ChatAIErrorMessages.PROMPT_TOO_LONG };
+    }
+
+    // TODO: Add more validation rules about the CREDITS that may belong to the user.
+    
+    return { success: true, error: null };
 }

@@ -1,4 +1,4 @@
-import { getResourceFromOpenAI } from "@/services/openAIService";
+import { getResourceFromOpenAI, validateOpenAIPromptValue } from "@/services/openAIService";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -14,7 +14,20 @@ export async function POST(request: Request) {
 
         const body = await request.json();
 
-        // TODO: Add validation before calling the service.
+        const trimmedPrompt = body?.prompt?.trim();
+
+        const validationResult = validateOpenAIPromptValue(trimmedPrompt);
+
+        if (!validationResult.success) {
+            return NextResponse.json(
+                {
+                    message: 'API Validation Error',
+                    error: validationResult.error
+                },
+                { status: 400 }
+            );
+        }
+
         const response = await getResourceFromOpenAI(body.prompt);
 
         // TODO: Handle the Error responses from the service.

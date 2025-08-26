@@ -21,6 +21,10 @@ const AIChatContainer = () => {
 
            const body = await response.json(); 
 
+           if(body.error) {
+            return {resources: body.resources, errorMessage: body.error};
+           }
+
            return {resources: body.resources};
 
         } catch (error) {
@@ -52,7 +56,7 @@ const AIChatContainer = () => {
                 messages: [...prevChatMessages.messages,
                 {
                     requestMessage: text,
-                    responseMessage: `I have found ${result.resources?.length || 0} resources for you.`,
+                    responseMessage: constructResponseMessage(result),
                     responseObject: result
                 }]
             }));
@@ -64,6 +68,15 @@ const AIChatContainer = () => {
         finally {
             setIsLoading(false);
         }
+    }
+
+    const constructResponseMessage = (response: AIChatApiResponse) : string => {
+        if(response.errorMessage) 
+        {
+            return `Error: ${response.errorMessage}`;
+        }
+
+        return `I have found ${response.resources?.length || 0} resources for you.`;
     }
 
     return (
