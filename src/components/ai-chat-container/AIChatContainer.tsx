@@ -4,7 +4,7 @@ import { useState } from "react";
 import AIChatWindow from "../ai-chat-window/AIChatWindow";
 import AISearchBar from "../ai-search-bar/AISearchBar";
 import styles from "./ai-chat-container.module.css";
-import { AIChatMessages } from "@/shared.types";
+import { AIChatMessages, AIChatApiResponse } from "@/shared.types";
 
 const AIChatContainer = () => {
 
@@ -12,13 +12,21 @@ const AIChatContainer = () => {
     const [chatMessages, setChatMessages] = useState<AIChatMessages>({ messages: [] });
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // Simulates a slow function
-    function slowFunction(ms = 2000) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve(`Finished after ${ms}ms`);
-            }, ms);
-        });
+    async function getResourcesFromOpenAI(prompt: string) : Promise<AIChatApiResponse> {
+        try {
+            const response = await fetch(`/api/ai/chat`, {
+                method: 'POST',
+                body: JSON.stringify({ prompt }),
+            });
+
+           const body = await response.json(); 
+
+           return {resources: body.resources};
+
+        } catch (error) {
+            console.error("Error fetching resources from OpenAI:", error);
+            return { resources: [] }; // Return an empty array on error
+        }
     }
 
     const handleOnSubmit = (text: string) => {
@@ -33,20 +41,27 @@ const AIChatContainer = () => {
         try {
             setIsLoading(true);
             setCurrentRequestMessage(text);
-            
-            const result = await slowFunction(3000); // waits 3 seconds
 
+            const result = await getResourcesFromOpenAI(text); // waits 3 seconds
+
+            // TODO: Handle the result from OpenAI based on responses.
+
+            // TODO: Construct response message based on the result from OpenAI.
+            // For now, we will use a placeholder response message.
             setChatMessages(prevChatMessages => ({
                 messages: [...prevChatMessages.messages,
-                { requestMessage: text, responseMessage: `AI: This is my response to your idea.` }]
+                {
+                    requestMessage: text,
+                    responseMessage: `I have found ${result.resources?.length || 0} resources for you.`,
+                    responseObject: result
+                }]
             }));
 
         } catch (error) {
             console.error("Error adding request message:", error);
             return;
         }
-        finally
-        {
+        finally {
             setIsLoading(false);
         }
     }
