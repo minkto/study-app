@@ -89,9 +89,23 @@ export interface AIChatMessage
 {
     requestMessage: string;
     responseMessage: string;
+    responseObject?: AIChatApiResponse;
 } 
 
 export interface AIChatMessages
 {
     messages: AIChatMessage[];
 } 
+
+export interface AIChatApiResponse
+{
+    resources?: AIChatResourceModel[];
+    errorMessage?: string;
+}
+
+export interface AIChatResourceModel
+{
+    name?: string;
+    chapters?: string[];
+    source?: string;
+}

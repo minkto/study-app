@@ -4,7 +4,7 @@ import { useState } from "react";
 import AIChatWindow from "../ai-chat-window/AIChatWindow";
 import AISearchBar from "../ai-search-bar/AISearchBar";
 import styles from "./ai-chat-container.module.css";
-import { AIChatMessages } from "@/shared.types";
+import { AIChatMessages, AIChatApiResponse } from "@/shared.types";
 
 const AIChatContainer = () => {
 
@@ -12,13 +12,25 @@ const AIChatContainer = () => {
     const [chatMessages, setChatMessages] = useState<AIChatMessages>({ messages: [] });
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // Simulates a slow function
-    function slowFunction(ms = 2000) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve(`Finished after ${ms}ms`);
-            }, ms);
-        });
+    async function getResourcesFromOpenAI(prompt: string): Promise<AIChatApiResponse> {
+        try {
+            const response = await fetch(`/api/ai/chat`, {
+                method: 'POST',
+                body: JSON.stringify({ prompt }),
+            });
+
+            const body = await response.json();
+
+            if (!response.ok) {
+                return { resources: [], errorMessage: body?.error?.errorMessage };
+            }
+
+            return body?.resources;
+
+        } catch (error) {
+            console.error("Error has occured while fetching resources from AI Services: ", error);
+            return { resources: [] };
+        }
     }
 
     const handleOnSubmit = (text: string) => {
@@ -33,22 +45,38 @@ const AIChatContainer = () => {
         try {
             setIsLoading(true);
             setCurrentRequestMessage(text);
-            
-            const result = await slowFunction(3000); // waits 3 seconds
+
+            const result = await getResourcesFromOpenAI(text); // waits 3 seconds
 
             setChatMessages(prevChatMessages => ({
                 messages: [...prevChatMessages.messages,
-                { requestMessage: text, responseMessage: `AI: This is my response to your idea.` }]
+                {
+                    requestMessage: text,
+                    responseMessage: constructResponseMessage(result),
+                    responseObject: result
+                }]
             }));
 
         } catch (error) {
             console.error("Error adding request message:", error);
             return;
         }
-        finally
-        {
+        finally {
             setIsLoading(false);
         }
+    }
+
+    const constructResponseMessage = (response: AIChatApiResponse): string => {
+        if (response?.errorMessage) {
+            return `Error: ${response.errorMessage}Please try again shortly.`;
+        }
+
+        if(response.resources?.length === 0) 
+        {
+            return `No resources could be found. Try to refine your search.`
+        }
+
+        return `I have found ${response.resources?.length || 0} resources for you.`;
     }
 
     return (
