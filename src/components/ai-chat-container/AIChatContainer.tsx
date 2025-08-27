@@ -12,24 +12,24 @@ const AIChatContainer = () => {
     const [chatMessages, setChatMessages] = useState<AIChatMessages>({ messages: [] });
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    async function getResourcesFromOpenAI(prompt: string) : Promise<AIChatApiResponse> {
+    async function getResourcesFromOpenAI(prompt: string): Promise<AIChatApiResponse> {
         try {
             const response = await fetch(`/api/ai/chat`, {
                 method: 'POST',
                 body: JSON.stringify({ prompt }),
             });
 
-           const body = await response.json(); 
+            const body = await response.json();
 
-           if(body.error) {
-            return {resources: body.resources, errorMessage: body.error};
-           }
+            if (!response.ok) {
+                return { resources: [], errorMessage: body?.error?.errorMessage };
+            }
 
-           return {resources: body.resources};
+            return body?.resources;
 
         } catch (error) {
-            console.error("Error fetching resources from OpenAI:", error);
-            return { resources: [] }; // Return an empty array on error
+            console.error("Error has occured while fetching resources from AI Services: ", error);
+            return { resources: [] };
         }
     }
 
@@ -48,10 +48,6 @@ const AIChatContainer = () => {
 
             const result = await getResourcesFromOpenAI(text); // waits 3 seconds
 
-            // TODO: Handle the result from OpenAI based on responses.
-
-            // TODO: Construct response message based on the result from OpenAI.
-            // For now, we will use a placeholder response message.
             setChatMessages(prevChatMessages => ({
                 messages: [...prevChatMessages.messages,
                 {
@@ -70,10 +66,14 @@ const AIChatContainer = () => {
         }
     }
 
-    const constructResponseMessage = (response: AIChatApiResponse) : string => {
-        if(response.errorMessage) 
+    const constructResponseMessage = (response: AIChatApiResponse): string => {
+        if (response?.errorMessage) {
+            return `Error: ${response.errorMessage}Please try again shortly.`;
+        }
+
+        if(response.resources?.length === 0) 
         {
-            return `Error: ${response.errorMessage}`;
+            return `No resources could be found. Try to refine your search.`
         }
 
         return `I have found ${response.resources?.length || 0} resources for you.`;

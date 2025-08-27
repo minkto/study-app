@@ -1,4 +1,5 @@
 import { ChatAIErrorMessages } from "@/constants/constants";
+import { ExternalApiError } from "@/utils/errors";
 import { isStringEmpty } from "@/utils/stringUtils";
 import OpenAI from "openai";
 import { zodToJsonSchema } from "openai/_vendor/zod-to-json-schema/zodToJsonSchema.mjs";
@@ -10,9 +11,6 @@ export async function getResourceFromOpenAI(prompt: string) {
             apiKey: process.env.OPENAI_API_KEY,
         });
 
-        let resources = {};
-
-        // TODO: Define the schema for the request body.
         const ResourceObject = z.object({
             name: z.string(),
             chapters: z.array(z.string()),
@@ -52,36 +50,41 @@ export async function getResourceFromOpenAI(prompt: string) {
             tools: [{ type: "web_search_preview" }],
         })
 
+        const resources = convertResourcesToJson(response.output_text) ;
 
-        try {
-            resources = JSON.parse(response.output_text);
-            return resources;
-        } catch (err) {
-            console.error("Raw output was not valid JSON:", err);
-        }
-
-        return { resources: [] }; // Return an empty array if parsing fails
+        return { resources };
     }
 
-    // TODO: Handle specific errors from OpenAI service.
     catch (error) {
-        console.error("API error:", error);
-        return new Response("Internal Server Error", { status: 500 });
+        console.log("An error has occured within the Open AI Service: ", error);
+        if (error instanceof Error) {
+            throw new ExternalApiError(error.message);
+        }
     }
 }
 
-export function validateOpenAIPromptValue(prompt: string)
-{
+export function validateOpenAIPromptValue(prompt: string) {
     if (isStringEmpty(prompt)) {
         return { success: false, error: ChatAIErrorMessages.EMPTY_PROMPT };
     }
 
-    if (prompt.length > 1000)
-    {
+    if (prompt.length > 1000) {
         return { success: false, error: ChatAIErrorMessages.PROMPT_TOO_LONG };
     }
 
     // TODO: Add more validation rules about the CREDITS that may belong to the user.
-    
+
     return { success: true, error: null };
+}
+
+function convertResourcesToJson(resourcesResponse: string) {
+    try {
+        const resources = JSON.parse(resourcesResponse);
+        return resources;
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log("Raw output was not valid JSON:", error, resourcesResponse);
+            throw new ExternalApiError(error.message);
+        }
+    }
 }

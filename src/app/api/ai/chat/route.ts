@@ -1,4 +1,5 @@
 import { getResourceFromOpenAI, validateOpenAIPromptValue } from "@/services/openAIService";
+import { createApiErrorResponse } from "@/utils/errors";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -30,12 +31,13 @@ export async function POST(request: Request) {
 
         const response = await getResourceFromOpenAI(body.prompt);
 
-        // TODO: Handle the Error responses from the service.
         return NextResponse.json(response, { status: 200 });
 
     } catch (error) {
-        console.error("API error:", error);
-        return NextResponse.json({ message: 'API Error', error: error instanceof Error ? error.message : error },
-            { status: 500 });
+        return NextResponse.json(
+            {
+                resources: [],
+                error: createApiErrorResponse(error)
+            }, { status: 500 });
     }
 }
