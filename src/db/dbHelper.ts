@@ -1,5 +1,5 @@
 import { pool } from './db';
-interface DbQuery {
+export interface DbQuery {
     text: string,
     values: Array<string | number | undefined>
 }

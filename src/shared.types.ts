@@ -19,7 +19,15 @@ export interface Resource {
     description?: string,
     categoryId?: number,
     categoryName? : string
+    chapters?: Chapter[]| null| undefined,
 }
+
+export interface CreateBulkResourceDto
+{
+    userId?: string | null;
+    resources?: Resource[];
+}
+
 
 export interface Chapter {
     chapterId?: number,

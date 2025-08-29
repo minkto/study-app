@@ -1,5 +1,6 @@
 import { Resource } from "@/shared.types";
-import { queryDataRowCount } from "../dbHelper";
+import { DbQuery, queryDataRowCount, queryWithTranscation } from "../dbHelper";
+import { createResourceWithChaptersQuery } from "../queries/resources/createResourceWithChaptersQuery";
 
 export async function createResource(resource: Resource) {
     try {
@@ -26,4 +27,19 @@ export async function createResource(resource: Resource) {
     catch (error) {
         console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
     }
+}
+
+export async function bulkCreateResourcesWithChapters(resources: Resource[], userId: string): Promise<boolean> {
+
+    let result = false;
+    let queries: DbQuery[] = [];
+
+    for (const resource of resources) {
+        resource.userId = userId;
+        queries.push(createResourceWithChaptersQuery(resource));
+    } 
+
+    result = await queryWithTranscation(queries);
+
+    return result;
 }
