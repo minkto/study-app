@@ -1,9 +1,9 @@
 import { DbQuery } from "@/db/dbHelper";
-import { Chapter, Resource } from "@/shared.types";
+import { Resource } from "@/shared.types";
 
-export function createResourceWithChaptersQuery(resource: Resource, chapters: Chapter[]): DbQuery {
-    
-    const chapterValuesSql = chapters.map((c, index) => {
+export function createResourceWithChaptersQuery(resource: Resource): DbQuery {
+
+    const chapterValuesSql = resource?.chapters?.map((c, index) => {
         const startingInsertTokenIndex = 5;
         const columnCount = 5;
         const baseIndex = startingInsertTokenIndex + (index * columnCount);
@@ -45,14 +45,17 @@ export function createResourceWithChaptersQuery(resource: Resource, chapters: Ch
         resource.description,
         resource.categoryId,
         resource.userId?.toString(),
-        ...chapters.flatMap(chap => [
+    ];
+
+    if (resource.chapters) {
+        values.push(...resource.chapters.flatMap(chap => [
             chap.statusId,
             chap.name,
             chap.url,
             chap.originalDateCompleted?.toString(),
             chap.lastDateCompleted?.toString()
-        ])
-    ];
+        ]))
+    }
 
     return {
         text: query,

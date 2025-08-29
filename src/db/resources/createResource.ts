@@ -1,4 +1,4 @@
-import { Chapter, Resource } from "@/shared.types";
+import { Resource } from "@/shared.types";
 import { DbQuery, queryDataRowCount, queryWithTranscation } from "../dbHelper";
 import { createResourceWithChaptersQuery } from "../queries/resources/createResourceWithChaptersQuery";
 
@@ -29,12 +29,15 @@ export async function createResource(resource: Resource) {
     }
 }
 
-export async function createResourceWithChapters(resource: Resource, chapters: Chapter[]): Promise<boolean> {
+export async function bulkCreateResourcesWithChapters(resources: Resource[], userId: string): Promise<boolean> {
 
     let result = false;
     let queries: DbQuery[] = [];
 
-    queries.push(createResourceWithChaptersQuery(resource, chapters))
+    for (const resource of resources) {
+        resource.userId = userId;
+        queries.push(createResourceWithChaptersQuery(resource));
+    } 
 
     result = await queryWithTranscation(queries);
 

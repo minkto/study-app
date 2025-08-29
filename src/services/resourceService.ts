@@ -1,8 +1,8 @@
-import { createResourceWithChapters } from "@/db/resources/createResource";
+import { bulkCreateResourcesWithChapters } from "@/db/resources/createResource";
 import { getResource } from "@/db/resources/getResource"
 import getResourcePercentageComplete from "@/db/resources/getResourcePercentageComplete";
 import { calculatePageCount, getResources } from "@/db/resources/getResources";
-import { Chapter, GetResourceDto, GetResourcesDto, ListingSearchQuery, Resource } from "@/shared.types";
+import { GetResourceDto, GetResourcesDto, ListingSearchQuery, Resource } from "@/shared.types";
 
 export const getResourceDto = async (resourceId: number, userId: string | null): Promise<GetResourceDto | null> => {
     const resource = await getResource(resourceId, userId);
@@ -52,12 +52,11 @@ export const getResourcesDto = async (queryParams: ListingSearchQuery): Promise<
     return null;
 }
 
-export const createResourcesAndChapters = async (resource: Resource,chapters : Chapter[]) :  Promise<boolean> => {
+export const bulkCreateResourcesAndChapters = async (resources: Resource[], userId: string): Promise<boolean> => {
 
-    const result = await createResourceWithChapters(resource,chapters);
-    if(!result)
-    {
-        console.log("Could not create resources, with chapters."); 
+    const result = await bulkCreateResourcesWithChapters(resources, userId);
+    if (!result) {
+        console.log("Could not create resources, with chapters.", resources,userId);
     }
 
     return result;

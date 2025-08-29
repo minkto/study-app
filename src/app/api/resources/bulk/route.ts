@@ -1,5 +1,5 @@
-import { createResourcesAndChapters } from "@/services/resourceService";
-import { Chapter, Resource } from "@/shared.types";
+import { bulkCreateResourcesAndChapters } from "@/services/resourceService";
+import { CreateBulkResourceDto } from "@/shared.types";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -14,22 +14,25 @@ export async function POST(request: Request) {
 
         const res = await request.json();
 
-        const resource: Resource =
+        const resources: CreateBulkResourceDto =
         {
-            name: res["resource"],
             userId: res["userId"],
+            resources: res["resources"]
         }
 
-        const chapters: Chapter[] = res["chapters"];
+        if (!resources.resources || !resources.userId) {
+            return NextResponse.json({ message: "No resources have been added to the payload." },
+                { status: 400 });
+        }
 
-        const result = await createResourcesAndChapters(resource, chapters);
+        const result = await bulkCreateResourcesAndChapters(resources.resources,resources.userId);
 
         if (!result) {
             return NextResponse.json({ message: "An issue has occured with creating the resources and chapters." },
                 { status: 500 });
         }
 
-        return NextResponse.json({success: result}, { status: 200 });
+        return NextResponse.json({ success: result }, { status: 200 });
 
     } catch (error) {
         console.log("An issue has occured with creating the resources and chapters.", error);
