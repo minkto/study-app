@@ -4,7 +4,7 @@ import { useState } from "react";
 import AIChatWindow from "../ai-chat-window/AIChatWindow";
 import AISearchBar from "../ai-search-bar/AISearchBar";
 import styles from "./ai-chat-container.module.css";
-import { AIChatMessages, AIChatApiResponse } from "@/shared.types";
+import { AIChatMessages, AIChatApiResponse, AIChatMessage } from "@/shared.types";
 
 const AIChatContainer = () => {
 
@@ -12,7 +12,7 @@ const AIChatContainer = () => {
     const [chatMessages, setChatMessages] = useState<AIChatMessages>({ messages: [] });
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    async function getResourcesFromOpenAI(prompt: string): Promise<AIChatApiResponse> {
+    async function getResourcesFromAIChatService(prompt: string): Promise<AIChatApiResponse> {
         try {
             const response = await fetch(`/api/ai/chat`, {
                 method: 'POST',
@@ -37,24 +37,52 @@ const AIChatContainer = () => {
         const inputValue = text?.trim() || "";
 
         if (inputValue !== "") {
-            addRequestMessage(inputValue);
+            addChatMessages(inputValue);
         }
     };
 
-    const addRequestMessage = async (text: string) => {
+
+    const addResponseMessage = async (message: AIChatMessage) => {
+        setChatMessages(prev => ({
+            ...prev,
+            messages: [
+                ...prev.messages,
+                {
+                    requestMessage: message.requestMessage,
+                    responseMessage: message.responseMessage,
+                    responseObject: message.responseObject,
+                    showConfirmationOptions: message.showConfirmationOptions
+                }
+            ]
+        }));
+    }
+
+    const addChatMessages = async (text: string) => {
         try {
             setIsLoading(true);
             setCurrentRequestMessage(text);
 
-            const result = await getResourcesFromOpenAI(text); // waits 3 seconds
+            const result = await getResourcesFromAIChatService(text);
 
             setChatMessages(prevChatMessages => ({
                 messages: [...prevChatMessages.messages,
                 {
                     requestMessage: text,
+                },
+                {
                     responseMessage: constructResponseMessage(result),
+                },
+
+                {
                     responseObject: result
-                }]
+                },
+                {
+                    requestMessage: "",
+                    responseMessage: "Do you wish to create these resource(s)?",
+                    responseObject: result,
+                    showConfirmationOptions: true
+                }
+                ]
             }));
 
         } catch (error) {
@@ -71,18 +99,21 @@ const AIChatContainer = () => {
             return `Error: ${response.errorMessage}Please try again shortly.`;
         }
 
-        if(response.resources?.length === 0) 
-        {
+        if (response.resources?.length === 0) {
             return `No resources could be found. Try to refine your search.`
         }
 
-        return `I have found ${response.resources?.length || 0} resources for you.`;
+        return `I have found ${response.resources?.length || 0} resource${response?.resources?.length ?? 0 > 1 ? "s" : ""} for you.`;
     }
 
     return (
         <div className={styles["ai-chat-container"]}>
             <AISearchBar onSearchSubmit={handleOnSubmit} isLoading={isLoading} />
-            <AIChatWindow currentRequestMessage={currentRequestMessage} chatMessages={chatMessages} isLoading={isLoading} />
+            <AIChatWindow addChatMessage={addResponseMessage}
+
+                currentRequestMessage={currentRequestMessage}
+                chatMessages={chatMessages}
+                isLoading={isLoading} />
         </div>
     );
 }
