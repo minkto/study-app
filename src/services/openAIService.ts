@@ -4,8 +4,25 @@ import { isStringEmpty } from "@/utils/stringUtils";
 import OpenAI from "openai";
 import { zodToJsonSchema } from "openai/_vendor/zod-to-json-schema/zodToJsonSchema.mjs";
 import z from "zod";
+import fs from 'fs';
+import path from 'path';
 
-export async function getResourceFromOpenAI(prompt: string) {
+export async function getResourceFromAIService(prompt: string) {
+    if (process.env.AI_ENABLED === "true") {
+        return await getResourceFromOpenAI(prompt);
+    }
+    else {
+        return await getTestSampleResourcesFromFile();
+    }
+}
+
+
+async function getResourceFromOpenAI(prompt: string) {
+
+    if (process.env.AI_ENABLED !== "true") {
+        return null;
+    }
+
     try {
         const client = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
@@ -50,7 +67,7 @@ export async function getResourceFromOpenAI(prompt: string) {
             tools: [{ type: "web_search_preview" }],
         })
 
-        const resources = convertResourcesToJson(response.output_text) ;
+        const resources = convertResourcesToJson(response.output_text);
 
         return { resources };
     }
@@ -59,6 +76,29 @@ export async function getResourceFromOpenAI(prompt: string) {
         console.log("An error has occured within the Open AI Service: ", error);
         if (error instanceof Error) {
             throw new ExternalApiError(error.message);
+        }
+    }
+}
+
+/**
+ * Used to test a typical resource response from an AI model. This ensures local testing
+ * and will not consume unecessary credits.
+ * @returns A JSON object of resources.
+ */
+async function getTestSampleResourcesFromFile() {
+    if (!process?.env?.AI_LOCAL_RESOURCE_PATH) {
+        return null;
+    }
+
+    try {
+        const filePath = path.join(process.cwd(), process?.env?.AI_LOCAL_RESOURCE_PATH);
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        const resources = convertResourcesToJson(fileContents);
+
+        return { resources };
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(`Failed to read resource file: ${error.message}`);
         }
     }
 }
