@@ -65,6 +65,41 @@
   margin-top: 0.5em;
 }
 
+.ai-chat-window-resources-options {
+  animation: fadeIn 0.3s ease-in-out;
+  background-color: #ECFFB1;
+  border-radius: 5px;
+  margin: 0.5em 1em;
+  padding: 0.5em;
+  max-width: 300px;
+}
+
+.ai-chat-window-response-options
+{
+  display: flex;
+  flex-direction: row;
+  gap: 1em;  
+  align-items: center;
+}
+
+.ai-chat-window-response-options button
+{
+  max-width: 100px;
+  background-color: blueviolet;
+  color: white;
+  font-weight: 600;
+  flex: 1;
+}
+
+
+.ai-chat-window-response-options button:hover,
+.ai-chat-window-response-options button:active,
+.ai-chat-window-response-options button:focus
+{
+    background-color: rgb(170, 126, 211);
+}
+
+
 
 .ai-chat-window-messages__loader {
   display: flex;

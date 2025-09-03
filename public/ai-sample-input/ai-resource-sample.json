@@ -1,0 +1,78 @@
+{
+    "resources": [
+        {
+            "name": "Domestic Plumbing Course - Trades Academy",
+            "chapters": [
+                "Health and safety",
+                "Installing central heating",
+                "Cold & hot water installation",
+                "Rainwater recyclable systems",
+                "Sanitation system",
+                "Environmental system",
+                "Maintenance and service of systems / components",
+                "Use of Tools",
+                "Site preparation",
+                "BPEC Water Regulations"
+            ],
+            "source": "https://tradesacademy.uk/plumbing-course.html"
+        },
+        {
+            "name": "Online Plumbing Course Level 1 & Level 2 - Training Express",
+            "chapters": [
+                "Plumbing 101",
+                "Water supply and heating systems",
+                "Basic and advanced plumbing tools",
+                "The entire plumbing process",
+                "Domestic hot and cold water systems",
+                "Central heating",
+                "Rainwater system installation",
+                "Key sanitation repairs",
+                "UK Plumbing Standards",
+                "Real-life case study project"
+            ],
+            "source": "https://trainingexpress.org.uk/course/online-plumbing-course/"
+        },
+        {
+            "name": "UK Standard Domestic Plumbing and Heating Installer Training – Learning Paths",
+            "chapters": [
+                "Basic Components of Plumbing",
+                "Principles of Effective Plumbing Systems",
+                "The Plumbing Tools",
+                "The Plumbing Process",
+                "Central Heating Systems",
+                "Domestic Cold Water System",
+                "Domestic Hot Water System – Part 1",
+                "Domestic Hot Water System – Part 2",
+                "The Sanitation System and Repairs",
+                "Domestic Rainwater System Installation",
+                "Plumbing Projects: Case Study",
+                "UK Standards for Plumbing"
+            ],
+            "source": "https://learningpaths.org.uk/course/uk-standard-domestic-plumbing-and-heating-installer-training/"
+        },
+        {
+            "name": "Plumbing Level 1 - University College Birmingham",
+            "chapters": [
+                "The structure of the construction industry",
+                "Fundamental safe working practices",
+                "Environmental and sustainability measures in domestic dwellings",
+                "Site preparation for working in the construction industry",
+                "Above ground drainage",
+                "Copper pipework",
+                "Plastic pressure pipework",
+                "Low carbon steel pipework",
+                "Installing, repairing and maintaining plumbing systems",
+                "Plumbing science",
+                "Level 2 Award in Understanding Domestic Retrofit"
+            ],
+            "source": "https://www.ucb.ac.uk/study/courses/college/plumbing-level-1/"
+        },
+        {
+            "name": "Plumbing Level 3 - University College Birmingham",
+            "chapters": [
+                "To be determined"
+            ],
+            "source": "https://www.ucb.ac.uk/study/courses/college/plumbing-level-3/"
+        }
+    ]
+}

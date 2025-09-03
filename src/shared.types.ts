@@ -95,9 +95,10 @@ export interface ChapterFormErrors
 
 export interface AIChatMessage
 {
-    requestMessage: string;
-    responseMessage: string;
+    requestMessage?: string;
+    responseMessage?: string;
     responseObject?: AIChatApiResponse;
+    showConfirmationOptions?: boolean;
 } 
 
 export interface AIChatMessages

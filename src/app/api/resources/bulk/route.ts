@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
         const resources: CreateBulkResourceDto =
         {
-            userId: res["userId"],
+            userId: userId,
             resources: res["resources"]
         }
 

@@ -1,4 +1,4 @@
-import { getResourceFromOpenAI, validateOpenAIPromptValue } from "@/services/openAIService";
+import { getResourceFromAIService, validateOpenAIPromptValue } from "@/services/openAIService";
 import { createApiErrorResponse } from "@/utils/errors";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const response = await getResourceFromOpenAI(body.prompt);
+        const response = await getResourceFromAIService(trimmedPrompt);
 
         return NextResponse.json(response, { status: 200 });
 
