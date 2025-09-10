@@ -41,6 +41,9 @@ export default async function Page() {
                         subHeading='Completed This Month' />
                 </div>
                 <div className={styles["sa-col-1"]}>
+                    <DashboardCounterCard title='Chapters'
+                        count={summary.chaptersInProgress} 
+                        subHeading='In Progress'/>
                 </div>
             </div>
             <div className={styles["dashboard-statistics-row"]}>

@@ -123,4 +123,5 @@ export interface ChaptersSummary
 {
     chaptersCompletedToday : number;
     chaptersCompletedCurrentMonth : number;
+    chaptersInProgress : number;
 }
