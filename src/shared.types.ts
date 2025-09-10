@@ -122,4 +122,5 @@ export interface AIChatResourceModel
 export interface ChaptersSummary 
 {
     chaptersCompletedToday : number;
+    chaptersCompletedCurrentMonth : number;
 }

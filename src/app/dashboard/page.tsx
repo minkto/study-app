@@ -36,6 +36,9 @@ export default async function Page() {
                         subHeading='Completed Today' />
                 </div>
                 <div className={styles["sa-col-1"]}>
+                    <DashboardCounterCard title='Total Chapters Reviewed'
+                        count={summary.chaptersCompletedCurrentMonth}
+                        subHeading='Completed This Month' />
                 </div>
                 <div className={styles["sa-col-1"]}>
                 </div>
