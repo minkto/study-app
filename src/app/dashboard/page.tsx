@@ -1,28 +1,20 @@
+import DashboardCounterCard from '@/components/dashboard/dashboard-counter-card/DashboardCounterCard'
 import styles from './page.module.css'
+import { getChaptersSummary } from '@/services/dashboardStatisticsService';
+import { auth } from '@clerk/nextjs/server';
+import { isStringEmpty } from '@/utils/stringUtils';
 
-export default function Page() {
-
-    const renderSmallCard = (text: string) => {
-        return <div className={`${styles[text]}`}>
-            <div className={`${styles["dashboard-statistics-sm-card"]} ${text}`}>
-                <div className={styles["dashboard-statistics-sm-card__title"]}>
-                    <h4>Total Chapters Reviewed</h4>
-                </div>
-                <div className={styles["dashboard-statistics-sm-card__count"]}>
-                    <h2>0</h2>
-                </div>
-                <div className={styles["dashboard-statistics-sm-card__sub-heading"]}>
-                    <h4>Completed Today</h4>
-                </div>
-            </div>
-        </div>
-
+export default async function Page() {
+    const { userId, redirectToSignIn } = await auth();
+    if (isStringEmpty(userId)) {
+        redirectToSignIn();
     }
 
+    const summary = await getChaptersSummary(userId);
 
     const renderMediumCard = (text: string) => {
         return <div className={styles[`${text}`]}>
-             <div className={styles[`dashboard-statistics-md-card`]}>
+            <div className={styles[`dashboard-statistics-md-card`]}>
                 <div className={styles["dashboard-statistics-md-card__title"]}>Total Chapters Reviewed</div>
                 <div className={styles["dashboard-statistics-md-card__count"]}>
                     <h2>0</h2>
@@ -38,9 +30,15 @@ export default function Page() {
                 <h2>Home</h2>
             </div>
             <div className={styles["dashboard-statistics-row"]}>
-                {renderSmallCard("sa-col-1")}
-                {renderSmallCard("sa-col-1")}
-                {renderSmallCard("sa-col-1")}
+                <div className={styles["sa-col-1"]}>
+                    <DashboardCounterCard title='Total Chapters Reviewed'
+                        count={summary.chaptersCompletedToday}
+                        subHeading='Completed Today' />
+                </div>
+                <div className={styles["sa-col-1"]}>
+                </div>
+                <div className={styles["sa-col-1"]}>
+                </div>
             </div>
             <div className={styles["dashboard-statistics-row"]}>
                 {renderMediumCard("sa-col-2")}

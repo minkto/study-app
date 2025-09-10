@@ -118,3 +118,8 @@ export interface AIChatResourceModel
     chapters?: string[];
     source?: string;
 }
+
+export interface ChaptersSummary 
+{
+    chaptersCompletedToday : number;
+}
