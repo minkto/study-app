@@ -124,4 +124,10 @@ export interface ChaptersSummary
     chaptersCompletedToday : number;
     chaptersCompletedCurrentMonth : number;
     chaptersInProgress : number;
+    latestResourcesProgress : ProgressItem[];
+}
+
+export interface ProgressItem {
+    name: string;
+    percentage: number;
 }

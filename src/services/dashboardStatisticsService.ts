@@ -1,3 +1,4 @@
+import { getLatestResourcesPercentagesReviewed } from "@/db/reports/getLatestResourcesPercentagesReviewed";
 import { getTotalChaptersInProgress } from "@/db/reports/getTotalChaptersInProgress";
 import { getTotalChaptersReviewedCurrentMonth } from "@/db/reports/getTotalChaptersReviewedCurrentMonth";
 import { getTotalChaptersReviewedToday } from "@/db/reports/getTotalChaptersReviewedToday";
@@ -8,19 +9,22 @@ export const getChaptersSummary = async (userId: string | null): Promise<Chapter
         return {
             chaptersCompletedToday: 0,
             chaptersCompletedCurrentMonth: 0,
-            chaptersInProgress: 0
+            chaptersInProgress: 0,
+            latestResourcesProgress: []
         }
     }
 
-    const [today, currentMonth,inProgress] = await Promise.all([
+    const [today, currentMonth,inProgress,latestResourcesProgress] = await Promise.all([
         getTotalChaptersReviewedToday(userId),
         getTotalChaptersReviewedCurrentMonth(userId),
-        getTotalChaptersInProgress(userId)
+        getTotalChaptersInProgress(userId),
+        getLatestResourcesPercentagesReviewed(userId)
     ]);
 
     return {
         chaptersCompletedToday: today ?? 0,
         chaptersCompletedCurrentMonth: currentMonth ?? 0,
-        chaptersInProgress: inProgress ?? 0
+        chaptersInProgress: inProgress ?? 0,
+        latestResourcesProgress : latestResourcesProgress ?? []
     };
 }
