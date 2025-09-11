@@ -3,6 +3,7 @@ import styles from './page.module.css'
 import { getChaptersSummary } from '@/services/dashboardStatisticsService';
 import { auth } from '@clerk/nextjs/server';
 import { isStringEmpty } from '@/utils/stringUtils';
+import DashboardProgressCard from '@/components/dashboard/dashboard-progress-card/DashboardProgressCard';
 
 export default async function Page() {
     const { userId, redirectToSignIn } = await auth();
@@ -42,12 +43,14 @@ export default async function Page() {
                 </div>
                 <div className={styles["sa-col-1"]}>
                     <DashboardCounterCard title='Chapters'
-                        count={summary.chaptersInProgress} 
-                        subHeading='In Progress'/>
+                        count={summary.chaptersInProgress}
+                        subHeading='In Progress' />
                 </div>
             </div>
             <div className={styles["dashboard-statistics-row"]}>
-                {renderMediumCard("sa-col-2")}
+                <div className={styles["sa-col-2"]}>
+                    <DashboardProgressCard title='Latest Resources Progress Overview' items={summary.latestResourcesProgress} />
+                </div>
                 {renderMediumCard("sa-col-2")}
             </div>
             <div className={styles["dashboard-statistics-row"]}>
