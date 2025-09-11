@@ -49,7 +49,7 @@ export default async function Page() {
             </div>
             <div className={styles["dashboard-statistics-row"]}>
                 <div className={styles["sa-col-2"]}>
-                    <DashboardProgressCard title='Resources Progress Overview' items={summary.latestResourcesProgress} />
+                    <DashboardProgressCard title='Latest Resources Progress Overview' items={summary.latestResourcesProgress} />
                 </div>
                 {renderMediumCard("sa-col-2")}
             </div>
