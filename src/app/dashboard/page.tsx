@@ -49,13 +49,34 @@ export default async function Page() {
             </div>
             <div className={styles["dashboard-statistics-row"]}>
                 <div className={styles["sa-col-2"]}>
-                    <DashboardProgressCard title='Latest Resources Progress Overview' items={summary.latestResourcesProgress} />
+                    <DashboardProgressCard title='Latest Resources' 
+                    items={summary.latestResourcesProgress}
+                    subTitle='Progress Overview'
+                    postfixLabel='%' />
                 </div>
-                {renderMediumCard("sa-col-2")}
+                <div className={styles["sa-col-2"]}>
+                    <DashboardProgressCard title='Top 4 Categories' 
+                    subTitle='Current Month'
+                    items={summary.chaptersCompletedCurrentMonthByCategory}
+                     postfixLabel=' Chapters'
+                     alternativeColors={true}  />
+                </div>
             </div>
             <div className={styles["dashboard-statistics-row"]}>
-                {renderMediumCard("sa-col-2")}
-                {renderMediumCard("sa-col-2")}
+                <div className={styles["sa-col-2"]}>
+                    <DashboardProgressCard title='Top 4 Categories' 
+                    subTitle='Current Month'
+                    items={summary.chaptersCompletedCurrentMonthByCategory}
+                     postfixLabel=' Chapters'
+                     alternativeColors={true}  />
+                </div>
+                <div className={styles["sa-col-2"]}>
+                    <DashboardProgressCard title='Top 4 Categories' 
+                    subTitle='Current Month'
+                    items={summary.chaptersCompletedCurrentMonthByCategory}
+                     postfixLabel=' Chapters'
+                     alternativeColors={true}  />
+                </div>
             </div>
         </div>);
 }

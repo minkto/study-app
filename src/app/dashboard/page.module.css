@@ -14,9 +14,11 @@
 }
 
 .sa-col-1 {
+    margin-top: 1em;
     flex-grow: 1;
 }
 
 .sa-col-2 {
+    margin-top: 1em;
     flex-grow: 2;
 }
