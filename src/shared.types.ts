@@ -123,11 +123,12 @@ export interface ChaptersSummary
 {
     chaptersCompletedToday : number;
     chaptersCompletedCurrentMonth : number;
+    chaptersCompletedCurrentMonthByCategory : ProgressItem[];
     chaptersInProgress : number;
     latestResourcesProgress : ProgressItem[];
 }
 
 export interface ProgressItem {
     name: string;
-    percentage: number;
+    numberValue : number;
 }

@@ -20,7 +20,7 @@ export const getLatestResourcesPercentagesReviewed = async (userId: string) => {
         const resources = result.map(r => {
             return {
                 name: r.name,
-                percentage: r.chapters_percentage_completed
+                numberValue: r.chapters_percentage_completed
             }
         });
 

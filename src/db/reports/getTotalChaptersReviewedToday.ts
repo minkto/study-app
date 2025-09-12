@@ -6,7 +6,7 @@ export const getTotalChaptersReviewedToday = async (userId: string): Promise<num
             `SELECT
 		        COUNT(CASE 
 				WHEN c.last_date_completed IS NOT NULL 
-                    AND c.original_date_completed::date = (CURRENT_DATE AT TIME ZONE 'UTC')::date
+                    AND c.last_date_completed::date = (NOW() AT TIME ZONE 'UTC')::date
 					THEN 1 
 					ELSE NULL 
 				END) chapters_completed_today
