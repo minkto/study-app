@@ -4,6 +4,7 @@ import { getChaptersSummary } from '@/services/dashboardStatisticsService';
 import { auth } from '@clerk/nextjs/server';
 import { isStringEmpty } from '@/utils/stringUtils';
 import DashboardProgressCard from '@/components/dashboard/dashboard-progress-card/DashboardProgressCard';
+import DashboardListCard from '@/components/dashboard/dashboard-list-card/DashboardListCard';
 
 export default async function Page() {
     const { userId, redirectToSignIn } = await auth();
@@ -12,18 +13,6 @@ export default async function Page() {
     }
 
     const summary = await getChaptersSummary(userId);
-
-    const renderMediumCard = (text: string) => {
-        return <div className={styles[`${text}`]}>
-            <div className={styles[`dashboard-statistics-md-card`]}>
-                <div className={styles["dashboard-statistics-md-card__title"]}>Total Chapters Reviewed</div>
-                <div className={styles["dashboard-statistics-md-card__count"]}>
-                    <h2>0</h2>
-                </div>
-                <div className={styles["dashboard-statistics-md-card__sub-heading"]}>Completed This Month</div>
-            </div>
-        </div>
-    }
 
     return (
         <div className={styles["dashboard-statistics"]}>
@@ -64,11 +53,10 @@ export default async function Page() {
             </div>
             <div className={styles["dashboard-statistics-row"]}>
                 <div className={styles["sa-col-2"]}>
-                    <DashboardProgressCard title='Top 4 Categories' 
-                    subTitle='Current Month'
-                    items={summary.chaptersCompletedCurrentMonthByCategory}
-                     postfixLabel=' Chapters'
-                     alternativeColors={true}  />
+                    <DashboardListCard title='Chapters With Review Dates Due' 
+                    subTitle='Longest Review Date'
+                    items={summary.chaptersWithLongestReviewDates}
+                     postfixLabel=' Days' />
                 </div>
                 <div className={styles["sa-col-2"]}>
                     <DashboardProgressCard title='Top 4 Categories' 
