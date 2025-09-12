@@ -82,6 +82,21 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
 
     const renderDateFields = (): ReactElement => {
 
+        /**
+         * Setup the local date, to be able to be converted from local time to UTC.
+         * @param selectedDate 
+         * @returns returns a date in which the time should be in UTC format instead of local.
+         */
+        const setupOnChangeForUtc = (selectedDate: Date | null): Date | null => {
+            if (selectedDate !== null) {
+                const midnightUTC = new Date(selectedDate);
+                midnightUTC.setUTCHours(0, 0, 0, 0);
+                return midnightUTC;
+            }
+
+            return null;
+        }
+
         const statusValue = Number(formData?.statusId);
 
         if (statusValue === ChapterStatuses.COMPLETED) {
@@ -96,7 +111,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                         dateFormat="dd/MM/yyyy"
                         onChange={(date) => {
                             if (date) {
-                                setOriginalDateCompleted(startOfDay(date));
+                                setOriginalDateCompleted(setupOnChangeForUtc(date));
                             }
                         }} />
 
@@ -113,7 +128,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                         dateFormat="dd/MM/yyyy"
                         onChange={(date) => {
                             if (date) {
-                                setLastDateCompleted(startOfDay(date));
+                                setLastDateCompleted(setupOnChangeForUtc(date));
                             }
                         }} />
 
