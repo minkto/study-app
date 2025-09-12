@@ -1,3 +1,4 @@
+import { getChaptersWithLongestReviewDates } from "@/db/reports/getChaptersWithLongestReviewDates";
 import { getLatestResourcesPercentagesReviewed } from "@/db/reports/getLatestResourcesPercentagesReviewed";
 import { getTotalChaptersCompleteInMonthByCategory } from "@/db/reports/getTotalChaptersCompleteInMonthByCategory";
 import { getTotalChaptersInProgress } from "@/db/reports/getTotalChaptersInProgress";
@@ -12,16 +13,20 @@ export const getChaptersSummary = async (userId: string | null): Promise<Chapter
             chaptersCompletedCurrentMonth: 0,
             chaptersInProgress: 0,
             latestResourcesProgress: [],
-            chaptersCompletedCurrentMonthByCategory : []
+            chaptersCompletedCurrentMonthByCategory : [],
+            chaptersWithLongestReviewDates : []
         }
     }
 
-    const [today, currentMonth,inProgress,latestResourcesProgress,chaptersCompletedCurrentMonthByCategory] = await Promise.all([
+    const [today, currentMonth,inProgress,latestResourcesProgress,chaptersCompletedCurrentMonthByCategory,
+        chaptersWithLongestReviewDates
+    ] = await Promise.all([
         getTotalChaptersReviewedToday(userId),
         getTotalChaptersReviewedCurrentMonth(userId),
         getTotalChaptersInProgress(userId),
         getLatestResourcesPercentagesReviewed(userId),
-        getTotalChaptersCompleteInMonthByCategory(userId)
+        getTotalChaptersCompleteInMonthByCategory(userId),
+        getChaptersWithLongestReviewDates(userId)
     ]);
 
     return {
@@ -30,5 +35,6 @@ export const getChaptersSummary = async (userId: string | null): Promise<Chapter
         chaptersCompletedCurrentMonthByCategory : chaptersCompletedCurrentMonthByCategory ?? [],
         chaptersInProgress: inProgress ?? 0,
         latestResourcesProgress : latestResourcesProgress ?? [],
+        chaptersWithLongestReviewDates : chaptersWithLongestReviewDates?? []
     };
 }
