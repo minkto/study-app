@@ -126,9 +126,16 @@ export interface ChaptersSummary
     chaptersCompletedCurrentMonthByCategory : ProgressItem[];
     chaptersInProgress : number;
     latestResourcesProgress : ProgressItem[];
+    chaptersWithLongestReviewDates : ListItem[];
 }
 
 export interface ProgressItem {
     name: string;
     numberValue : number;
+}
+
+export interface ListItem {
+    title: string;
+    subTitle: string;
+    value : string;
 }
