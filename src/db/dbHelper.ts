@@ -15,7 +15,6 @@ export async function queryData(text: string, params?: any[]) {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function queryWithTranscation(dbQueryCollection: DbQuery[]) :Promise<boolean>
 {
     const client = await pool.connect();

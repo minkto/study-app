@@ -1,6 +1,6 @@
 import { queryDataSingleRow } from "../dbHelper";
 
-export default async function resourceWithUserExists(resourceId: number, userId: string | null): Promise<Boolean> {
+export default async function resourceWithUserExists(resourceId: number, userId: string | null): Promise<boolean> {
 
     try {
         const query = "SELECT r.name FROM resources r WHERE r.resource_id = $1 AND r.user_id = $2 LIMIT 1";
