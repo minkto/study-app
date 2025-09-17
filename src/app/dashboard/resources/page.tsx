@@ -3,7 +3,7 @@
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 import ResourceListings from '@/components/resource-listings/ResourceListings';
 
-const Page = () => {
+export default function Page() {
 
     return (
         <div>
@@ -13,5 +13,3 @@ const Page = () => {
             </DashboardWidget>
         </div>)
 }
-
-export default Page;
