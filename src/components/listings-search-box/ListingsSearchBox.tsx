@@ -30,6 +30,14 @@ export const ListingsSearchBox = ({ onSearchSubmit,handleBeforeOnSearchSubmit }:
 
   const handleOnSubmitSearch = () => {
 
+    const currentSearchParams = new URLSearchParams(searchParams?.toString());
+    const currentSearchTerm = currentSearchParams.get('search-term') ?? '';
+
+    if (currentSearchTerm?.localeCompare(currentText, undefined, { sensitivity: 'accent' }) === 0) {
+      return;
+    }
+
+
     if(handleBeforeOnSearchSubmit)
     {
       handleBeforeOnSearchSubmit();
