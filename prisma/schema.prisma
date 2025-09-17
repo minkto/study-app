@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Statuses {
+  status_id Int        @id @unique
+  name      String
+  chapter   Chapters[]
+
+  @@map("statuses")
+}
+
+model Categories {
+  category_id Int         @id @default(autoincrement())
+  name        String
+  resource    Resources[]
+
+  @@map("categories")
+}
+
+model Resources {
+  resource_id  Int         @id @default(autoincrement())
+  user_id      String
+  name         String
+  description  String?
+  category_id  Int?
+  categories   Categories? @relation(fields: [category_id], references: [category_id])
+  date_created DateTime    @default(now())
+  chapters     Chapters[]
+
+  @@map("resources")
+}
+
+model Chapters {
+  chapter_id              Int       @id @default(autoincrement())
+  resource_id             Int
+  status_id               Int?
+  name                    String
+  url                     String?   @db.VarChar(800)
+  original_date_completed DateTime?
+  last_date_completed     DateTime?
+  resource                Resources @relation(fields: [resource_id], references: [resource_id])
+  status                  Statuses? @relation(fields: [status_id], references: [status_id])
+
+  @@map("chapters")
+}
