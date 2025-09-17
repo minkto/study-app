@@ -14,7 +14,7 @@ const DashboardModalPortal = ({ children, selector = "#dashboard-modal-portal", 
         return () => {
             // Cleanup if needed
         };
-    }, []);
+    }, [selector]);
 
     if (show && portalNode) {
         return createPortal(children, portalNode);
