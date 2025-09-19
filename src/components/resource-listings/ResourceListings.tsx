@@ -1,7 +1,7 @@
 import { GetResourceDto } from '@/shared.types';
 import ResourceListingsCard from '../resource-listings-card/ResourceListingsCard';
 import styles from './resource-listings.module.css'
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { createColumnHelper, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import ListingsSearchBar from '../listings-search-bar/ListingsSearchBar';
 import Link from 'next/link';

@@ -126,10 +126,8 @@ const mapStatusFilter = (value: string | undefined): string => {
         case "Completed":
             return "2";
         default:
-            "";
+            return "";
     }
-
-    return "";
 }
 
 const daysSinceLastCompletedFilter = (value: string | undefined): string => {
@@ -145,8 +143,6 @@ const daysSinceLastCompletedFilter = (value: string | undefined): string => {
         case "Greater Than 30 Days":
             return "CURRENT_DATE  - last_date_completed :: date > 30";
         default:
-            "";
+            return "";
     }
-
-    return "";
 }

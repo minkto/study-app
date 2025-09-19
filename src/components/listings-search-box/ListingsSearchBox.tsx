@@ -94,6 +94,7 @@ export const ListingsSearchBox = ({ onSearchSubmit,handleBeforeOnSearchSubmit }:
         type="text"
       />
       <button
+        disabled={isPending}
         onClick={handleOnSubmitSearch}
         className={styles['search-box-listing__submit-btn']}
       >

@@ -64,7 +64,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     const columnHelper = createColumnHelper<Chapter>();
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
-    const { isVisible: deleteModalVisible, toggle: handleModalVisibility, show, hide } = useModalVisibility();
+    const { isVisible: deleteModalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
     const { constructQueryString, redirectWithQueryParams, searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams(process.env.CHAPTERS_MAX_PAGE_SIZE);
 
     const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS, FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];

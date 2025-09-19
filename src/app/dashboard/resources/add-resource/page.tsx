@@ -2,9 +2,7 @@
 import ResourceForm from '@/components/resource-form/ResourceForm';
 import { FormState } from '@/constants/constants';
 
-const Page = () => {
+export default function Page() {
 
     return (<ResourceForm state={FormState.ADD} />)
 }
-
-export default Page;

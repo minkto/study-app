@@ -1,6 +1,7 @@
-import { PrismaClient, Prisma } from "../src/generated/prisma/client";
+import { Prisma,PrismaClient } from "../src/generated/prisma/client";
 
 const prisma = new PrismaClient();
+
 const statusData: Prisma.StatusesCreateInput[] = [
     { status_id: 0, name: 'Not Started' },
     { status_id: 1, name: 'In Progress' },

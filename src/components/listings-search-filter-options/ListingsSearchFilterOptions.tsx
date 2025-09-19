@@ -174,7 +174,7 @@ export const ListingsSearchFilterOptions = ({ filterGroups, filterQueryKeys, onF
             </div>
         }
 
-        <button onClick={toggleFiltersMenuOption} className={styles["search-filter-options__btn"]}><IconFilter className={"icon-wrapper"} width={20} height={20} />Filter By</button>
+        <button disabled={isPending} onClick={toggleFiltersMenuOption} className={styles["search-filter-options__btn"]}><IconFilter className={"icon-wrapper"} width={20} height={20} />Filter By</button>
     </div>)
 }
 

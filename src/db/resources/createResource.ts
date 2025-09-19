@@ -31,8 +31,8 @@ export async function createResource(resource: Resource) {
 
 export async function bulkCreateResourcesWithChapters(resources: Resource[], userId: string): Promise<boolean> {
 
+    const queries: DbQuery[] = [];
     let result = false;
-    let queries: DbQuery[] = [];
 
     for (const resource of resources) {
         resource.userId = userId;

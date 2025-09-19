@@ -2,16 +2,17 @@
 
 import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
 import ResourceListings from '@/components/resource-listings/ResourceListings';
+import { Suspense } from 'react';
 
-const Page = () => {
+export default function Page() {
 
     return (
-        <div>
-            <h1>Resources Page</h1>
-            <DashboardWidget title="Resources">
-                <ResourceListings />
-            </DashboardWidget>
-        </div>)
+        <Suspense fallback={<>...</>}>
+            <div>
+                <h1>Resources Page</h1>
+                <DashboardWidget title="Resources">
+                    <ResourceListings />
+                </DashboardWidget>
+            </div>
+        </Suspense>)
 }
-
-export default Page;

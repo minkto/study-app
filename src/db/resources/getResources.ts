@@ -95,13 +95,11 @@ export const calculatePageCount = async (
     listingSearchQuery: ListingSearchQuery | undefined) => {
 
     const pageCount = Number(process.env.RESOURCES_MAX_PAGE_SIZE ?? ListingPageSizes.RESOURCES);
-
+    const countQueryParams = [];
 
     let countQuery = `SELECT COUNT(*) 
                     FROM resources r
                     LEFT JOIN categories c ON r.category_id = c.category_id`;
-
-    let countQueryParams = [];
 
 
     countQuery += buildFilterQuery(listingSearchQuery);

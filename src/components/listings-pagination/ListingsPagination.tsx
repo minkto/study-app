@@ -1,12 +1,12 @@
 import { Table } from '@tanstack/react-table'
 import styles from './listings-pagination.module.css'
 
-interface ListingsPaginationProps {
-    table: Table<any>;
+interface ListingsPaginationProps<TData> {
+    table: Table<TData>;
     handleBeforeButtonClick?: () => void;
 }
 
-export const ListingsPagination = ({ table, handleBeforeButtonClick }: ListingsPaginationProps) => {
+export const ListingsPagination = <TData,>({ table, handleBeforeButtonClick }: ListingsPaginationProps<TData>) => {
     const handleOnPaginationButtonClick = () => {
         if (handleBeforeButtonClick) {
             handleBeforeButtonClick();
