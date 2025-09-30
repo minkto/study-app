@@ -11,7 +11,7 @@ export async function createResource(resource: Resource) {
 
         const query =
         {
-            text: "INSERT INTO resources(name,description,category_id,user_id)VALUES($1,$2,$3,$4,$5)",
+            text: "INSERT INTO resources(name,description,category_id,user_id,is_pinned)VALUES($1,$2,$3,$4,$5)",
             values: [
                 resource["name"],
                 resource["description"],

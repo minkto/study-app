@@ -156,7 +156,7 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
                 </div>
                 <div className="form-field-wrapper centered-fields">
                     <label htmlFor='form-chapter__is-pinned'>Pinned</label>
-                    <input type="checkbox" className="form-field" id="form-chapter__is-pinned" name="isPinned" onChange={handleChange} />
+                    <input type="checkbox" className="form-field" id="form-chapter__is-pinned" name="isPinned" onChange={handleChange} checked={formData.isPinned} />
                 </div>
                 <div className="form-field-wrapper centered-fields">
                     <button disabled={buttonDisabled} className={"form-field"} type='submit'>Save</button>
