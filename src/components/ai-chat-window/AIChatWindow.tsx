@@ -43,6 +43,7 @@ const AIChatWindow = ({ addChatMessage, chatMessages, isLoading, currentRequestM
             const mappedResources = responseObject.resources.map<Resource>((r) => {
                 return {
                     name: r?.name ?? "",
+                    isPinned: false,
                     chapters: r.chapters?.map((chapter) => {
                         return {
                             name: chapter
