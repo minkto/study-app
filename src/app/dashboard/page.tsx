@@ -59,11 +59,9 @@ export default async function Page() {
                      postfixLabel=' Days' />
                 </div>
                 <div className={styles["sa-col-2"]}>
-                    <DashboardProgressCard title='Top 4 Categories' 
-                    subTitle='Current Month'
-                    items={summary.chaptersCompletedCurrentMonthByCategory}
-                     postfixLabel=' Chapters'
-                     alternativeColors={true}  />
+                    <DashboardListCard title='Pinned Resources' 
+                    subTitle='Top Pinned Resources'
+                    items={summary?.pinnedResources}/>
                 </div>
             </div>
         </div>);

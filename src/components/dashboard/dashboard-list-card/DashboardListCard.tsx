@@ -20,14 +20,14 @@ const DashboardListCard = ({ title, subTitle, items, prefixLabel = "", postfixLa
         </div>
 
         <div className={styles["dashboard-list-item-list"]}>
-            {items.map((p, index) => (
+            {items?.map((p, index) => (
                 <div className={styles["dashboard-list-item"]} key={index}>
                     <div className={styles["dashboard-list-item-container"]}>
                         <div className={styles["dashboard-list-item-details"]}>
                             <p className={styles["dashboard-list-item__title"]}>{p.title}</p>
                             <p className={styles["dashboard-list-item__sub-title"]}>{p.subTitle}</p>
                         </div>
-                        <p className={styles["dashboard-list-item__value"]}>{`${prefixLabel}${p.value}${postfixLabel}`}</p>
+                        <p className={styles["dashboard-list-item__value"]}> {p.value ?  `${prefixLabel}${p.value}${postfixLabel}` : "" }</p>
                     </div>
                 </div>
             ))}

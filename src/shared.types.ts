@@ -128,6 +128,7 @@ export interface ChaptersSummary
     chaptersInProgress : number;
     latestResourcesProgress : ProgressItem[];
     chaptersWithLongestReviewDates : ListItem[];
+    pinnedResources : ListItem[];
 }
 
 export interface ProgressItem {
@@ -137,6 +138,6 @@ export interface ProgressItem {
 
 export interface ListItem {
     title: string;
-    subTitle: string;
-    value : string;
+    subTitle?: string;
+    value? : string;
 }
