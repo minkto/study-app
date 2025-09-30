@@ -39,6 +39,7 @@ model Resources {
   categories   Categories? @relation(fields: [category_id], references: [category_id])
   date_created DateTime    @default(now())
   chapters     Chapters[]
+  is_pinned     Boolean     @default(false)
 
   @@map("resources")
 }
