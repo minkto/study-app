@@ -24,12 +24,20 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
         name: "",
         categoryId: -1,
         description: "",
+        isPinned: false
     });
 
     const router = useRouter();
 
     const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [event.target.name]: event.target.value });
+        if(event.target.type === "checkbox" && event.target instanceof HTMLInputElement)
+        {
+            setFormData({ ...formData, [event.target.name]:  event.target.checked});
+        }
+        else
+        {
+            setFormData({ ...formData, [event.target.name]: event.target.value });
+        }
     }
 
     const isFormValid = (): boolean => {
@@ -145,6 +153,10 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
                 <div className="form-field-wrapper centered-fields">
                     <label htmlFor='form-resource__description'>Description</label>
                     <textarea className="form-field" id="form-resource__description" rows={5} name="description" onChange={handleChange} value={formData?.description} />
+                </div>
+                <div className="form-field-wrapper centered-fields">
+                    <label htmlFor='form-chapter__is-pinned'>Pinned</label>
+                    <input type="checkbox" className="form-field" id="form-chapter__is-pinned" name="isPinned" onChange={handleChange} />
                 </div>
                 <div className="form-field-wrapper centered-fields">
                     <button disabled={buttonDisabled} className={"form-field"} type='submit'>Save</button>

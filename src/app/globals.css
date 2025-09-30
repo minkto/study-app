@@ -138,6 +138,14 @@ button.form-field {
   color: #FFFFFF;
 }
 
+
+.form-field-wrapper> input[type="checkbox"].form-field
+{
+    display: block;
+    width: 2em;
+    padding: 5px;
+    height: 2em;
+}
 /*******************************
 *
 * Buttons
