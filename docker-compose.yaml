@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  app:
+    image: ghcr.io/minkto/study-app:latest
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - .env
+      
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # For Linux compatibility
