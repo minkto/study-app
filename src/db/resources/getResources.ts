@@ -38,7 +38,8 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
                 name: x.name,
                 description: x.description,
                 resourceId: x.resource_id,
-                categoryName: x.category_name
+                categoryName: x.category_name,
+                isPinned: x.is_pinned
             }));
 
         return mappedResources;

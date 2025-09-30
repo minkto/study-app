@@ -60,7 +60,8 @@ export async function POST(request: Request) {
                 name: res["name"],
                 description: res["description"],
                 categoryId: res["categoryId"],
-                userId: userId
+                isPinned: res["isPinned"],
+                userId: userId,
             });
 
         return NextResponse.json(newResource, { status: 200 });
@@ -95,6 +96,7 @@ export async function PUT(request: Request) {
             name: res["name"],
             description: res["description"],
             categoryId: res["categoryId"],
+            isPinned: res["isPinned"],
             userId: userId
         };
 

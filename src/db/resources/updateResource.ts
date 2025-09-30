@@ -7,7 +7,8 @@ export async function updateResource(id: number, resource: Resource) {
         resourceId: id,
         name: resource.name,
         categoryId: resource.categoryId,
-        description: resource.description
+        description: resource.description,
+        isPinned: resource.isPinned
     }
 
     const result = await queryData(
@@ -15,13 +16,15 @@ export async function updateResource(id: number, resource: Resource) {
         SET 
             name = $2,
             description = $3,
-            category_id = $4
+            category_id = $4,
+            is_pinned = $5
         WHERE resource_id = $1`,
         [
             resourceToUpdate.resourceId,
             resourceToUpdate.name,
             resourceToUpdate.description,
-            resourceToUpdate.categoryId
+            resourceToUpdate.categoryId,
+            resourceToUpdate.isPinned
         ]);
 
     return result;

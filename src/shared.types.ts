@@ -20,6 +20,7 @@ export interface Resource {
     categoryId?: number,
     categoryName? : string
     chapters?: Chapter[]| null| undefined,
+    isPinned: boolean;
 }
 
 export interface CreateBulkResourceDto
