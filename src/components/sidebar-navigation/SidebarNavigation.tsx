@@ -77,7 +77,7 @@ export const SidebarNavigation = () => {
                             <Link onClick={closeSidebar} href={"/dashboard/ai/helper/"}><IconAISpark width={32} height={32} />AI Helper</Link>
                         </li>
                         <li className={styles["sidebar__container-menu-list-item"]}>
-                            <Link onClick={closeSidebar} href={"#"}><IconSettings width={32} height={32} />Settings</Link>
+                            <Link onClick={closeSidebar} href={"/dashboard/settings/"}><IconSettings width={32} height={32} />Settings</Link>
                         </li>
                         <li className={styles["sidebar__container-menu-list-item"]}>
                             <SignOutButton >
