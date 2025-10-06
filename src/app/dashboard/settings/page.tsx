@@ -7,9 +7,6 @@ export default async function Page() {
             <DashboardWidget title="General">
                 <p>This will be where general settings are changed.</p>
             </DashboardWidget>
-            <DashboardWidget title="Profile">
-                <p>This will be where profile specific settings are changed.</p>
-            </DashboardWidget>
             <DashboardWidget title="Category">
                 <p>This will be where user category settings are changed.</p>
             </DashboardWidget>
