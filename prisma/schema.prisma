@@ -39,7 +39,7 @@ model Resources {
   categories   Categories? @relation(fields: [category_id], references: [category_id])
   date_created DateTime    @default(now())
   chapters     Chapters[]
-  is_pinned     Boolean     @default(false)
+  is_pinned    Boolean     @default(false)
 
   @@map("resources")
 }
@@ -56,4 +56,11 @@ model Chapters {
   status                  Statuses? @relation(fields: [status_id], references: [status_id])
 
   @@map("chapters")
+}
+
+model Users {
+  user_id       Int    @id @default(autoincrement())
+  clerk_user_id String @unique
+
+  @@map("users")
 }
