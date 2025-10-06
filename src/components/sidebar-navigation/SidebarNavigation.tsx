@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from './sidebar-navigation.module.css';
 import { SignOutButton } from "@clerk/nextjs";
 import IconAISpark from "../icons/icon-ai-spark/IconAISpark";
+import IconUserProfile from "../icons/icon-user-profile/IconUserProfile";
 
 export const SidebarNavigation = () => {
     const [sidebarToggle, setSidebarToggle] = useState(false);
@@ -78,6 +79,9 @@ export const SidebarNavigation = () => {
                         </li>
                         <li className={styles["sidebar__container-menu-list-item"]}>
                             <Link onClick={closeSidebar} href={"/dashboard/settings/"}><IconSettings width={32} height={32} />Settings</Link>
+                        </li>
+                        <li className={styles["sidebar__container-menu-list-item"]}>
+                            <Link title="User Profile" onClick={closeSidebar} href={"/dashboard/settings/user-profile"}><IconUserProfile width={32} height={32} />User Profile</Link>
                         </li>
                         <li className={styles["sidebar__container-menu-list-item"]}>
                             <SignOutButton >
