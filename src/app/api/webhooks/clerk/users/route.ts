@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
-import { Webhook } from "svix"
-import type { WebhookEvent } from "@clerk/backend";
+import { NextRequest, NextResponse } from "next/server";
+import { verifyWebhook } from "@clerk/nextjs/webhooks";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
 
     // Get the webhook secret - fail fast if not configured
-    const webhookSecret = process.env.CLERK_SYNC_WEBHOOK_SECRET;
+    const webhookSecret = process.env.CLERK_WEBHOOK_SIGNING_SECRET;
 
     if (!webhookSecret) {
         console.error("CLERK_SYNC_WEBHOOK_SECRET is not configured");
@@ -15,50 +14,20 @@ export async function POST(request: Request) {
         );
     }
 
-    // Validate the secret format
-    if (!webhookSecret.startsWith("whsec_")) {
-        console.error("Invalid webhook secret format. Must start with 'whsec_'");
-        return NextResponse.json(
-            { error: "Invalid webhook secret format" },
-            { status: 500 }
-        );
-    }
-
-    // Get Svix headers
-    const svix_id = request.headers.get("svix-id") ?? "";
-    const svix_timestamp = request.headers.get("svix-timestamp") ?? "";
-    const svix_signature = request.headers.get("svix-signature") ?? "";
-
-    // Check if headers are present
-    if (!svix_id || !svix_timestamp || !svix_signature) {
-        return NextResponse.json(
-            { error: "Missing svix headers" },
-            { status: 400 }
-        );
-    }
-    const body = await request.text();
-
-    const svix = new Webhook(webhookSecret);
-
-    let webhookEvent: WebhookEvent ;
-
     try {
-        webhookEvent = svix.verify(body, {
-            "svix-id": svix_id,
-            "svix-timestamp": svix_timestamp,
-            "svix-signature": svix_signature
-        })as WebhookEvent;
+        const webhookEvent = await verifyWebhook(request, { signingSecret: webhookSecret });
+        if (webhookEvent.type === 'user.created') {
+            //TODO: Sync up the users.
+            console.log("Webhook event: ", webhookEvent);
+            console.log("Syncing - user id: ", webhookEvent?.data?.id);
+            console.log("Http Request: ", request);
+
+            return NextResponse.json({ success: true }, { status: 200 })
+        }
 
     } catch (err) {
         return NextResponse.json({ message: 'Bad Request', error: err instanceof Error ? err.message : err })
     }
 
-    console.log("Webhook event: ", webhookEvent);
-    console.log("Will sync user: ", webhookEvent?.data?.id);
-    
-    //TODO: Sync up the users.
-
-    console.log("Http Request: ", request)
-
-    return NextResponse.json({success:true},{ status: 200 })
+    return NextResponse.json({ message: 'Bad Request' }, { status: 400 })
 }
