@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Webhook } from "svix"
+import type { WebhookEvent } from "@clerk/backend";
 
 export async function POST(request: Request) {
 
@@ -39,25 +40,25 @@ export async function POST(request: Request) {
 
     const svix = new Webhook(webhookSecret);
 
-    let msg;
+    let webhookEvent: WebhookEvent ;
 
     try {
-        msg = svix.verify(body, {
+        webhookEvent = svix.verify(body, {
             "svix-id": svix_id,
             "svix-timestamp": svix_timestamp,
             "svix-signature": svix_signature
-        });
+        })as WebhookEvent;
 
     } catch (err) {
         return NextResponse.json({ message: 'Bad Request', error: err instanceof Error ? err.message : err })
     }
 
-    console.log(msg);
-    console.log("Will sync user....");
+    console.log("Webhook event: ", webhookEvent);
+    console.log("Will sync user: ", webhookEvent?.data?.id);
+    
     //TODO: Sync up the users.
 
-
-    console.log("Users Request: ", request)
+    console.log("Http Request: ", request)
 
     return NextResponse.json({success:true},{ status: 200 })
 }
