@@ -5,7 +5,7 @@ export async function POST(request: Request) {
 
     // Get the webhook secret - fail fast if not configured
     const webhookSecret = process.env.CLERK_SYNC_WEBHOOK_SECRET;
-    
+
     if (!webhookSecret) {
         console.error("CLERK_SYNC_WEBHOOK_SECRET is not configured");
         return NextResponse.json(
@@ -58,4 +58,6 @@ export async function POST(request: Request) {
 
 
     console.log("Users Request: ", request)
+
+    return NextResponse.json({success:true},{ status: 200 })
 }
