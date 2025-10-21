@@ -1,9 +1,14 @@
 import { Category } from "@/shared.types";
 import { queryData } from "../dbHelper";
 
-export async function getCategories() {
-    const queryResult = await queryData("SELECT * FROM categories");
+export async function getUserCategories(userId: string | null) {
 
+    if(!userId) 
+    {
+        throw new Error("Invalid user id for fetching user categories.");
+    }
+
+    const queryResult = await queryData("SELECT * FROM categories WHERE user_id = $1", [userId]);
     if (queryResult?.length > 0) {
         const categories = queryResult.map<Category>((x) => (
             {
@@ -11,9 +16,6 @@ export async function getCategories() {
                 name: x.name
             }
         ));
-
         return categories;
     }
-
-    return null;
 }
