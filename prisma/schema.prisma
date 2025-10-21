@@ -26,8 +26,8 @@ model Categories {
   category_id Int         @id @default(autoincrement())
   name        String
   resource    Resources[]
-  clerk_user_id String
-  users Users @relation(fields: [clerk_user_id], references: [clerk_user_id])
+  user_id String
+  users Users @relation(fields: [user_id], references: [clerk_user_id])
 
   @@map("categories")
 }
