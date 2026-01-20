@@ -4,7 +4,7 @@ import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export async function GET(_request: Request, { params }: { params: Promise<{ "resource-id": number }> }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ "resource-id": string }> }) {
     try {
         const { userId } = await auth();
 
@@ -13,7 +13,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ "re
         }
 
         const slug = (await params);
-        const resource = await getResource(slug["resource-id"], userId);
+        const resourceIdNum = Number(slug["resource-id"]);
+        const resource = await getResource(resourceIdNum, userId);
 
         if (resource === null || resource === undefined) {
             return NextResponse.json({ message: "Could not find resource." }, { status: 404 });
@@ -28,7 +29,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ "re
     }
 }
 
-export async function DELETE(_request: Request, { params }: { params: Promise<{ "resource-id": number }> }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ "resource-id": string }> }) {
     const { userId } = await auth();
     
     if (isStringEmpty(userId)) {
@@ -36,14 +37,15 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     }
 
     const slug = (await params);
-    const resourceFromDb = await getResource(slug["resource-id"], userId);
+    const resourceIdNum = Number(slug["resource-id"]);
+    const resourceFromDb = await getResource(resourceIdNum, userId);
 
     if (resourceFromDb === undefined ||
         resourceFromDb === null) {
         return NextResponse.json({ message: "No resource was found." }, { status: 404 });
     }
 
-    const result = await deleteResource(slug["resource-id"]);
+    const result = await deleteResource(resourceIdNum);
 
     return NextResponse.json(result, { status: 200 });
 }

@@ -7,7 +7,7 @@ import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export async function GET(_request: Request, { params }: { params: Promise<{ "chapter-id": number }> }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
     try {
         const { userId } = await auth();
 
@@ -16,7 +16,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ "ch
         }
 
         const slug = (await params);
-        const chapter = await getChapter(slug["chapter-id"], userId);
+        const chapterIdNum = Number(slug["chapter-id"]);
+        const chapter = await getChapter(chapterIdNum, userId);
 
         if (chapter === null || chapter === undefined) {
             return NextResponse.json({ message: "Could not find chapter." }, { status: 404 });
@@ -31,7 +32,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ "ch
     }
 }
 
-export async function PUT(request: Request, { params }: { params: Promise<{ "chapter-id": number }> }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
     try {
 
         const { userId } = await auth();
@@ -42,8 +43,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
 
         const res = await request.json();
         const slug = (await params);
-        const chapterFromDb = await getChapter(slug["chapter-id"], userId);
+        const chapterIdNum = Number(slug["chapter-id"]);
 
+        const chapterFromDb = await getChapter(chapterIdNum, userId);
+        
         if (chapterFromDb === undefined ||
             chapterFromDb === null) {
             return NextResponse.json({ message: "No Chapter was found." }, { status: 404 });
@@ -51,7 +54,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
 
         const chapter: Chapter =
         {
-            chapterId: slug["chapter-id"],
+            chapterId: chapterIdNum,
             resourceId: res["resourceId"],
             name: res["name"],
             statusId: res["statusId"],
@@ -77,7 +80,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
 }
 
 
-export async function DELETE(_request: Request, { params }: { params: Promise<{ "chapter-id": number }> }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
     try {
 
         const { userId } = await auth();
@@ -87,15 +90,16 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
         }
 
         const slug = (await params);
+        const chapterIdNum = Number(slug["chapter-id"]);
 
-        const chapterFromDb = await getChapter(slug["chapter-id"], userId);
+        const chapterFromDb = await getChapter(chapterIdNum, userId);
 
         if (chapterFromDb === undefined ||
             chapterFromDb === null) {
             return NextResponse.json({ message: "No Chapter was found." }, { status: 404 });
         }
 
-        const result = await deleteChapter(slug["chapter-id"]);
+        const result = await deleteChapter(chapterIdNum);
 
         return NextResponse.json(result, { status: 200 });
 
