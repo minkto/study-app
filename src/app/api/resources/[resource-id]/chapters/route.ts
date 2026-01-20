@@ -5,9 +5,10 @@ import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ "resource-id": number }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ "resource-id": string }> }) {
     try {
         const slug = (await params);
+        const resourceIdNum = Number(slug["resource-id"]);
         const searchParams = request.nextUrl.searchParams;
 
         const { userId } = await auth();
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             userId: userId
         };
 
-        const chapters = await getChaptersByResource(slug["resource-id"], listingSearchQuery);
+        const chapters = await getChaptersByResource(resourceIdNum, listingSearchQuery);
         if (chapters === null || chapters === undefined) {
             return NextResponse.json({ message: "Could not find chapters with resource id.", chapters: [], chaptersCount: 0 }, { status: 404 });
         }
