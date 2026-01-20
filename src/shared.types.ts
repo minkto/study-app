@@ -30,6 +30,21 @@ export interface CreateBulkResourceDto
 }
 
 
+export interface User
+{
+    userId: number;
+    clerkUserId: string;
+} 
+
+export interface UserSettings
+{
+    userSettingsId?: number;
+    userId?: number;
+    aiHelperCredits?: number;
+    globalChapterDaysBeforeReviewDue?: number;
+} 
+
+
 export interface Chapter {
     chapterId?: number,
     resourceId?: number,

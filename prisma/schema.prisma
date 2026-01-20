@@ -26,8 +26,8 @@ model Categories {
   category_id Int         @id @default(autoincrement())
   name        String
   resource    Resources[]
-  user_id String
-  users Users @relation(fields: [user_id], references: [clerk_user_id])
+  user_id     String
+  users       Users       @relation(fields: [user_id], references: [clerk_user_id])
 
   @@map("categories")
 }
@@ -61,9 +61,20 @@ model Chapters {
 }
 
 model Users {
-  user_id       Int    @id @default(autoincrement())
-  clerk_user_id String @unique
+  user_id       Int           @id @default(autoincrement())
+  clerk_user_id String        @unique
   categories    Categories[]
+  user_settings UserSettings?
 
   @@map("users")
+}
+
+model UserSettings {
+  user_setting_id                       Int   @id @default(autoincrement())
+  user_id                               Int   @unique
+  user                                  Users @relation(fields: [user_id], references: [user_id])
+  ai_helper_credits                     Int   @default(0)
+  global_chapter_days_before_review_due Int   @default(30)
+
+  @@map("user_settings")
 }

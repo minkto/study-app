@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { createUserFromClerk } from "@/db/users/createUser";
+import { createUserSettings } from "@/db/users/settings/createUserSettings";
 
 export async function POST(request: NextRequest) {
 
@@ -29,12 +30,19 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleUserCreation(clerkUserId: string) {
-    const result = await createUserFromClerk(clerkUserId);
-    if (result && result > 0) {
-        console.log("Clerk User created in DB with id: ", clerkUserId);
+    const newUser = await createUserFromClerk(clerkUserId);
+    if(!newUser)
+    {
+        console.error("Failed to create User from Clerk with Clerk id: ", clerkUserId);
+        return NextResponse.json({ message: 'Failed to create user' }, { status: 500 });
+    }
+
+    const userSettingsResult = await createUserSettings({ userId: newUser?.userId });
+    if (userSettingsResult && userSettingsResult > 0) {
+        console.log("Clerk User created in DB with clerk id: ", clerkUserId);
         return NextResponse.json({ success: true }, { status: 200 })
     } else {
-        console.error("Failed to create User from Clerk with Clerk id: ", clerkUserId);
+        console.error("Failed to create User Settings with User id: ", clerkUserId);
         return NextResponse.json({ message: 'Failed to create user' }, { status: 500 });
     }
 }
