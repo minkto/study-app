@@ -39,3 +39,9 @@ export const FilterByQueryKeys =
         CATEGORY: "Category",
     }
 };
+
+export const DefaultUserSettings =
+{
+    AI_HELPER_CREDITS: 0,
+    GLOBAL_CHAPTER_DAYS_BEFORE_REVIEW_DUE: 30
+};
