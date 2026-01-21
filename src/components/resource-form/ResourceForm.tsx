@@ -156,7 +156,7 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
                 </div>
                 <div className="form-field-wrapper centered-fields">
                     <label htmlFor='form-resource__description'>Description</label>
-                    <textarea className="form-field" id="form-resource__description" rows={5} name="description" onChange={handleChange} value={formData?.description} />
+                    <textarea className="form-field" id="form-resource__description" rows={5} name="description" onChange={handleChange} value={formData?.description ?? ""} />
                 </div>
                 <div className="form-field-wrapper centered-fields">
                     <label htmlFor='form-chapter__is-pinned'>Pinned</label>
