@@ -56,12 +56,9 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
     const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // If nothing was changed on dropdown, take the first value.
-        if (categories?.length > 0 &&
-            formData.categoryId !== undefined &&
-            formData.categoryId <= -1 &&
-            categories[0]?.categoryId) {
-            formData.categoryId = categories[0]?.categoryId;
+        if (formData?.categoryId && formData.categoryId <= -1)
+        {
+            formData.categoryId = null;
         }
 
         if (!isFormValid()) {
@@ -144,10 +141,17 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
                     <select className="form-field" id='form-resource__category' name="categoryId" onChange={handleChange}
                         value={formData?.categoryId ?? -1 }
                     >
-                        {
-                            categories?.map((c: Category) =>
-                                (<option key={c.categoryId} value={c.categoryId ?? -1}>{c.name}</option>)
-                            )}
+                        <option key={-1} value={-1}>-- None --</option>
+                        {categories?.length ? (
+                        categories.map((c: Category) => (
+                            <option key={c.categoryId} value={c.categoryId ?? -1}>
+                            {c.name}
+                            </option>
+                        ))
+                        
+                        ) : (
+                        <option disabled>No categories available</option>
+                        )}
                     </select>
                 </div>
                 <div className="form-field-wrapper centered-fields">
