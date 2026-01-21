@@ -49,13 +49,13 @@ model Resources {
 model Chapters {
   chapter_id              Int       @id @default(autoincrement())
   resource_id             Int
-  status_id               Int?
+  status_id               Int @default(0)
   name                    String
   url                     String?   @db.VarChar(800)
   original_date_completed DateTime?
   last_date_completed     DateTime?
   resource                Resources @relation(fields: [resource_id], references: [resource_id])
-  status                  Statuses? @relation(fields: [status_id], references: [status_id])
+  status                  Statuses @relation(fields: [status_id], references: [status_id])
 
   @@map("chapters")
 }
