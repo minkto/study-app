@@ -2,7 +2,7 @@ export interface GetResourceDto {
     resourceId?: number,
     name: string,
     description?: string,
-    categoryId?: number,
+    categoryId?: number| null | undefined,
     categoryName? : string,
     percentageCompleted? : number;
 }

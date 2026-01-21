@@ -1,7 +1,7 @@
 import { pool } from './db';
 export interface DbQuery {
     text: string,
-    values: Array<string | number | boolean | undefined>
+    values: Array<string | number | boolean | undefined | null>
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
