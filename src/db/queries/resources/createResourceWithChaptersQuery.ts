@@ -4,8 +4,8 @@ import { Resource } from "@/shared.types";
 export function createResourceWithChaptersQuery(resource: Resource): DbQuery {
 
     const chapterValuesSql = resource?.chapters?.map((c, index) => {
-        const startingInsertTokenIndex = 5;
-        const columnCount = 5;
+        const startingInsertTokenIndex = 4;
+        const columnCount = 4;
         const baseIndex = startingInsertTokenIndex + (index * columnCount);
 
         return `($${baseIndex}, $${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${baseIndex + 4})`
@@ -20,7 +20,6 @@ export function createResourceWithChaptersQuery(resource: Resource): DbQuery {
         )
         INSERT INTO chapters(
             resource_id,
-            status_id,
             name,
             url,
             original_date_completed,
@@ -28,7 +27,6 @@ export function createResourceWithChaptersQuery(resource: Resource): DbQuery {
         )
         SELECT 
             resource_id,
-            chapter_data.status_id ::integer,
             chapter_data.name,
             chapter_data.url,
             chapter_data.original_date_completed::timestamp without time zone,
@@ -49,7 +47,6 @@ export function createResourceWithChaptersQuery(resource: Resource): DbQuery {
 
     if (resource.chapters) {
         values.push(...resource.chapters.flatMap(chap => [
-            chap.statusId,
             chap.name,
             chap.url,
             chap.originalDateCompleted?.toString(),
