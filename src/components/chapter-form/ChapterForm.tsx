@@ -230,7 +230,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
 
                     <div className="form-field-wrapper centered-fields">
                         <label htmlFor='form-chapter__url'>URL</label>
-                        <input className="form-field" id="form-chapter__url" name="url" type='text' onChange={handleChange} value={formData?.url}></input>
+                        <input className="form-field" id="form-chapter__url" name="url" type='text' onChange={handleChange} value={formData?.url ?? ""}></input>
                         {formErrors.urlError ? (<p className='form-field__error-message'>{formErrors.urlError}</p>) : null}
                     </div>
 
