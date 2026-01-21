@@ -17,7 +17,7 @@ export interface Resource {
     userId?: string | null;
     name: string,
     description?: string,
-    categoryId?: number,
+    categoryId?: number| null | undefined,
     categoryName? : string
     chapters?: Chapter[]| null| undefined,
     isPinned: boolean;
