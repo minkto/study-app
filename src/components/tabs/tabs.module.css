@@ -1,0 +1,34 @@
+.tab-headers {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    height: 50%;
+    flex-wrap: wrap;
+}
+
+button.tab-header {
+    background: none;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0.5em;
+}
+
+
+button.tab-header:hover {
+    background-color: #e1e1e1;
+    transition: all 0.5s;
+}
+
+button.tab-header.active {
+    background-color: rgb(217, 217, 217);
+}
+
+
+.tab-content {
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 0 5px 5px 5px;
+}
