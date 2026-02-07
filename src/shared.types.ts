@@ -38,7 +38,7 @@ export interface User
 
 export interface UserSettings
 {
-    userSettingsId?: number;
+    userSettingId?: number;
     userId?: number;
     aiHelperCredits?: number;
     globalChapterDaysBeforeReviewDue?: number;
