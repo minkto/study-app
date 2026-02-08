@@ -13,7 +13,7 @@ export async function getUserSettings(userId: string) {
 
                 FROM users u 
                 INNER JOIN user_settings us ON u.user_id = us.user_id 
-                WHERE us.user_id = $1 `,
+                WHERE u.clerk_user_id = $1 `,
         values: [userId]
     }
 
