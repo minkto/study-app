@@ -1,7 +1,12 @@
 import { DashboardWidget } from "@/components/dashboard/DashboardWidget";
+import SettingsForm from "@/components/settings-form/SettingsForm";
 import { Tabs } from "@/components/tabs/Tabs";
+import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Page() {
+
+    const user = await currentUser();
+
     return (
         <div>
             <DashboardWidget title="Settings">
@@ -9,7 +14,9 @@ export default async function Page() {
                     {
                         label: "General",
                         content:
-                            <p>This will be where general settings are changed.</p>
+                            <div>
+                                <SettingsForm userId={user?.id} />
+                            </div>
                     },
                     {
                         label: "Categories",
