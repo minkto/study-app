@@ -4,12 +4,13 @@ import { isStringEmpty } from "@/utils/stringUtils";
 
 export async function updateUserSettings(userId: string, userSettings: UserSettings) {
     try {
-        const query = `UPDATE user_settings
-                    SET 
-	                    ai_helper_credits  = $2 , 
-	                    global_chapter_days_before_review_due = $3
-                    WHERE 
-                    user_id = $1`
+        const query = `
+        UPDATE user_settings us
+        SET 
+            global_chapter_days_before_review_due = $2
+        FROM users u
+        WHERE  u.user_id = us.user_id	
+            AND u.clerk_user_id = $1`
 
         if (isStringEmpty(userId)) {
             throw new Error("userId is required to update UserSettings");
@@ -17,8 +18,7 @@ export async function updateUserSettings(userId: string, userSettings: UserSetti
 
         const result = await queryData(query,
             [
-                userId,
-                userSettings.aiHelperCredits ?? 0,
+                userSettings.userId,
                 userSettings.globalChapterDaysBeforeReviewDue ?? process.env.DEFAULT_DAYS_BEFORE_CHAPTER_REVIEW_DUE ?? 30
             ]);
 
