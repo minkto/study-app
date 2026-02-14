@@ -2,7 +2,7 @@ import { queryData } from "@/db/dbHelper";
 import { UserSettings } from "@/shared.types";
 import { isStringEmpty } from "@/utils/stringUtils";
 
-export async function updateUserSettings(userId: string, userSettings: UserSettings) {
+export async function updateUserSettings(userUid: string, userSettings: UserSettings) {
     try {
         const query = `
         UPDATE user_settings us
@@ -12,13 +12,13 @@ export async function updateUserSettings(userId: string, userSettings: UserSetti
         WHERE  u.user_id = us.user_id	
             AND u.clerk_user_id = $1`
 
-        if (isStringEmpty(userId)) {
+        if (isStringEmpty(userUid)) {
             throw new Error("userId is required to update UserSettings");
         }
 
         const result = await queryData(query,
             [
-                userSettings.userId,
+                userSettings.userUid,
                 userSettings.globalChapterDaysBeforeReviewDue ?? process.env.DEFAULT_DAYS_BEFORE_CHAPTER_REVIEW_DUE ?? 30
             ]);
 

@@ -40,9 +40,23 @@ export interface UserSettings
 {
     userSettingId?: number;
     userId?: number;
+    userUid?: string;
     aiHelperCredits?: number;
     globalChapterDaysBeforeReviewDue?: number;
 } 
+
+export interface UserSettingsValidationModel
+{
+    isValid : boolean;
+    message : string;
+    formErrors : UserSettingsFormErrors
+}
+
+export interface UserSettingsFormErrors
+{
+    userIdErrors: string;
+    globalChapterDaysBeforeReviewDueErrors: string;
+}
 
 
 export interface Chapter {
