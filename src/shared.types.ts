@@ -36,11 +36,16 @@ export interface User
     clerkUserId: string;
 } 
 
+export interface AppUser {
+    userId: number;
+    clerkUserId?: string;
+}
+
+
 export interface UserSettings
 {
     userSettingId?: number;
     userId?: number;
-    userUid?: string;
     aiHelperCredits?: number;
     globalChapterDaysBeforeReviewDue?: number;
 } 

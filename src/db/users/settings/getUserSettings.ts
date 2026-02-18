@@ -1,19 +1,19 @@
 import { queryDataSingleRow } from "@/db/dbHelper"
 import { UserSettings } from "@/shared.types";
 
-export async function getUserSettings(userId: string) {
+export async function getUserSettings(userId: number) {
 
     const query =
     {
         text: `SELECT
                     us.user_setting_id,
-                    u.clerk_user_id AS user_id, 
+                    u.user_id,
 	                us.ai_helper_credits,
 	                us.global_chapter_days_before_review_due
 
                 FROM users u 
                 INNER JOIN user_settings us ON u.user_id = us.user_id 
-                WHERE u.clerk_user_id = $1 `,
+                WHERE u.user_id = $1 `,
         values: [userId]
     }
 

@@ -64,7 +64,7 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
                 return;
             }
 
-            const response = await fetch(`/api/users/${userId}/settings`, {
+            const response = await fetch(`/api/users/settings`, {
                 method: 'PUT',
                 body: JSON.stringify(formData)
             })
@@ -88,7 +88,7 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
     useEffect(() => {
         const getUserDetails = async () => {
 
-            const response = await fetch(`/api/users/${userId}/settings`);
+            const response = await fetch(`/api/users/settings`);
             const data = await response.json();
 
             setFormData(data);
