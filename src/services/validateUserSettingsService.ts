@@ -12,7 +12,7 @@ export const validateUserSettings = (settings: UserSettings): UserSettingsValida
         }
     };
 
-    if (!settings.userUid) {
+    if (!settings.userId) {
         result.formErrors.userIdErrors = 'User ID is not valid.';
         result.isValid = false;
     }

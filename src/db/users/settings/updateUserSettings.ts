@@ -1,24 +1,17 @@
 import { queryData } from "@/db/dbHelper";
 import { UserSettings } from "@/shared.types";
-import { isStringEmpty } from "@/utils/stringUtils";
 
-export async function updateUserSettings(userUid: string, userSettings: UserSettings) {
+export async function updateUserSettings(userSettings: UserSettings) {
     try {
         const query = `
-        UPDATE user_settings us
+        UPDATE user_settings
         SET 
             global_chapter_days_before_review_due = $2
-        FROM users u
-        WHERE  u.user_id = us.user_id	
-            AND u.clerk_user_id = $1`
-
-        if (isStringEmpty(userUid)) {
-            throw new Error("userId is required to update UserSettings");
-        }
+        WHERE user_id = $1`
 
         const result = await queryData(query,
             [
-                userSettings.userUid,
+                userSettings.userId,
                 userSettings.globalChapterDaysBeforeReviewDue ?? process.env.DEFAULT_DAYS_BEFORE_CHAPTER_REVIEW_DUE ?? 30
             ]);
 
