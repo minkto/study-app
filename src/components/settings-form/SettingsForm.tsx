@@ -2,14 +2,17 @@
 
 import { UserSettings, UserSettingsFormErrors } from "@/shared.types";
 import Form from "next/form";
-import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { toast } from 'sonner';
 
 interface SettingsFormProps {
     userId?: string;
 }
 
 const SettingsForm = ({ userId }: SettingsFormProps) => {
+
+    const FORM_SUCCESS_MESSAGE = 'Changes have been successfully saved.';
+    const FORM_FAILED_MESSAGE = 'An issue has occured. Please try again.'
 
     const [formData, setFormData] = useState<UserSettings>(
         {
@@ -26,8 +29,6 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
             globalChapterDaysBeforeReviewDueErrors: ''
         });
 
-
-    const router = useRouter();
 
     const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         if (event.target.type === "checkbox" && event.target instanceof HTMLInputElement) {
@@ -70,11 +71,11 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
             })
 
             if (!response.ok) {
+                toast.error('Error', { closeButton: true, description: FORM_FAILED_MESSAGE })
                 throw new Error('Failed to submit the data. Please try again.')
             }
 
-            router.refresh();
-
+            toast.success('Success', { closeButton: true, description: FORM_SUCCESS_MESSAGE })
         }
         catch (error) {
             if (error instanceof Error) {
@@ -100,6 +101,7 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
 
     }, [userId])
 
+
     return (
         userId ?
             <div className="form-container">
@@ -120,7 +122,6 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
 
                         <div className="form-field-wrapper centered-fields">
                             <button disabled={buttonDisabled} className={"form-field"} type='submit'>Save</button>
-                            <p>Changes have been successfully saved</p>
                         </div>
                     </Form>
                 </div>
