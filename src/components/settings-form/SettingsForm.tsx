@@ -71,11 +71,11 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
             })
 
             if (!response.ok) {
-                toast.error('Error', { description: FORM_FAILED_MESSAGE })
+                toast.error('Error', { closeButton: true, description: FORM_FAILED_MESSAGE })
                 throw new Error('Failed to submit the data. Please try again.')
             }
 
-            toast.success('Success', { description: FORM_SUCCESS_MESSAGE })
+            toast.success('Success', { closeButton: true, description: FORM_SUCCESS_MESSAGE })
         }
         catch (error) {
             if (error instanceof Error) {
