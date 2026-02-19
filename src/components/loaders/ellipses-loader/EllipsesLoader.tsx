@@ -1,9 +1,14 @@
 import styles from './ellipses-loader.module.css';
 
-const EllipsesLoader = () => {
+interface EllipsesLoaderProps 
+{
+    message?: string;
+}
+
+const EllipsesLoader = ({message = "Waiting for response..."} : EllipsesLoaderProps) => {
     return (
         <div className={styles["ellipses-loader__wrapper"]}>
-            <p>Waiting for response...</p>
+            <p>{message}</p>
             <span className={styles["loader"]}></span>
         </div>
     )
