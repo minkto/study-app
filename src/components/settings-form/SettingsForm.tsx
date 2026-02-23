@@ -5,6 +5,7 @@ import Form from "next/form";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { toast } from 'sonner';
 import EllipsesLoader from "../loaders/ellipses-loader/EllipsesLoader";
+import styles from './settings-form.module.css'
 
 interface SettingsFormProps {
     userId?: string;
@@ -51,6 +52,12 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
             setFormErrors({ ...formErrors, globalChapterDaysBeforeReviewDueErrors: "Value must be greater than 0." });
             result = false;
         }
+
+        else if (!Number.isInteger(Number(formData.globalChapterDaysBeforeReviewDue))) {
+            setFormErrors({ ...formErrors, globalChapterDaysBeforeReviewDueErrors: "Value must be a whole number." });
+            result = false;
+        }
+
         else {
             setFormErrors({ ...formErrors, globalChapterDaysBeforeReviewDueErrors: "" });
             result = true;
@@ -58,6 +65,12 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
 
         return result;
     };
+
+    const enableSubmitButton = () => {
+         setTimeout(() => {
+            setButtonDisabled(false);
+        }, 1500);
+    }
 
     const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -86,9 +99,51 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
                 console.error(error);
             }
         } finally {
-            setButtonDisabled(false);
+            enableSubmitButton();
         }
     }
+
+
+    const renderForm = () => {
+        if (isError) {
+            return <div>
+                <p>An error has occured.</p>
+            </div>
+        }
+        else {
+            return <Form className='form-dashboard' onSubmit={onSubmit} action={`/dashboard/settings`}>
+
+                <div className={`form-field-wrapper ${styles["settings-form__row"]} text-md`}>
+                    <div className={styles["settings-form__info-box"]}>
+                        <label htmlFor='form-settings__ai-helper-tokens'>AI Tokens</label>
+                        <p className={styles["settings-form__description"]}>This amount of current tokens available to be used.</p>
+                    </div>
+
+                    <div className={`form-field-wrapper ${styles["settings-form__field"]}`}>
+                        <input className={`form-field ${styles["settings-form__field-value"]}`} disabled id="form-settings__ai-helper-tokens" name="ai-helper-credits" type='text' onChange={handleChange} value={formData?.aiHelperCredits ?? 0}></input>
+                    </div>
+                </div>
+
+                <div className={`form-field-wrapper ${styles["settings-form__row"]} text-md`}>
+                    <div className={styles["settings-form__info-box"]}>
+                        <label htmlFor='form-settings__global_chapter_days_before_review_due'>Global chapter days before review due</label>
+                        <p className={styles["settings-form__description"]}>The range of days used for reporting chapters that need to be reviewed.</p>
+                    </div>
+
+                    <div className={`form-field-wrapper ${styles["settings-form__field"]}`}>
+                        <input className={`form-field ${styles["settings-form__field-value"]}`} id="form-settings__global_chapter_days_before_review_due" name="globalChapterDaysBeforeReviewDue" type='number' onChange={handleChange} value={formData?.globalChapterDaysBeforeReviewDue}></input>
+                        {formErrors.globalChapterDaysBeforeReviewDueErrors ? (<p className='form-field__error-message'>{formErrors.globalChapterDaysBeforeReviewDueErrors}</p>) : null}
+                    </div>
+
+                </div>
+
+                <div className="form-field-wrapper centered-fields">
+                    <button disabled={buttonDisabled} className={"form-field"} type='submit'>Save</button>
+                </div>
+            </Form>
+        }
+    }
+
 
     useEffect(() => {
         const getUserDetails = async () => {
@@ -121,35 +176,6 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
         getUserDetails();
 
     }, [userId])
-
-
-    const renderForm = () => {
-        if (isError) {
-            return <div>
-                <p>An error has occured.</p>
-            </div>
-        }
-        else {
-            return <Form className='form-dashboard' onSubmit={onSubmit} action={`/dashboard/settings`}>
-                <div className="form-field-wrapper centered-fields">
-                    <label htmlFor='form-settings__ai-helper-credits'>AI Helper Credits</label>
-                    <input disabled className="form-field" id="form-settings__ai-helper-credits" name="ai-helper-credits" type='text' onChange={handleChange} value={formData?.aiHelperCredits ?? 0}></input>
-                    <p>This amount of current credit available to be used.</p>
-                </div>
-
-                <div className="form-field-wrapper centered-fields">
-                    <label htmlFor='form-settings__global_chapter_days_before_review_due'>Global chapter days before review due</label>
-                    <input className="form-field" id="form-settings__global_chapter_days_before_review_due" name="globalChapterDaysBeforeReviewDue" type='number' onChange={handleChange} value={formData?.globalChapterDaysBeforeReviewDue}></input>
-                    {formErrors.globalChapterDaysBeforeReviewDueErrors ? (<p className='form-field__error-message'>{formErrors.globalChapterDaysBeforeReviewDueErrors}</p>) : null}
-                    <p>The range of days used for reporting chapters that need to be reviewed.</p>
-                </div>
-
-                <div className="form-field-wrapper centered-fields">
-                    <button disabled={buttonDisabled} className={"form-field"} type='submit'>Save</button>
-                </div>
-            </Form>
-        }
-    }
 
     return (
         !isLoading ?
