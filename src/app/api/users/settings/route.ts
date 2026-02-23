@@ -42,7 +42,7 @@ export async function PUT(request: Request) {
     const userSettings: UserSettings = {
         userId: userId,
         aiHelperCredits: res['aiHelperCredits'],
-        globalChapterDaysBeforeReviewDue: res['globalChapterDaysBeforeReviewDue']
+        globalChapterDaysBeforeReviewDue: Math.floor(res['globalChapterDaysBeforeReviewDue'])
     }
 
     const validationModel = validateUserSettings(userSettings);

@@ -7,6 +7,10 @@
   --mobile-table-font-size: .875rem;
   --desktop-table-font-size: 1.2rem;
   --default-border-radius: 5px;
+
+  --font-size-sm: 1.2rem;
+  --font-size-md: 1.4rem;
+  --font-size-lg: 1.6rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -51,6 +55,22 @@ a {
 h1
 {
   font-size: 2.1rem;
+}
+
+.text-sm
+{
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+}
+
+.text-md
+{
+  font-size: var(--font-size-md);
+}
+
+.text-fw-md
+{
+  font-weight: 600;
 }
 
 input[type]
@@ -146,6 +166,12 @@ button.form-field {
     padding: 5px;
     height: 2em;
 }
+
+button.form-field:disabled
+{
+  background-color: rgb(100, 100, 100);
+}
+
 /*******************************
 *
 * Buttons

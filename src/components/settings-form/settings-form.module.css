@@ -1,0 +1,41 @@
+.settings-form__row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 0.5em;
+    padding: 0.5em;
+    border-bottom: 1px solid #dedede;
+}
+
+.settings-form__description {
+    color: #6b6b6b;
+    font-size: 80%;
+    max-width: 400px;
+}
+
+.settings-form__info-box {
+    flex-grow: 2;
+
+}
+
+
+.settings-form__field {
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+}
+
+.settings-form__field-value {
+    width: 150px;
+    align-self: flex-end;
+}
+
+
+@media screen and (max-width: 1024px) {
+
+    .settings-form__field {
+        width: 100%;
+    }
+
+}
