@@ -25,6 +25,7 @@ model Statuses {
 model Categories {
   category_id Int         @id @default(autoincrement())
   name        String
+  description String?     @db.VarChar(256)
   resource    Resources[]
   user_id     Int
   users       Users       @relation(fields: [user_id], references: [user_id])
