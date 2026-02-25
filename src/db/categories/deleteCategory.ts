@@ -1,6 +1,6 @@
 import { queryDataRowCount } from "../dbHelper";
 
-export async function deleteCategory(categoryId: string, userId: string | null) {
+export async function deleteCategory(categoryId: string, userId: number | null) {
 
     try {
         if (!categoryId) {

@@ -1,6 +1,6 @@
 import { queryDataRowCount } from "../dbHelper";
 
-export async function createCategory(name: string, userId: string | null) {
+export async function createCategory(name: string, userId: number | null) {
     try {
 
         if(!name) {

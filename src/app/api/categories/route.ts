@@ -1,17 +1,21 @@
 import { createCategory } from "@/db/categories/createCategory";
 import { getUserCategories } from "@/db/categories/getUserCategories";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentAppUser } from "@/services/auth/userService";
 import { NextResponse } from "next/server";
 
 export async function GET() {
 
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const categories = await getUserCategories(userId);
         return NextResponse.json(categories, { status: 200 });
@@ -23,11 +27,16 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const res = await request.json();
         const name: string = res["name"];

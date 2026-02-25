@@ -1,7 +1,7 @@
 import { Category } from "@/shared.types";
 import { queryData } from "../dbHelper";
 
-export async function getUserCategories(userId: string | null) {
+export async function getUserCategories(userId: number | null) {
 
     if(!userId) 
     {
