@@ -88,7 +88,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ 'cat
             return NextResponse.json({ message: validationResult.message }, { status: 400 });
         }
 
-        const result = await updateCategory(categoryFromDb, userId);
+        const result = await updateCategory(categoryFromDb);
 
         if (result) {
             return NextResponse.json({ message: 'Category updated successfully' }, { status: 200 });
