@@ -12,6 +12,7 @@ export async function getUserCategories(userId: number | null) {
     if (queryResult?.length > 0) {
         const categories = queryResult.map<Category>((x) => (
             {
+                userId: x.user_id,
                 categoryId: x.category_id,
                 name: x.name
             }
