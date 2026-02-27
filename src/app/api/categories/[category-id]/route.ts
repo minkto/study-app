@@ -2,6 +2,7 @@ import { deleteCategory } from "@/db/categories/deleteCategory";
 import { getCategory } from "@/db/categories/getCategory";
 import { updateCategory } from "@/db/categories/updateCategory";
 import { getCurrentAppUser } from "@/services/auth/userService";
+import validateCategoriesService from "@/services/validateCategoriesService";
 import { Category } from "@/shared.types";
 import { NextResponse } from "next/server";
 
@@ -72,7 +73,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ 'cat
 
         const { userId } = currentUser;
         const categoryId = (await params)['category-id'];
-        const categoryRequestBody : Category = await request.json();
+        const categoryRequestBody: Category = await request.json();
 
         const categoryFromDb: Category | null = await getCategory(categoryId, userId);
 
@@ -80,7 +81,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ 'cat
             return NextResponse.json({ message: 'No category was found for the user.' }, { status: 404 });
         }
 
-        categoryFromDb.name = categoryRequestBody.name;
+        categoryFromDb.name = categoryRequestBody.name.trim();
+
+        const validationResult = await validateCategoriesService(categoryFromDb);
+        if (!validationResult.isValid) {
+            return NextResponse.json({ message: validationResult.message }, { status: 400 });
+        }
 
         const result = await updateCategory(categoryFromDb, userId);
 

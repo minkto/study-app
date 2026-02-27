@@ -17,6 +17,7 @@ export async function getCategory(categoryId: string, userId: number | null): Pr
             const rowResult = queryResult[0];
 
             return {
+                userId: userId,
                 categoryId: rowResult.category_id,
                 name: rowResult.name
             }

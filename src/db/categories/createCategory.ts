@@ -1,20 +1,13 @@
+import { Category } from "@/shared.types";
 import { queryDataRowCount } from "../dbHelper";
 
-export async function createCategory(name: string, userId: number | null) {
+export async function createCategory(category: Category ) {
     try {
-
-        if(!name) {
-            throw new Error("Invalid name parameter for creating category.");
-        }
-
-        if(!userId) {
-            throw new Error("Invalid user id for creating category.");
-        }
 
         const query =
         {
             text: "INSERT INTO categories (name,user_id) VALUES ($1,$2)",
-            values: [name, userId]
+            values: [category.name, category.userId]
         }
 
         return await queryDataRowCount(query);

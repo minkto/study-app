@@ -1,6 +1,8 @@
 import { createCategory } from "@/db/categories/createCategory";
 import { getUserCategories } from "@/db/categories/getUserCategories";
 import { getCurrentAppUser } from "@/services/auth/userService";
+import validateCategoriesService from "@/services/validateCategoriesService";
+import { Category } from "@/shared.types";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -41,7 +43,21 @@ export async function POST(request: Request) {
         const res = await request.json();
         const name: string = res["name"];
 
-        const result = await createCategory(name, userId);
+        const category: Category = 
+        {
+            categoryId: null,
+            userId : userId,
+            name : name.trim()
+        }  
+
+        const validationResult = await validateCategoriesService(category);
+        if (!validationResult.isValid)
+        {
+            return NextResponse.json({ message: validationResult.message }, { status: 400 }); 
+        }
+
+        const result = await createCategory(category);
+        
         if (result && result > 0) {
             return NextResponse.json({ message: 'Category created successfully' }, { status: 201 });
         }
