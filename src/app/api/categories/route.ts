@@ -1,17 +1,24 @@
 import { createCategory } from "@/db/categories/createCategory";
 import { getUserCategories } from "@/db/categories/getUserCategories";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentAppUser } from "@/services/auth/userService";
+import validateCategoriesService from "@/services/validateCategoriesService";
+import { Category } from "@/shared.types";
+import { removeWhitespace } from "@/utils/stringUtils";
 import { NextResponse } from "next/server";
 
 export async function GET() {
 
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const categories = await getUserCategories(userId);
         return NextResponse.json(categories, { status: 200 });
@@ -23,18 +30,37 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const res = await request.json();
         const name: string = res["name"];
 
-        const result = await createCategory(name, userId);
+        const category: Category = 
+        {
+            categoryId: null,
+            userId : userId,
+            name : removeWhitespace(name)
+        }  
+
+        const validationResult = await validateCategoriesService(category);
+        if (!validationResult.isValid)
+        {
+            return NextResponse.json({ message: validationResult.message }, { status: 400 }); 
+        }
+
+        const result = await createCategory(category);
+        
         if (result && result > 0) {
-            return NextResponse.json({ message: 'Category created successfully' }, { status: 201 });
+            return NextResponse.json({ message: 'Category created successfully.' }, { status: 201 });
         }
 
 

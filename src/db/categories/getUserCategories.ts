@@ -1,7 +1,7 @@
 import { Category } from "@/shared.types";
 import { queryData } from "../dbHelper";
 
-export async function getUserCategories(userId: string | null) {
+export async function getUserCategories(userId: number | null) {
 
     if(!userId) 
     {
@@ -12,6 +12,7 @@ export async function getUserCategories(userId: string | null) {
     if (queryResult?.length > 0) {
         const categories = queryResult.map<Category>((x) => (
             {
+                userId: x.user_id,
                 categoryId: x.category_id,
                 name: x.name
             }

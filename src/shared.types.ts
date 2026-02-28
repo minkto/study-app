@@ -76,8 +76,22 @@ export interface Chapter {
 }
 
 export interface Category {
-    categoryId?: number | undefined | null,
-    name: string
+    categoryId?: number | undefined | null;
+    userId: number;
+    name: string;
+}
+
+export interface CategoryValidationModel
+{
+    isValid : boolean;
+    message : string;
+    errors : CategoryErrors;
+}
+
+export interface CategoryErrors
+{
+    categoryNameErrors: string;
+    duplicateError: string;
 }
 
 export interface Status 
