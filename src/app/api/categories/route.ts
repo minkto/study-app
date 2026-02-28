@@ -3,6 +3,7 @@ import { getUserCategories } from "@/db/categories/getUserCategories";
 import { getCurrentAppUser } from "@/services/auth/userService";
 import validateCategoriesService from "@/services/validateCategoriesService";
 import { Category } from "@/shared.types";
+import { removeWhitespace } from "@/utils/stringUtils";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
         {
             categoryId: null,
             userId : userId,
-            name : name.trim()
+            name : removeWhitespace(name)
         }  
 
         const validationResult = await validateCategoriesService(category);
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
         const result = await createCategory(category);
         
         if (result && result > 0) {
-            return NextResponse.json({ message: 'Category created successfully' }, { status: 201 });
+            return NextResponse.json({ message: 'Category created successfully.' }, { status: 201 });
         }
 
 
