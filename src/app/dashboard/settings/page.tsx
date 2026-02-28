@@ -1,4 +1,5 @@
 import { DashboardWidget } from "@/components/dashboard/DashboardWidget";
+import ListingsSearchBox from "@/components/listings-search-box/ListingsSearchBox";
 import SettingsForm from "@/components/settings-form/SettingsForm";
 import { Tabs } from "@/components/tabs/Tabs";
 import { currentUser } from "@clerk/nextjs/server";
@@ -21,7 +22,7 @@ export default async function Page() {
                     {
                         label: "Categories",
                         content:
-                            <p>This will be where user category settings are changed.</p>
+                            <ListingsSearchBox/>
 
                     }
                 ]} />
