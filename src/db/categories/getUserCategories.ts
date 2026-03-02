@@ -14,7 +14,9 @@ export async function getUserCategories(userId: number | null) {
             {
                 userId: x.user_id,
                 categoryId: x.category_id,
-                name: x.name
+                name: x.name,
+                description: x.description,
+                color : x.color,
             }
         ));
         return categories;

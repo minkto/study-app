@@ -12,6 +12,8 @@ export const FormState =
     EDIT: 1
 };
 
+export const DEFAULT_CATEGORY_COLOR = "#FFFFFF"
+
 export const ChapterStatuses =
 {
     NOT_STARTED: 0,

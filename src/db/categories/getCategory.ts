@@ -19,7 +19,9 @@ export async function getCategory(categoryId: string, userId: number | null): Pr
             return {
                 userId: userId,
                 categoryId: rowResult.category_id,
-                name: rowResult.name
+                name: rowResult.name,
+                description : rowResult.description,
+                color: rowResult.color
             }
         }
     }
