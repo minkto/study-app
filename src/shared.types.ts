@@ -78,7 +78,9 @@ export interface Chapter {
 export interface Category {
     categoryId?: number | undefined | null;
     userId: number;
-    name: string;
+    name: string | null;
+    description?: string | null;
+    color: string;
 }
 
 export interface CategoryValidationModel

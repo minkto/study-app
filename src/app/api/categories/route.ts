@@ -1,3 +1,4 @@
+import { DEFAULT_CATEGORY_COLOR } from "@/constants/constants";
 import { createCategory } from "@/db/categories/createCategory";
 import { getUserCategories } from "@/db/categories/getUserCategories";
 import { getCurrentAppUser } from "@/services/auth/userService";
@@ -42,13 +43,14 @@ export async function POST(request: Request) {
         const { userId } = currentUser;
 
         const res = await request.json();
-        const name: string = res["name"];
 
         const category: Category = 
         {
             categoryId: null,
             userId : userId,
-            name : removeWhitespace(name)
+            name : removeWhitespace(res["name"]),
+            description : removeWhitespace( res["description"]),
+            color: removeWhitespace(res["color"]) ?? DEFAULT_CATEGORY_COLOR
         }  
 
         const validationResult = await validateCategoriesService(category);
