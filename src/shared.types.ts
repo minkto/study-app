@@ -118,7 +118,7 @@ export interface ListingSearchQuery
     searchTerm?: string,
     page?:string
     filters? : ListingSearchQueryFilters;
-    userId? : string | null;
+    userId? : string| number | null;
 }
 
 export interface ListingSearchQueryFilters

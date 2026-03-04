@@ -3,11 +3,11 @@ import { createCategory } from "@/db/categories/createCategory";
 import { getUserCategories } from "@/db/categories/getUserCategories";
 import { getCurrentAppUser } from "@/services/auth/userService";
 import validateCategoriesService from "@/services/validateCategoriesService";
-import { Category } from "@/shared.types";
+import { Category, ListingSearchQuery } from "@/shared.types";
 import { removeWhitespace } from "@/utils/stringUtils";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
 
     try {
         const currentUser = await getCurrentAppUser();
@@ -21,7 +21,18 @@ export async function GET() {
 
         const { userId } = currentUser;
 
-        const categories = await getUserCategories(userId);
+        const searchParams = request.nextUrl.searchParams;
+        const listingSearchQuery: ListingSearchQuery =
+        {
+            searchTerm: searchParams?.get('search-term')?.trim(),
+            sortBy: searchParams?.get('sortBy')?.trim(),
+            sortOrder: searchParams?.get('sortOrder')?.trim(),
+            page: searchParams?.get('page')?.trim(),
+            userId: userId
+        };
+
+
+        const categories = await getUserCategories(listingSearchQuery);
         return NextResponse.json(categories, { status: 200 });
     }
     catch (error) {
@@ -44,23 +55,22 @@ export async function POST(request: Request) {
 
         const res = await request.json();
 
-        const category: Category = 
+        const category: Category =
         {
             categoryId: null,
-            userId : userId,
-            name : removeWhitespace(res["name"]),
-            description : removeWhitespace( res["description"]),
+            userId: userId,
+            name: removeWhitespace(res["name"]),
+            description: removeWhitespace(res["description"]),
             color: removeWhitespace(res["color"]) ?? DEFAULT_CATEGORY_COLOR
-        }  
+        }
 
         const validationResult = await validateCategoriesService(category);
-        if (!validationResult.isValid)
-        {
-            return NextResponse.json({ message: validationResult.message }, { status: 400 }); 
+        if (!validationResult.isValid) {
+            return NextResponse.json({ message: validationResult.message }, { status: 400 });
         }
 
         const result = await createCategory(category);
-        
+
         if (result && result > 0) {
             return NextResponse.json({ message: 'Category created successfully.' }, { status: 201 });
         }
