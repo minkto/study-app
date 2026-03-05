@@ -1,9 +1,10 @@
-import { DEFAULT_CATEGORY_COLOR } from "@/constants/constants";
+import { DEFAULT_CATEGORY_COLOR, ListingPageSizes } from "@/constants/constants";
 import { createCategory } from "@/db/categories/createCategory";
 import { getUserCategories } from "@/db/categories/getUserCategories";
+import { calculatePageCount } from "@/db/queryBuilder";
 import { getCurrentAppUser } from "@/services/auth/userService";
 import validateCategoriesService from "@/services/validateCategoriesService";
-import { Category, ListingSearchQuery } from "@/shared.types";
+import { Category, GetCategoriesApiResponse, ListingSearchQuery } from "@/shared.types";
 import { removeWhitespace } from "@/utils/stringUtils";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -31,9 +32,20 @@ export async function GET(request: NextRequest) {
             userId: userId
         };
 
-
         const categories = await getUserCategories(listingSearchQuery);
-        return NextResponse.json(categories, { status: 200 });
+
+        const response: GetCategoriesApiResponse =
+        {
+            categories: categories,
+            count: await calculatePageCount(
+                listingSearchQuery,
+                Number(process.env.CATEGORIES_MAX_PAGE_SIZE ?? ListingPageSizes.CATEGORIES),
+                `SELECT COUNT(*) FROM categories c WHERE c.user_id = $1`,
+                [listingSearchQuery.userId],
+            )
+        }
+
+        return NextResponse.json(response, { status: 200 });
     }
     catch (error) {
         return NextResponse.json({ message: 'API Error', error }, { status: 500 });

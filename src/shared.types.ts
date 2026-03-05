@@ -83,6 +83,11 @@ export interface Category {
     color: string;
 }
 
+export interface GetCategoriesApiResponse {
+    categories : Category[] | null;
+    count : number| null| undefined;
+}
+
 export interface CategoryValidationModel
 {
     isValid : boolean;

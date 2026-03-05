@@ -1,7 +1,9 @@
 import { Category, ListingSearchQuery } from "@/shared.types";
 import { queryData } from "../dbHelper";
+import { buildPageLimit } from "../queryBuilder";
+import { ListingPageSizes } from "@/constants/constants";
 
-export async function getUserCategories(query: ListingSearchQuery) {
+export async function getUserCategories(query: ListingSearchQuery): Promise<Category[] | null> {
 
     let querySql = `SELECT * FROM categories 
         WHERE user_id = $1`;
@@ -17,6 +19,9 @@ export async function getUserCategories(query: ListingSearchQuery) {
         querySql += ` ORDER BY name ${safeSortOrder}`;
     }
 
+    querySql += buildPageLimit(Number(process.env.CATEGORIES_MAX_PAGE_SIZE ?? ListingPageSizes.CATEGORIES), Number(query.page))
+
+
     const queryResult = await queryData(querySql, queryValues);
     if (queryResult?.length > 0) {
         const categories = queryResult.map<Category>((x) => (
@@ -30,4 +35,6 @@ export async function getUserCategories(query: ListingSearchQuery) {
         ));
         return categories;
     }
+
+    return null;
 }

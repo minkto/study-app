@@ -130,14 +130,17 @@ export const CategoryListings = () => {
 
     const fetchCateogries = async () => {
         try {
+            setupLoading(true);
             const response = await fetch(`/api/categories${constructQueryString()}`);
             const result = await response.json();
 
-            setData(result);
-            setupLoading(false);
-            console.log(result);
+            setData(result.categories);
+            setPageCount(result.count);
         } catch (error) {
             console.error("Error fetching categories:", error);
+        }
+        finally {
+            setupLoading(false);
         }
     }
 
@@ -219,7 +222,7 @@ export const CategoryListings = () => {
                     <tbody>
                         {!dataLoaded ? (
                             // Skeleton rows
-                            [...Array(Number(process.env.CATEGORIES_MAX_PAGE_SIZE ?? ListingPageSizes.DEFAULT))].map((_, i) => (
+                            [...Array(Number(process.env.CATEGORIES_MAX_PAGE_SIZE ?? ListingPageSizes.CATEGORIES))].map((_, i) => (
                                 <tr className={styles["table-row"]} key={`skeleton-${i}`}>
                                     {table.getVisibleFlatColumns().map((col, j) => (
                                         <td className={styles["table-row-data"]} key={`skeleton-cell-${j}`}>
