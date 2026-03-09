@@ -1,6 +1,6 @@
 import { Category, ListingSearchQuery } from "@/shared.types";
 import { queryData } from "../dbHelper";
-import { buildPageLimit, calculatePageCount } from "../queryBuilder";
+import { buildOrderByFilter, buildPageLimit, calculatePageCount } from "../queryBuilder";
 import { ListingPageSizes } from "@/constants/constants";
 import { isStringEmpty } from "@/utils/stringUtils";
 
@@ -44,19 +44,21 @@ export const getUserCategoriesPageCount = async (listingSearchQuery: ListingSear
     )
 }
 
-export const buildGetUserCategoriesQuery = (query: ListingSearchQuery, excludePageLimit: boolean = false) => {
+const buildGetUserCategoriesQuery = (query: ListingSearchQuery, excludePageLimit: boolean = false) => {
     let querySql = `SELECT * FROM categories c`;
+
+    const columnsToSql: Map<string, string> = new Map([
+        ["name", "name"],
+    ]);
 
     if (!query.userId) {
         throw new Error("Invalid user id for fetching user categories.");
     }
 
-    if (query.sortBy && query.sortOrder) {
-        const safeSortOrder = query.sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC";
-        querySql += ` ORDER BY name ${safeSortOrder}`;
-    }
-
     querySql += buildCategoriesFilterQuery(query);
+
+    querySql += buildOrderByFilter(columnsToSql, query?.sortBy, query?.sortOrder, "c.category_id");
+
 
     if (!excludePageLimit) {
         querySql += buildPageLimit(Number(process.env.CATEGORIES_MAX_PAGE_SIZE ?? ListingPageSizes.CATEGORIES), Number(query.page));
@@ -65,7 +67,8 @@ export const buildGetUserCategoriesQuery = (query: ListingSearchQuery, excludePa
     return querySql;
 }
 
-export const buildCategoriesFilterQuery = (searchQuery?: ListingSearchQuery | undefined): string => {
+
+const buildCategoriesFilterQuery = (searchQuery?: ListingSearchQuery | undefined): string => {
 
     let queryFilter = "";
 
