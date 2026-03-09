@@ -1,12 +1,13 @@
+import { DEFAULT_CATEGORY_COLOR } from "@/constants/constants";
 import { createCategory } from "@/db/categories/createCategory";
-import { getUserCategories } from "@/db/categories/getUserCategories";
+import { getUserCategories, getUserCategoriesPageCount } from "@/db/categories/getUserCategories";
 import { getCurrentAppUser } from "@/services/auth/userService";
 import validateCategoriesService from "@/services/validateCategoriesService";
-import { Category } from "@/shared.types";
+import { Category, GetCategoriesApiResponse, ListingSearchQuery } from "@/shared.types";
 import { removeWhitespace } from "@/utils/stringUtils";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
 
     try {
         const currentUser = await getCurrentAppUser();
@@ -20,8 +21,29 @@ export async function GET() {
 
         const { userId } = currentUser;
 
-        const categories = await getUserCategories(userId);
-        return NextResponse.json(categories, { status: 200 });
+        const searchParams = request.nextUrl.searchParams;
+        const listingSearchQuery: ListingSearchQuery =
+        {
+            searchTerm: searchParams?.get('search-term')?.trim(),
+            sortBy: searchParams?.get('sortBy')?.trim(),
+            sortOrder: searchParams?.get('sortOrder')?.trim(),
+            page: searchParams?.get('page')?.trim(),
+            userId: userId
+        };
+
+        const categories = await getUserCategories(listingSearchQuery);
+        if(!categories)
+        {
+            return NextResponse.json({message: "No Categories found.", categories: [], count:0 }, { status: 404 });
+        }
+
+        const response: GetCategoriesApiResponse =
+        {
+            categories: categories,
+            count: await getUserCategoriesPageCount(listingSearchQuery)
+        }
+
+        return NextResponse.json(response, { status: 200 });
     }
     catch (error) {
         return NextResponse.json({ message: 'API Error', error }, { status: 500 });
@@ -42,23 +64,23 @@ export async function POST(request: Request) {
         const { userId } = currentUser;
 
         const res = await request.json();
-        const name: string = res["name"];
 
-        const category: Category = 
+        const category: Category =
         {
             categoryId: null,
-            userId : userId,
-            name : removeWhitespace(name)
-        }  
+            userId: userId,
+            name: removeWhitespace(res["name"]),
+            description: removeWhitespace(res["description"]),
+            color: removeWhitespace(res["color"]) ?? DEFAULT_CATEGORY_COLOR
+        }
 
         const validationResult = await validateCategoriesService(category);
-        if (!validationResult.isValid)
-        {
-            return NextResponse.json({ message: validationResult.message }, { status: 400 }); 
+        if (!validationResult.isValid) {
+            return NextResponse.json({ message: validationResult.message }, { status: 400 });
         }
 
         const result = await createCategory(category);
-        
+
         if (result && result > 0) {
             return NextResponse.json({ message: 'Category created successfully.' }, { status: 201 });
         }

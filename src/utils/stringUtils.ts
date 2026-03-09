@@ -3,5 +3,11 @@ export function isStringEmpty(value: string | null | undefined ) {
 }
 
 export function removeWhitespace(value: string | null | undefined ) {
+
+    if(isStringEmpty(value))
+    {
+        return null;
+    }
+
     return value?.trim()?.replaceAll(/  +/g, ' ') ?? '';
 }

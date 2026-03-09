@@ -6,8 +6,8 @@ export async function createCategory(category: Category ) {
 
         const query =
         {
-            text: "INSERT INTO categories (name,user_id) VALUES ($1,$2)",
-            values: [category.name, category.userId]
+            text: "INSERT INTO categories (name,user_id,description,color) VALUES ($1,$2,$3,$4)",
+            values: [category.name, category.userId,category.description,category.color]
         }
 
         return await queryDataRowCount(query);

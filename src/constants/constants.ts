@@ -12,6 +12,8 @@ export const FormState =
     EDIT: 1
 };
 
+export const DEFAULT_CATEGORY_COLOR = "#FFFFFF"
+
 export const ChapterStatuses =
 {
     NOT_STARTED: 0,
@@ -24,7 +26,8 @@ export const ListingPageSizes =
 {
     DEFAULT: "5",
     CHAPTERS: "5",
-    RESOURCES: "2"
+    RESOURCES: "2",
+    CATEGORIES: "5"
 };
 
 export const FilterByQueryKeys =

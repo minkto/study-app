@@ -1,4 +1,6 @@
+import { ListingSearchQuery } from "@/shared.types";
 import { isStringEmpty } from "@/utils/stringUtils";
+import { queryData } from "./dbHelper";
 
 export function buildOrderByFilter(columnNames: Map<string, string>,
     sortBy: string | undefined,
@@ -21,6 +23,37 @@ export const mapOrderByColumnsToSql = (columnNames: Map<string, string>, sortByV
     }
 
     return "";
+}
+
+
+export const buildPageLimit = (pageSize: number, currentPage: number) => {
+
+    if (currentPage) {
+        return ` LIMIT ${pageSize} OFFSET ${pageSize * (Number(currentPage) - 1)}`;
+    }
+
+    return ` LIMIT ${pageSize} `;
+}
+
+export const calculatePageCount = async (
+    listingSearchQuery: ListingSearchQuery | undefined,
+    pageCount: number,
+    countQuery: string,
+    values: Array<string | number | boolean | undefined | null> = [],
+    buildFilterQuery?: (listingSearchQuery: ListingSearchQuery) => string): Promise<number> => {
+
+
+    if (buildFilterQuery && listingSearchQuery) {
+        countQuery += buildFilterQuery(listingSearchQuery);
+    }
+
+    if (listingSearchQuery?.searchTerm !== undefined) {
+        values.push(`%${listingSearchQuery?.searchTerm}%`);
+    }
+
+    const countQueryResult = await queryData(countQuery, values);
+    const totalPageCount = Math.ceil(Number(countQueryResult.length / pageCount));
+    return totalPageCount;
 }
 
 const mapSortOrderColumnsToSql = (sortOrderValue: string | undefined) => {

@@ -1,0 +1,13 @@
+.data-table-listings
+{
+    overflow: visible;
+}
+
+.color-cell {
+    opacity: 1;
+    width: 25px;
+    border-radius: 50%;
+    border: 1px solid #000000;
+    height: 25px;
+    margin: 0 auto;
+}

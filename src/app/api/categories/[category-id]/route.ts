@@ -1,3 +1,4 @@
+import { DEFAULT_CATEGORY_COLOR } from "@/constants/constants";
 import { deleteCategory } from "@/db/categories/deleteCategory";
 import { getCategory } from "@/db/categories/getCategory";
 import { updateCategory } from "@/db/categories/updateCategory";
@@ -83,7 +84,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ 'cat
         }
 
         categoryFromDb.name = removeWhitespace(categoryRequestBody.name);
-
+        categoryFromDb.description = removeWhitespace(categoryRequestBody.description);
+        categoryFromDb.color = removeWhitespace(categoryRequestBody.color) ?? DEFAULT_CATEGORY_COLOR;
+        
         const validationResult = await validateCategoriesService(categoryFromDb);
         if (!validationResult.isValid) {
             return NextResponse.json({ message: validationResult.message }, { status: 400 });

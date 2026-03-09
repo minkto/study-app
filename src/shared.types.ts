@@ -78,7 +78,14 @@ export interface Chapter {
 export interface Category {
     categoryId?: number | undefined | null;
     userId: number;
-    name: string;
+    name: string | null;
+    description?: string | null;
+    color: string;
+}
+
+export interface GetCategoriesApiResponse {
+    categories : Category[] | null;
+    count : number| null| undefined;
 }
 
 export interface CategoryValidationModel
@@ -116,7 +123,7 @@ export interface ListingSearchQuery
     searchTerm?: string,
     page?:string
     filters? : ListingSearchQueryFilters;
-    userId? : string | null;
+    userId? : string| number | null;
 }
 
 export interface ListingSearchQueryFilters

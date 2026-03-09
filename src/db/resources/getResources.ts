@@ -1,7 +1,7 @@
 import { ListingSearchQuery, Resource } from "@/shared.types";
 import { queryData } from "../dbHelper";
 import { isStringEmpty } from "@/utils/stringUtils";
-import { buildOrderByFilter } from "../queryBuilder";
+import { buildOrderByFilter, buildPageLimit } from "../queryBuilder";
 import { ListingPageSizes } from "@/constants/constants";
 
 export async function getResources(listingSearchQuery: ListingSearchQuery) {
@@ -30,7 +30,7 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
 
         query += buildOrderByFilter(columnsToSql, listingSearchQuery?.sortBy, listingSearchQuery?.sortOrder, "r.resource_id");
 
-        query += buildPageLimit(listingSearchQuery);
+        query += buildPageLimit(Number(process.env.RESOURCES_MAX_PAGE_SIZE ?? ListingPageSizes.RESOURCES), Number(listingSearchQuery.page));
 
         const resourcesDb = await queryData(query, queryParams);
         const mappedResources = resourcesDb.map<Resource>((x) => (
@@ -51,16 +51,6 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
     }
 }
 
-const buildPageLimit = (listingSearchQuery: ListingSearchQuery) => {
-
-    const pageSize = Number(process.env.RESOURCES_MAX_PAGE_SIZE ?? ListingPageSizes.RESOURCES);
-
-    if (listingSearchQuery?.page) {
-        return ` LIMIT ${pageSize} OFFSET ${pageSize * (Number(listingSearchQuery.page) - 1)}`;
-    }
-
-    return ` LIMIT ${pageSize} `;
-}
 
 const buildFilterQuery = (searchQuery?: ListingSearchQuery | undefined) => {
 
@@ -82,7 +72,7 @@ const buildFilterQuery = (searchQuery?: ListingSearchQuery | undefined) => {
         }
     }
 
-    if (isStringEmpty(queryFilter) && !isStringEmpty(searchQuery?.userId)) {
+    if (isStringEmpty(queryFilter) && !isStringEmpty(searchQuery?.userId?.toString())) {
         queryFilter = ` WHERE r.user_id = '${searchQuery?.userId}'`;
     }
     else if (!isStringEmpty(queryFilter)) {
