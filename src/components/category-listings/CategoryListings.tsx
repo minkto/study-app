@@ -8,7 +8,6 @@ import { ListingPageSizes } from "@/constants/constants";
 import { Category } from "@/shared.types";
 import { createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, Row, useReactTable } from "@tanstack/react-table";
 import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
-import styles from './category-listings.module.css'
 import { isStringEmpty } from "@/utils/stringUtils";
 import Skeleton from "react-loading-skeleton";
 import { getCurrentSortOrder, getInitialSortByOption, getSortDirectionTitle } from "@/utils/tableUtils";
@@ -88,8 +87,8 @@ export const CategoryListings = () => {
             },
 
             meta: {
-                tdClassName: () => styles["col-menu"],
-                thClassName: styles["col-menu"],
+                tdClassName: () => "col-menu",
+                thClassName: "col-menu",
             },
             enableSorting: false,
             enableHiding: false,
@@ -165,7 +164,7 @@ export const CategoryListings = () => {
     }, [dataLoaded]);
 
     return (
-        <div>
+        <div className="data-table-listings">
             <ListingsSearchBar 
              handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
                 onSearchSubmit={() => { setPagination({ ...pagination, pageIndex: 0 }) }}>
@@ -178,14 +177,14 @@ export const CategoryListings = () => {
                     dropdownOptions={sortByOptions} />
             </ListingsSearchBar>
             {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults />
-                : <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
+                : <table className="table-container" cellPadding={0} cellSpacing={0}>
                     <thead>
                         {table.getHeaderGroups().map(headerGroup => (
                             <tr key={headerGroup.id}>
                                 {headerGroup.headers.map(header => {
                                     const thClass = header.column.columnDef.meta?.thClassName;
                                     return (
-                                        <th className={`${styles["table-head-cell"]} ${thClass}`} key={header.id}>
+                                        <th className={`table-head-cell ${thClass ?? ""}`} key={header.id}>
 
                                             {header.isPlaceholder ? null : (
                                                 <button
@@ -225,9 +224,9 @@ export const CategoryListings = () => {
                         {!dataLoaded ? (
                             // Skeleton rows
                             [...Array(Number(process.env.CATEGORIES_MAX_PAGE_SIZE ?? ListingPageSizes.CATEGORIES))].map((_, i) => (
-                                <tr className={styles["table-row"]} key={`skeleton-${i}`}>
+                                <tr className="table-row" key={`skeleton-${i}`}>
                                     {table.getVisibleFlatColumns().map((col, j) => (
-                                        <td className={styles["table-row-data"]} key={`skeleton-cell-${j}`}>
+                                        <td className="table-row-data" key={`skeleton-cell-${j}`}>
                                             <div style={{ width: '100%' }}>
                                                 <Skeleton height={(Number(process.env.CATEGORIES_MAX_PAGE_SIZE ?? ListingPageSizes.DEFAULT))} />
                                             </div>
@@ -238,7 +237,7 @@ export const CategoryListings = () => {
                         ) : (
                             // Actual rows
                             table.getRowModel().rows.map(row => (
-                                <tr className={styles["table-row"]} key={row.id}>
+                                <tr className="table-row" key={row.id}>
                                     {row.getVisibleCells().map(cell => {
                                         const tdClass = cell.column.columnDef.meta?.tdClassName
                                             ? cell.column.columnDef.meta.tdClassName(cell.getContext())
@@ -252,10 +251,10 @@ export const CategoryListings = () => {
 
                                         return (
                                             <td
-                                                className={`${styles["table-row-data"]} ${tdClass}`}
+                                                className={`table-row-data ${tdClass ?? null}`}
                                                 key={cell.id}
                                             >
-                                                {!isStringEmpty(value) ? (<span className={`${styles["col-label-inline"]}`}>{label}</span>) : (null)}
+                                                {!isStringEmpty(value) ? (<span className={"col-label-inline"}>{label}</span>) : (null)}
 
                                                 <span>
 
