@@ -15,6 +15,7 @@ import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
 import SelectDropdown from "../select-dropdown/SelectDropdown";
 import { ListingsPagination } from "../listings-pagination/ListingsPagination";
 import ListingsNoResults from "../listings-no-results/ListingsNoResults";
+import styles from './category-listings.module.css'
 
 
 export const CategoryListings = () => {
@@ -45,14 +46,8 @@ export const CategoryListings = () => {
             cell: ({ row }: { row: Row<Category> }) => {
                 const color = row.original.color;
                 return (
-                    <div style={{
-                        backgroundColor: `${color}`,
-                        opacity: `1`, width: `25px`,
-                        borderRadius: `50%`,
-                        border: `1px solid #000000`,
-                        height: `25px`,
-                        margin: `0 auto`
-                    }}>
+                    <div className={styles["color-cell"]} style={{
+                        backgroundColor: `${color}`}}>
                     </div>
                 )
             },
