@@ -159,7 +159,7 @@ export const CategoryListings = () => {
     }, [dataLoaded]);
 
     return (
-        <div className="data-table-listings">
+        <div className={styles["data-table-listings"]}>
             <ListingsSearchBar 
              handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
                 onSearchSubmit={() => { setPagination({ ...pagination, pageIndex: 0 }) }}>

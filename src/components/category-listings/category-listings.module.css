@@ -1,3 +1,8 @@
+.data-table-listings
+{
+    overflow: visible;
+}
+
 .color-cell {
     opacity: 1;
     width: 25px;
