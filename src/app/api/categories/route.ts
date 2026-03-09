@@ -1,7 +1,6 @@
-import { DEFAULT_CATEGORY_COLOR, ListingPageSizes } from "@/constants/constants";
+import { DEFAULT_CATEGORY_COLOR } from "@/constants/constants";
 import { createCategory } from "@/db/categories/createCategory";
-import { getUserCategories } from "@/db/categories/getUserCategories";
-import { calculatePageCount } from "@/db/queryBuilder";
+import { getUserCategories, getUserCategoriesPageCount } from "@/db/categories/getUserCategories";
 import { getCurrentAppUser } from "@/services/auth/userService";
 import validateCategoriesService from "@/services/validateCategoriesService";
 import { Category, GetCategoriesApiResponse, ListingSearchQuery } from "@/shared.types";
@@ -33,16 +32,15 @@ export async function GET(request: NextRequest) {
         };
 
         const categories = await getUserCategories(listingSearchQuery);
+        if(!categories)
+        {
+            return NextResponse.json({message: "No Categories found.", categories: [], count:0 }, { status: 404 });
+        }
 
         const response: GetCategoriesApiResponse =
         {
             categories: categories,
-            count: await calculatePageCount(
-                listingSearchQuery,
-                Number(process.env.CATEGORIES_MAX_PAGE_SIZE ?? ListingPageSizes.CATEGORIES),
-                `SELECT COUNT(*) FROM categories c WHERE c.user_id = $1`,
-                [listingSearchQuery.userId],
-            )
+            count: await getUserCategoriesPageCount(listingSearchQuery)
         }
 
         return NextResponse.json(response, { status: 200 });

@@ -40,7 +40,7 @@ export const calculatePageCount = async (
     pageCount: number,
     countQuery: string,
     values: Array<string | number | boolean | undefined | null> = [],
-    buildFilterQuery?: (listingSearchQuery: ListingSearchQuery) => string) => {
+    buildFilterQuery?: (listingSearchQuery: ListingSearchQuery) => string): Promise<number> => {
 
 
     if (buildFilterQuery && listingSearchQuery) {
@@ -52,7 +52,7 @@ export const calculatePageCount = async (
     }
 
     const countQueryResult = await queryData(countQuery, values);
-    const totalPageCount = Math.ceil(Number(countQueryResult[0].count / pageCount));
+    const totalPageCount = Math.ceil(Number(countQueryResult.length / pageCount));
     return totalPageCount;
 }
 

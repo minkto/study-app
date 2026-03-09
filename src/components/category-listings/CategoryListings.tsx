@@ -166,7 +166,9 @@ export const CategoryListings = () => {
 
     return (
         <div>
-            <ListingsSearchBar handleBeforeOnSearchSubmit={() => { setupLoading(true) }} onSearchSubmit={() => { table.firstPage(); }}>
+            <ListingsSearchBar 
+             handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
+                onSearchSubmit={() => { setPagination({ ...pagination, pageIndex: 0 }) }}>
                 <Link className='dashboard-primary-btn' href={'resources/add-resource'}><IconPlus width={24} height={24} />Add</Link>
 
 
