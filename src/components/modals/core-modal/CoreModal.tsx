@@ -1,4 +1,6 @@
+import IconCancel from "@/components/icons/icon-cancel/IconCancel";
 import { useEffect, useRef } from "react";
+import styles from './core-modal.module.css';
 
 interface CoreModalProps {
     children?: React.ReactNode;
@@ -71,8 +73,8 @@ export const CoreModal = ({ children, isActive, onConfirm, onClose }: CoreModalP
     return (
         isActive && <div ref={backgroundEl} className="modal-background" >
             <div className={'modal-content'}>
-                <div>
-                    <button onClick={() => handleOnConfirm()}>Close</button>
+                <div className={styles['modal-options']}>
+                    <button aria-label="close" className={styles["modal-close-btn"]} onClick={() => handleOnConfirm()}><IconCancel width={32} height={32} /></button>
                 </div>
                 {children}
             </div>

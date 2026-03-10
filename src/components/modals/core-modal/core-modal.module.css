@@ -1,0 +1,22 @@
+.modal-options
+{
+    flex-direction: row;
+    display: flex;
+    justify-content: flex-end;
+    
+}
+
+.modal-close-btn
+{
+    background-color: transparent;
+    border: none;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:active,
+.modal-close-btn:hover,
+.modal-close-btn:focus
+{
+    background-color: #c1c1c1;
+    border-radius: 5px;
+}
