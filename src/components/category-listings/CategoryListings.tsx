@@ -1,10 +1,9 @@
 'use client'
 
-import Link from "next/link";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar"
 import IconPlus from "../icons/icon-plus/IconPlus";
 import { useEffect, useMemo, useState } from "react";
-import { ListingPageSizes } from "@/constants/constants";
+import { FormState, ListingPageSizes } from "@/constants/constants";
 import { Category } from "@/shared.types";
 import { createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, Row, useReactTable } from "@tanstack/react-table";
 import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
@@ -16,14 +15,28 @@ import SelectDropdown from "../select-dropdown/SelectDropdown";
 import { ListingsPagination } from "../listings-pagination/ListingsPagination";
 import ListingsNoResults from "../listings-no-results/ListingsNoResults";
 import styles from './category-listings.module.css'
-
+import { CategoryForm } from "../category-form/CategoryForm";
+import DashboardModalPortal from "../dashboard-modal-portal/DashboardModalPortal";
+import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
+import { useModalVisibility } from "@/hooks/useModalVisibility";
+import { CoreModal } from "../modals/core-modal/CoreModal";
 
 export const CategoryListings = () => {
+
+    const ModalActiveState = useMemo(() => ({
+        NONE: 0,
+        ADD_OR_EDIT: 1,
+        DELETE: 2,
+    }), []);
+    
+    const { isVisible: modalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, searchParams } = useDataTableQueryParams(process.env.RESOURCES_MAX_PAGE_SIZE ?? ListingPageSizes.DEFAULT);
     const [pageCount, setPageCount] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState<Category>();
+    const [activeModal, setActiveModal] = useState<number>(ModalActiveState.NONE);
     const [data, setData] = useState<Category[]>([]);
     const columnHelper = createColumnHelper<Category>();
     const sortByOptions =
@@ -47,7 +60,8 @@ export const CategoryListings = () => {
                 const color = row.original.color;
                 return (
                     <div className={styles["color-cell"]} style={{
-                        backgroundColor: `${color}`}}>
+                        backgroundColor: `${color}`
+                    }}>
                     </div>
                 )
             },
@@ -60,19 +74,26 @@ export const CategoryListings = () => {
             id: 'menuOptions',
             header: () => null,
             cell: ({ row }: { row: Row<Category> }) => {
-                const categoryId = row.original.categoryId
                 return (
                     <CardDropdownMenu positionCenter={true} links={
                         [
-                            { label: "Edit", href: `categories/${categoryId}/edit-category` },
+                            {
+                                label: "Edit",
+                                onClick: async () => {
+                                    setActiveModal(ModalActiveState.ADD_OR_EDIT);
+                                    setSelectedCategory(row.original);
+                                    handleModalVisibility();
+                                }
+                            },
                             {
                                 label: "Delete",
                                 onClick: async () => {
                                     try {
-                                        //setSelectedChapter(row.original);
-                                        //handleModalVisibility();
+                                        setActiveModal(ModalActiveState.DELETE);
+                                        setSelectedCategory(row.original);
+                                        handleModalVisibility();
                                     } catch (error) {
-                                        console.error("Failed to delete chapter:", error);
+                                        console.error("Failed to delete category:", error);
                                     }
                                 },
                             }
@@ -88,7 +109,7 @@ export const CategoryListings = () => {
             enableSorting: false,
             enableHiding: false,
         },
-    ], [columnHelper]);
+    ], [columnHelper, ModalActiveState, handleModalVisibility]);
 
     const table = useReactTable({
         data,
@@ -138,6 +159,25 @@ export const CategoryListings = () => {
         }
     }
 
+    const deleteCategory = async (categoryId: number | null | undefined) => {
+        setupLoading(true);
+        try {
+            const response = await fetch(`/api/categories/${categoryId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                fetchCateogries();
+            }
+        }
+        catch (error) {
+            console.log("An error has occured in deleting the Category: ", error);
+        }
+        finally {
+            setupLoading(false);
+        }
+    }
+
     useEffect(() => {
         fetchCateogries();
     }, [searchParams])
@@ -159,12 +199,44 @@ export const CategoryListings = () => {
     }, [dataLoaded]);
 
     return (
-        <div className={styles["data-table-listings"]}>
-            <ListingsSearchBar 
-             handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
-                onSearchSubmit={() => { setPagination({ ...pagination, pageIndex: 0 }) }}>
-                <Link className='dashboard-primary-btn' href={'resources/add-resource'}><IconPlus width={24} height={24} />Add</Link>
 
+        <div className={styles["data-table-listings"]}>
+            <DashboardModalPortal show={modalVisible}>
+                <CoreModal onClose={hide} isActive={modalVisible && activeModal == ModalActiveState.ADD_OR_EDIT}>
+                    <CategoryForm
+                        state={!selectedCategory?.categoryId ? FormState.ADD : FormState.EDIT}
+                        onFormSubmit={async () => {
+                            hide();
+                            await fetchCateogries();
+                        }}
+                        categoryId={selectedCategory?.categoryId ?? -1} />
+                </CoreModal>
+                <ConfirmationModal
+                    onClose={hide}
+                    onConfirm={async () => {
+                        if (selectedCategory !== undefined) {
+                            await deleteCategory(selectedCategory?.categoryId);
+                            await fetchCateogries();
+                        }
+                    }}
+                    isActive={modalVisible && activeModal == ModalActiveState.DELETE}
+                    text={`Are you sure you would like to delete this Category?`}
+                    subText={`${selectedCategory?.name}`}
+                    confirmText="Yes, Delete"
+                    headingText="Delete Category"
+                />
+            </DashboardModalPortal>
+            <ListingsSearchBar
+                handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
+                onSearchSubmit={() => { setPagination({ ...pagination, pageIndex: 0 }) }}>
+
+                <button onClick={() => {
+                    setSelectedCategory(undefined);
+                    setActiveModal(ModalActiveState.ADD_OR_EDIT);
+                    handleModalVisibility();
+                }} className='dashboard-primary-btn'>
+                    <IconPlus width={24} height={24} />Add
+                </button>
 
                 <SelectDropdown
                     getDefaultValue={() => getInitialSortByOption(sorting)}
@@ -264,7 +336,7 @@ export const CategoryListings = () => {
                     </tbody>
                 </table>}
             <ListingsPagination handleBeforeButtonClick={() => setupLoading(true)} table={table} />
-
+            {/* <CategoryForm/> */}
         </div>
 
     )
