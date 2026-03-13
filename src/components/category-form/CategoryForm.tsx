@@ -45,7 +45,15 @@ export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormPr
                 method: state === FormState.ADD ? 'POST' : 'PUT'
             })
 
+
             if (!response.ok) {
+
+                if (response.status === 400) {
+                    const responseMessage = await response.json();
+                    toast.error('Error', { closeButton: true, description: responseMessage.message });
+                    return;
+                }
+
                 toast.error('Error', { closeButton: true, description: 'An issue has occured while saving category. Please try again later.' })
                 throw new Error('Failed to submit the data. Please try again.');
             }
@@ -65,29 +73,25 @@ export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormPr
         }
     }
 
+
     const isFormValid = (): boolean => {
-        let result = true;
-        
+        const errors = { nameError: "", colorError: "" };
+
         if (!formData.name) {
-            setFormErrors({ ...formErrors, nameError: "The 'Name' field is a mandatory field." });
-            result = false;
-        }
-        const colorHexReg = new RegExp(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
-        if(!colorHexReg.test(formData.color))
-        {
-            setFormErrors({ ...formErrors, colorError: "A valid hex value is required." });
-            result = false;
+            errors.nameError = "The 'Name' field is a mandatory field.";
         }
 
-        if (result) {
-            setFormErrors({ ...formErrors, nameError: "" });
+        const colorHexReg = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+        if (!colorHexReg.test(formData.color)) {
+            errors.colorError = "A valid hex value is required.";
         }
 
-        return result;
+        setFormErrors(errors);
+        return !errors.nameError && !errors.colorError;
     };
 
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {        
+    const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         if (event.target.type === "checkbox" && event.target instanceof HTMLInputElement) {
             setFormData({ ...formData, [event.target.name]: event.target.checked });
         }
@@ -96,8 +100,7 @@ export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormPr
         }
     }
 
-    const handleColorPickerChange =(newColor: string) =>
-    {
+    const handleColorPickerChange = (newColor: string) => {
         setFormData({ ...formData, color: newColor });
     }
 
@@ -146,8 +149,8 @@ export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormPr
 
                 <div className="form-field-wrapper centered-fields">
                     <label htmlFor='form-category__color'>Color</label>
-                    <HexColorPicker  color={formData?.color ?? DEFAULT_CATEGORY_COLOR} onChange={handleColorPickerChange} />
-                    <input id="form-category__color" name="color" maxLength={7}  className="form-field"  type="text" value={formData.color} onChange={handleChange}/>
+                    <HexColorPicker color={formData?.color ?? DEFAULT_CATEGORY_COLOR} onChange={handleColorPickerChange} />
+                    <input id="form-category__color" name="color" maxLength={7} className="form-field" type="text" value={formData.color} onChange={handleChange} />
                     {formErrors.colorError ? (<p className='form-field__error-message'>{formErrors.colorError}</p>) : null}
                 </div>
 
