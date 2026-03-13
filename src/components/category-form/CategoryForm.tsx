@@ -7,7 +7,6 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { HexColorPicker } from "react-colorful";
 
-
 interface CategoryFormProps {
     state?: number;
     categoryId?: number;
@@ -129,7 +128,7 @@ export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormPr
 
     }, [categoryId, state])
 
-    return (<div className="form-container">
+    return (<div className={`form-container plain`}>
         <div className='form-inner-content'>
             <Form className='form-dashboard' action="/dashboard/settings" onSubmit={onSubmit}>
                 <div className="form-field-wrapper centered-fields">
@@ -145,7 +144,7 @@ export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormPr
 
                 <div className="form-field-wrapper centered-fields">
                     <label htmlFor='form-category__color'>Color</label>
-                    <HexColorPicker color={formData?.color ?? DEFAULT_CATEGORY_COLOR} onChange={handleColorPickerChange} />
+                    <HexColorPicker className="react-colorful full-width" color={formData?.color ?? DEFAULT_CATEGORY_COLOR} onChange={handleColorPickerChange} />
                     <input id="form-category__color" name="color" maxLength={7} className="form-field" type="text" value={formData.color} onChange={handleChange} />
                     {formErrors.colorError ? (<p className='form-field__error-message'>{formErrors.colorError}</p>) : null}
                 </div>

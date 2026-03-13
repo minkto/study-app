@@ -99,6 +99,14 @@ textarea
   box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.25);
 }
 
+.form-container.plain {
+  border-radius: 5px;
+  background-color: #FFFFFF;
+  border: none;
+  margin: 0;
+  box-shadow: none;
+}
+
 .form-inner-content {
   padding: 10px;
 }
@@ -450,4 +458,14 @@ tbody .table-row:nth-child(2n):hover {
     border-radius: 5px;
     font-weight: bold;
     font-size: 1.2rem;
+}
+
+/****************************************
+*
+* React Colourful - Overrides
+*
+***************************************/
+.react-colorful.full-width
+{
+  width: 100%;
 }
