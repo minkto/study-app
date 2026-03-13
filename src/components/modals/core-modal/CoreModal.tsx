@@ -3,13 +3,14 @@ import { useEffect, useRef } from "react";
 import styles from './core-modal.module.css';
 
 interface CoreModalProps {
+    title?: string;
     children?: React.ReactNode;
     isActive?: boolean;
     onClose?: () => void;
     onConfirm?: () => void;
 }
 
-export const CoreModal = ({ children, isActive, onConfirm, onClose }: CoreModalProps) => {
+export const CoreModal = ({ title, children, isActive, onConfirm, onClose }: CoreModalProps) => {
     const backgroundEl = useRef<HTMLDivElement>(null);
     const firstFocusElement = useRef<HTMLButtonElement>(null);
     const secondFocusElement = useRef<HTMLButtonElement>(null);
@@ -73,8 +74,11 @@ export const CoreModal = ({ children, isActive, onConfirm, onClose }: CoreModalP
     return (
         isActive && <div ref={backgroundEl} className="modal-background" >
             <div className={'modal-content'}>
-                <div className={styles['modal-options']}>
-                    <button aria-label="close" className={styles["modal-close-btn"]} onClick={() => handleOnConfirm()}><IconCancel width={32} height={32} /></button>
+                <div className={styles['model-content-header']}>
+                    {title && <h2>{title}</h2>}
+                    <div className={styles['modal-options']}>
+                        <button aria-label="close" className={styles["modal-close-btn"]} onClick={() => handleOnConfirm()}><IconCancel width={32} height={32} /></button>
+                    </div>
                 </div>
                 {children}
             </div>

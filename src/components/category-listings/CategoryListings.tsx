@@ -171,7 +171,7 @@ export const CategoryListings = () => {
             }
         }
         catch (error) {
-            console.log("An error has occured in deleting the Category: ", error);
+            console.error("An error has occured in deleting the Category: ", error);
         }
         finally {
             setupLoading(false);
@@ -202,7 +202,12 @@ export const CategoryListings = () => {
 
         <div className={styles["data-table-listings"]}>
             <DashboardModalPortal show={modalVisible}>
-                <CoreModal onClose={hide} isActive={modalVisible && activeModal == ModalActiveState.ADD_OR_EDIT}>
+                <CoreModal 
+                title={!selectedCategory?.categoryId  ? "Add Category" : "Edit Category"}
+                onClose={hide} 
+                isActive={modalVisible 
+                && activeModal == ModalActiveState.ADD_OR_EDIT}
+                >
                     <CategoryForm
                         state={!selectedCategory?.categoryId ? FormState.ADD : FormState.EDIT}
                         onFormSubmit={async () => {
