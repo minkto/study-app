@@ -15,6 +15,7 @@ interface CategoryFormProps {
 }
 export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormProps) => {
 
+    const TOP_LEVEL_ERROR_MESSAGE = 'An issue has occured while saving category. Please try again later.'
     const [formErrors, setFormErrors] = useState({
         nameError: "",
         colorError: ""
@@ -47,15 +48,9 @@ export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormPr
 
 
             if (!response.ok) {
-
-                if (response.status === 400) {
-                    const responseMessage = await response.json();
-                    toast.error('Error', { closeButton: true, description: responseMessage.message });
-                    return;
-                }
-
-                toast.error('Error', { closeButton: true, description: 'An issue has occured while saving category. Please try again later.' })
-                throw new Error('Failed to submit the data. Please try again.');
+                const responseMessage = await response.json();
+                toast.error('Error', { closeButton: true, description:  responseMessage?.message ?? TOP_LEVEL_ERROR_MESSAGE });
+                return;
             }
 
             toast.success('Success', { closeButton: true, description: 'Category was saved successfully.' })
@@ -65,6 +60,7 @@ export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormPr
         }
         catch (error) {
             if (error instanceof Error) {
+                toast.error('Error', { closeButton: true, description: TOP_LEVEL_ERROR_MESSAGE })
                 console.error(error);
             }
         }
