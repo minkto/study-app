@@ -89,8 +89,8 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
         const getCategories = async () => {
             try {
                 const response = await fetch('/api/categories');
-                const data: Category[] = await response.json();
-                setCategories(data);
+                const data = await response.json();
+                setCategories(data.categories);
 
             } catch (error) {
                 if (error instanceof Error) {

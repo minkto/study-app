@@ -1,6 +1,8 @@
 import { DEFAULT_CATEGORY_COLOR } from "@/constants/constants";
 import { createCategory } from "@/db/categories/createCategory";
+import { getCategory } from "@/db/categories/getCategory";
 import { getUserCategories, getUserCategoriesPageCount } from "@/db/categories/getUserCategories";
+import { updateCategory } from "@/db/categories/updateCategory";
 import { getCurrentAppUser } from "@/services/auth/userService";
 import validateCategoriesService from "@/services/validateCategoriesService";
 import { Category, GetCategoriesApiResponse, ListingSearchQuery } from "@/shared.types";
@@ -85,6 +87,49 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: 'Category created successfully.' }, { status: 201 });
         }
 
+
+    } catch (error) {
+        return NextResponse.json({ message: 'API Error', error }, { status: 500 });
+    }
+}
+
+export async function PUT(request: Request) {
+    try {
+        const currentUser = await getCurrentAppUser();
+
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
+        }
+
+        const { userId } = currentUser;
+        const categoryRequestBody: Category = await request.json();
+        const categoryId = Number(categoryRequestBody.categoryId);
+
+        const categoryFromDb: Category | null = await getCategory(categoryId, userId);
+
+        if (!categoryFromDb) {
+            return NextResponse.json({ message: 'No category was found for the user.' }, { status: 404 });
+        }
+
+        categoryFromDb.name = removeWhitespace(categoryRequestBody.name);
+        categoryFromDb.description = removeWhitespace(categoryRequestBody.description);
+        categoryFromDb.color = removeWhitespace(categoryRequestBody.color) ?? DEFAULT_CATEGORY_COLOR;
+        
+        const validationResult = await validateCategoriesService(categoryFromDb);
+        if (!validationResult.isValid) {
+            return NextResponse.json({ message: validationResult.message }, { status: 400 });
+        }
+
+        const result = await updateCategory(categoryFromDb);
+
+        if (result) {
+            return NextResponse.json({ message: 'Category updated successfully.' }, { status: 200 });
+        }
+
+        return NextResponse.json({ message: 'No category was updated.' }, { status: 404 });
 
     } catch (error) {
         return NextResponse.json({ message: 'API Error', error }, { status: 500 });

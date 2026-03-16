@@ -1,0 +1,31 @@
+.modal-options {
+    flex-direction: row;
+    display: flex;
+    justify-content: flex-end;
+
+}
+
+.model-content-header {
+    display: flex;
+    flex-direction: row;
+
+}
+
+.model-content-header h2 {
+    text-align: center;
+    flex-grow: 2;
+    align-self: center;
+}
+
+.modal-close-btn {
+    background-color: transparent;
+    border: none;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:active,
+.modal-close-btn:hover,
+.modal-close-btn:focus {
+    background-color: #c1c1c1;
+    border-radius: 5px;
+}
