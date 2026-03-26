@@ -45,12 +45,13 @@ const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps)
                 <h2 className={styles["resources-listing-card__name"]}>{resource.name}</h2>
                 {<CardDropdownMenu links={
                     [
+                        { href: `resources/${resource.resourceId}`, label: "View Details" },
                         { href: `resources/${resource.resourceId}/chapters`, label: "View Chapters" },
-                        { href: `resources/${resource.resourceId}/edit-resource`, label: "Edit Resource" },
+                        { href: `resources/${resource.resourceId}/edit-resource`, label: "Edit" },
                         {
                             onClick: () => {
                                 handleModalVisibility();
-                            }, label: "Delete Resource"
+                            }, label: "Delete"
                         },
                     ]
                 } />}
