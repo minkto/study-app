@@ -5,7 +5,8 @@ export async function getResource(id: number, userId: string | null) {
     const resourceQueryResult = await queryData(
         `SELECT 
             r.*, 
-            c.name AS category_name 
+            c.name AS category_name,
+            c.color AS color
         FROM Resources r
         LEFT JOIN categories c ON r.category_id = c.category_id
         WHERE r.resource_id = $1 AND r.user_id = $2`, [id, userId]);
@@ -16,6 +17,7 @@ export async function getResource(id: number, userId: string | null) {
             description: x.description,
             categoryId: x.category_id,
             categoryName: x.category_name,
+            categoryColor: x.color,
             isPinned: x.is_pinned
         }))[0];
 

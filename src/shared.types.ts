@@ -4,6 +4,7 @@ export interface GetResourceDto {
     description?: string;
     categoryId?: number | null | undefined;
     categoryName?: string;
+    categoryColor?: string| null | undefined;
     chaptersProgressDetails?: ChaptersProgressDetails;
 }
 
@@ -25,6 +26,7 @@ export interface Resource {
     description?: string;
     categoryId?: number | null | undefined;
     categoryName?: string
+    categoryColor?: string | null | undefined;
     chapters?: Chapter[] | null | undefined;
     isPinned: boolean;
 }

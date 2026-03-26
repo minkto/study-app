@@ -36,7 +36,7 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
         <div className={styles["resource-details-section"]}>
             <h1 className={styles["resource-details__title"]}>{resource?.name}</h1>
             {resource?.categoryId && <div className={styles["resource-details__category"]}>
-                <CategoryPill title={resource?.categoryName} />
+                <CategoryPill title={resource?.categoryName} color={resource?.categoryColor} />
             </div>}
         </div>
 

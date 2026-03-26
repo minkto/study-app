@@ -17,6 +17,7 @@ export const getResourceDto = async (resourceId: number, userId: string | null):
             resourceId: resource.resourceId,
             categoryId: resource.categoryId,
             categoryName: resource.categoryName,
+            categoryColor: resource.categoryColor,
             description: resource.description,
             chaptersProgressDetails: chaptersProgress
         }
