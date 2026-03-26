@@ -2,10 +2,10 @@ import CategoryPill from '../category-pill/CategoryPill';
 import styles from './resource-listings-card.module.css'
 import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
 import { GetResourceDto } from '@/shared.types';
-import { useEffect, useState } from 'react';
 import DashboardModalPortal from '../dashboard-modal-portal/DashboardModalPortal';
 import ConfirmationModal from '../modals/confirmation-modal/ConfirmationModal';
 import { useModalVisibility } from '@/hooks/useModalVisibility';
+import ResourceProgressBar from '../resource-progress-bar/ResourceProgressBar';
 
 interface ResourceListingsCardProps {
     resource: GetResourceDto;
@@ -28,12 +28,7 @@ const renderCategory = (resource: GetResourceDto) => {
 
 const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps) => {
 
-    const [progressBarWidth, setProgressBarWidth] = useState("0%");
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
-
-    useEffect(() => {
-        setProgressBarWidth(`calc(${resource.percentageCompleted}%)`);
-    }, [resource.percentageCompleted]);
 
     return (
         <div className={styles["resources-listing-card"]}>
@@ -64,15 +59,7 @@ const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps)
             {renderCategory(resource)}
 
             <div className={styles["resources-listing-card__row"]}>
-                {/*<!-- Percentage Component -->*/}
-                <div className={styles["resources-listing-card__progress-bar"]}>
-                    <div className={styles["resources-listing-card__progress-bar__name"]}>Percentage Complete</div>
-                    <div className={styles["resources-listing-card__progress-bar__background"]}>
-                        <div style={{ width: progressBarWidth }} className={styles["resources-listing-card__progress-bar__overlay"]}></div>
-                        <div className={styles["resources-listing-card__progress-bar__value"]}>{resource.percentageCompleted}%</div>
-                    </div>
-
-                </div>
+                <ResourceProgressBar percentageCompleted={resource?.chaptersProgressDetails?.percentageCompleted} />
             </div>
             <div className={styles["resources-listing-card__description"]}>
                 <p className={styles["max-lines"]}>{resource?.description}</p>
