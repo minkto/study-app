@@ -1,0 +1,32 @@
+.resources-progress-bar__background {
+    background-color: #F3F3F3;
+    border-radius: 5px;
+    width: 100%;
+    height: 20px;
+    position: relative;
+
+}
+
+.resources-progress-bar__overlay {
+    background-color: #B1FFC5;
+    border-radius: 5px;
+    height: 20px;
+    width: 0;
+    transition: width 1s ease-in-out;
+}
+
+
+.resources-progress-bar {
+    flex: 2;
+}
+
+.resources-progress-bar__name {
+    margin: 5px auto;
+}
+
+.resources-progress-bar__value {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    text-align: center;
+}

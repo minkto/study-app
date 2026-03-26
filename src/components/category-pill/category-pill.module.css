@@ -1,14 +1,13 @@
-.resources-listing-card-category__pill {
+.category__pill {
     display: flex;
     align-items: center;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--primary-color);
     border-radius: 20px;
     padding: 0.5em;
     margin: 5px;
-    border: 2px dashed black;
 }
 
-.resources-listing-card-category-pill__color-tag {
+.category-pill__color-tag {
     width: 10px;
     height: 10px;
     margin-right: 5px;
@@ -16,6 +15,7 @@
     background-color: rgb(250, 85, 2);
 }
 
-.resources-listing-card-category-pill__text {
+.category-pill__text {
     display: inline-block;
+    color: var(--secondary-color);
 }

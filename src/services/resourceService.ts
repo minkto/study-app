@@ -1,14 +1,15 @@
 import { bulkCreateResourcesWithChapters } from "@/db/resources/createResource";
 import { getResource } from "@/db/resources/getResource"
-import getResourcePercentageComplete from "@/db/resources/getResourcePercentageComplete";
+import getChaptersProgressDetails from "@/db/resources/getResourceChaptersProgress";
 import { calculatePageCount, getResources } from "@/db/resources/getResources";
 import { GetResourceDto, GetResourcesDto, ListingSearchQuery, Resource } from "@/shared.types";
 
 export const getResourceDto = async (resourceId: number, userId: string | null): Promise<GetResourceDto | null> => {
+
     const resource = await getResource(resourceId, userId);
 
     if (resource !== null && resource !== undefined) {
-        const percentageCompleted = await getResourcePercentageComplete(resourceId);
+        const chaptersProgress = await getChaptersProgressDetails(resourceId);
 
         const dto: GetResourceDto =
         {
@@ -16,8 +17,9 @@ export const getResourceDto = async (resourceId: number, userId: string | null):
             resourceId: resource.resourceId,
             categoryId: resource.categoryId,
             categoryName: resource.categoryName,
+            categoryColor: resource.categoryColor,
             description: resource.description,
-            percentageCompleted: percentageCompleted
+            chaptersProgressDetails: chaptersProgress
         }
 
         return dto;
@@ -33,13 +35,13 @@ export const getResourcesDto = async (queryParams: ListingSearchQuery): Promise<
     if (Array.isArray(mappedResources)) {
         const mappedDto: GetResourceDto[] = await Promise.all(
             mappedResources.map(async (x) => {
-                const percentageCompleted = await getResourcePercentageComplete(x?.resourceId ?? 0);
+                const chaptersProgress = await getChaptersProgressDetails(x?.resourceId ?? 0);
                 return {
                     name: x.name,
                     description: x.description,
                     resourceId: x.resourceId,
                     categoryName: x.categoryName,
-                    percentageCompleted: percentageCompleted
+                    chaptersProgressDetails: chaptersProgress
                 };
             })
         );
@@ -56,7 +58,7 @@ export const bulkCreateResourcesAndChapters = async (resources: Resource[], user
 
     const result = await bulkCreateResourcesWithChapters(resources, userId);
     if (!result) {
-        console.log("Could not create resources, with chapters.", resources,userId);
+        console.log("Could not create resources, with chapters.", resources, userId);
     }
 
     return result;
