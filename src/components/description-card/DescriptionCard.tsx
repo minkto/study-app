@@ -25,7 +25,7 @@ export const DescriptionCard = ({ text }: DescriptionCardProps) => {
         setIsExpanded(next);
         isExpandedRef.current = next;
         isAnimatingRef.current = true;
-        setTimeout(() => { isAnimatingRef.current = false; }, 500); // match your CSS transition duration
+        setTimeout(() => { isAnimatingRef.current = false; }, 500);
     }
 
 
