@@ -10,7 +10,7 @@ interface DescriptionCardProps {
 
 export const DescriptionCard = ({ text }: DescriptionCardProps) => {
 
-    const OVERFLOW_MARGIN_HEIGHT = 20;
+    const OVERFLOW_MARGIN_HEIGHT = 2;
     const innerContent = useRef<HTMLDivElement>(null);
     const showMoreBtn = useRef<HTMLButtonElement>(null);
     const [isExpanded, setIsExpanded] = useState(false);
