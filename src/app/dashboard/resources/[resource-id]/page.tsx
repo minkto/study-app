@@ -5,6 +5,7 @@ import { GetResourceDto } from "@/shared.types";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
 import styles from './page.module.css'
+import DescriptionCard from "@/components/description-card/DescriptionCard";
 
 export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
 
@@ -32,23 +33,28 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
 
     const resource: GetResourceDto | null = await getResourceDetails();
 
-    return <div>
-        <div className={styles["resource-details-section"]}>
-            <h1 className={styles["resource-details__title"]}>{resource?.name}</h1>
-            {resource?.categoryId && <div className={styles["resource-details__category"]}>
-                <CategoryPill title={resource?.categoryName} color={resource?.categoryColor} />
-            </div>}
-        </div>
+    return (
+        <div>
+            <div className="resource-details-top-section">
+                <div className={styles["resource-details-section"]}>
+                    <h1 className={styles["resource-details__title"]}>{resource?.name}</h1>
+                    {resource?.categoryId && <div className={styles["resource-details__category"]}>
+                        <CategoryPill title={resource?.categoryName} color={resource?.categoryColor} />
+                    </div>}
+                </div>
 
-        <div className={styles["resource-details__progress-details"]}>
-            <div className={styles["progress-details__percentage"]}>
-                <ResourceProgressBar percentageCompleted={resource?.chaptersProgressDetails?.percentageCompleted} />
+                <div className={styles["resource-details__progress-details"]}>
+                    <div className={styles["progress-details__percentage"]}>
+                        <ResourceProgressBar percentageCompleted={resource?.chaptersProgressDetails?.percentageCompleted} />
+                    </div>
+                    <div className={styles["progress-details__progress"]}>
+                        <h3>{resource?.chaptersProgressDetails?.totalChaptersComplete}/{resource?.chaptersProgressDetails?.totalChapters}</h3>
+                        <h4>Chapters</h4>
+                    </div>
+                </div>
             </div>
-            <div className={styles["progress-details__progress"]}>
-                <h3>{resource?.chaptersProgressDetails?.totalChaptersComplete}/{resource?.chaptersProgressDetails?.totalChapters}</h3>
-                <h4>Chapters</h4>
+            <div className={styles["resource-details__description"]}>
+                <DescriptionCard text={resource?.description} />
             </div>
-
-        </div>
-    </div>
+        </div>)
 }

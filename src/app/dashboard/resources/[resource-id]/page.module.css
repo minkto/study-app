@@ -9,6 +9,11 @@
     flex-grow: 2;
 }
 
+.resource-details__description 
+{
+    margin: 1.25em 0;
+}
+
 .resource-details__progress-details {
     display: flex;
     flex-direction: row;
