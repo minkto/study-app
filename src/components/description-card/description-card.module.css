@@ -1,0 +1,49 @@
+.description-card {
+    background-color: #F5F5F5;
+    border-radius: var(--standard-box-radius);
+}
+
+.description-card__inner-content {
+    max-height: 100px;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+    padding: 0.5em;
+}
+
+
+.inner-content--expanded {
+    max-height: 1000px;
+    mask-image: none;
+}
+
+.description-card__show-more-option {
+
+    padding: 0.5em;
+}
+
+.show-more-option__btn-link {
+
+    color: var(--secondary-color);
+}
+
+.overflow.description-card__inner-content {
+    mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+}
+
+
+.overflow.description-card__inner-content.inner-content--expanded {
+    mask-image: none;
+}
+
+.icon-wrapper {
+    display: inline-block;
+    transform: rotate(0deg);
+    transition: transform 0.3s ease-in-out;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+.icon-wrapper--rotated {
+    transform: rotate(-180deg);
+    vertical-align: bottom;
+}
