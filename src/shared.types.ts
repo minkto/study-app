@@ -113,6 +113,7 @@ export interface SvgIcon {
     className?: string;
     useCurrentColor?: boolean;
     removeStroke?: boolean;
+    strokeColor? : string;
 }
 
 export interface ListingSearchQuery {
