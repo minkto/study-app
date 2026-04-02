@@ -14,6 +14,14 @@
     margin: 1.25em 0;
 }
 
+.resource-details__chapters
+{
+    padding: 0.5em;
+    background-color: white;
+    border-radius: var(--default-border-radius);
+}
+
+
 .resource-details__progress-details {
     display: flex;
     flex-direction: row;
