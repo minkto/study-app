@@ -4,25 +4,29 @@ import { PaginationState, SortingState } from "@tanstack/react-table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-interface SortQueryFilters 
-{
+interface SortQueryFilters {
     sortByValue: string;
     sortOrderValue: string;
 }
 
-export function useDataTableQueryParams(pageSize = ListingPageSizes.DEFAULT) {
+interface UseDataTableQueryProps {
+    pageSize?: number;
+    syncWithQueryParams?: boolean;
+}
+
+export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEFAULT), syncWithQueryParams = false }: UseDataTableQueryProps) {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize: parseInt(pageSize)
+        pageSize: pageSize
     });
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
 
-    const constructQueryString = useCallback(() => {
+    const constructQueryStringSync = useCallback(() => {
         const params = new URLSearchParams(searchParams?.toString());
         const sortBy = sorting[0]?.id;
         const sortOrder = sorting[0]?.desc ? "desc" : "asc";
@@ -42,7 +46,46 @@ export function useDataTableQueryParams(pageSize = ListingPageSizes.DEFAULT) {
         return params.size > 0 ? "?" + params.toString() : "";
     }, [searchParams, sorting, pagination.pageIndex]);
 
-    const redirectWithQueryParams = () => {
+    const constructQueryStringLocal = useCallback(() => {
+        const params = new URLSearchParams();
+        const sortBy = sorting[0]?.id;
+        const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
+        if (sorting.length > 0) {
+            params.set("sortBy", sortBy!);
+            params.set("sortOrder", sortOrder);
+        }
+        if (pagination.pageIndex > 0) {
+            params.set("page", (pagination.pageIndex + 1).toString());
+        }
+        return params.size > 0 ? "?" + params.toString() : "";
+    }, [sorting, pagination.pageIndex]);
+
+
+    const constructQueryString = useCallback(() => {        
+        if (!syncWithQueryParams) {
+            return constructQueryStringLocal();
+        }
+        else {
+            return constructQueryStringSync();
+        }
+
+
+    }, [constructQueryStringSync, constructQueryStringLocal, syncWithQueryParams]);
+
+
+    const getSortByQueryParamValues = useCallback((): SortQueryFilters => {
+        const params = new URLSearchParams(searchParams?.toString());
+        const sortByValue = params.get('sortBy') ?? "";
+        const sortOrderValue = params.get('sortOrder') ?? "";
+
+        return {
+            sortByValue: sortByValue,
+            sortOrderValue: sortOrderValue
+        }
+    }, [searchParams])
+
+    const redirectWithQueryParams = useCallback(() => {
         const queryString = constructQueryString();
         if (queryString) {
             router.push(queryString);
@@ -50,9 +93,9 @@ export function useDataTableQueryParams(pageSize = ListingPageSizes.DEFAULT) {
         else {
             router.replace(`${pathname}${queryString}`);
         }
-    }
+    }, [constructQueryString, pathname, router])
 
-    const setupInitialSort = () => {
+    const setupInitialSort = useCallback(() => {
         const sortQueryFilters = getSortByQueryParamValues();
 
         if (!isStringEmpty(sortQueryFilters.sortByValue) && !isStringEmpty(sortQueryFilters.sortOrderValue)) {
@@ -63,31 +106,22 @@ export function useDataTableQueryParams(pageSize = ListingPageSizes.DEFAULT) {
 
             setSorting(newSorting);
         }
-    }
+    }, [getSortByQueryParamValues])
 
-    const getSortByQueryParamValues = () : SortQueryFilters => 
-    {
-        const params = new URLSearchParams(searchParams?.toString());
-        const sortByValue = params.get('sortBy') ?? "";
-        const sortOrderValue = params.get('sortOrder') ?? "";
-
-        return {
-            sortByValue : sortByValue,
-            sortOrderValue : sortOrderValue
-        }
-    }
 
     // Only redirect when sorting changes and it's not the initial sort
     useEffect(() => {
-        if (sorting.length > 0) {
+        if (sorting.length > 0 && syncWithQueryParams) {
             redirectWithQueryParams();
         }
-    }, [sorting]);
+    }, [sorting, syncWithQueryParams, redirectWithQueryParams]);
 
     // Upon Component Mount, set the sorting.
     useEffect(() => {
-        setupInitialSort();
-    }, []);
+        if (syncWithQueryParams) {
+            setupInitialSort();
+        }
+    }, [syncWithQueryParams, setupInitialSort]);
 
     return {
         constructQueryString,
