@@ -19,7 +19,7 @@ const ResourceListings = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
-  const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, searchParams } = useDataTableQueryParams(process.env.RESOURCES_MAX_PAGE_SIZE ?? ListingPageSizes.RESOURCES);
+  const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, searchParams } = useDataTableQueryParams({pageSize:Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.RESOURCES)});
   const [pageCount, setPageCount] = useState(0);
   const [data, setData] = useState<GetResourceDto[]>([]);
   const columnHelper = createColumnHelper<GetResourceDto>();

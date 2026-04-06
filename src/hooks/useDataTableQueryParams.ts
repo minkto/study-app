@@ -21,10 +21,16 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         pageIndex: 0,
         pageSize: pageSize
     });
+    const [search, setSearch] = useState('');
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
+
+    const submitSearch = useCallback((value: string) => {
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        setSearch(value);
+    }, []);
 
     const constructQueryStringSync = useCallback(() => {
         const params = new URLSearchParams(searchParams?.toString());
@@ -43,8 +49,15 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
             params.set("page", (pagination.pageIndex + 1).toString());
         }
 
+        if (!isStringEmpty(search)) {
+            params.set("search-term", search);
+        }
+        else {
+            params.delete("search-term");
+        }
+
         return params.size > 0 ? "?" + params.toString() : "";
-    }, [searchParams, sorting, pagination.pageIndex]);
+    }, [searchParams, sorting, pagination.pageIndex, search]);
 
     const constructQueryStringLocal = useCallback(() => {
         const params = new URLSearchParams();
@@ -58,18 +71,22 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         if (pagination.pageIndex > 0) {
             params.set("page", (pagination.pageIndex + 1).toString());
         }
+
+        if (!isStringEmpty(search)) {
+            params.set("search-term", search);
+        }
+
         return params.size > 0 ? "?" + params.toString() : "";
-    }, [sorting, pagination.pageIndex]);
+    }, [sorting, pagination.pageIndex, search]);
 
 
-    const constructQueryString = useCallback(() => {        
+    const constructQueryString = useCallback(() => {
         if (!syncWithQueryParams) {
             return constructQueryStringLocal();
         }
         else {
             return constructQueryStringSync();
         }
-
 
     }, [constructQueryStringSync, constructQueryStringLocal, syncWithQueryParams]);
 
@@ -126,11 +143,13 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
     return {
         constructQueryString,
         redirectWithQueryParams,
+        submitSearch,
         setupInitialSort,
         setSorting,
         setPagination,
         sorting,
         pagination,
-        searchParams
+        searchParams,
+        search,
     };
 }

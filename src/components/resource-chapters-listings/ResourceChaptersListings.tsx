@@ -18,7 +18,6 @@ import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
 import ListingsSearchFilterOptions from "../listings-search-filter-options/ListingsSearchFilterOptions";
 import { ListingsPagination } from "../listings-pagination/ListingsPagination";
 import Skeleton from "react-loading-skeleton";
-import 'react-loading-skeleton/dist/skeleton.css';
 import { isStringEmpty } from "@/utils/stringUtils";
 import SelectDropdown from "../select-dropdown/SelectDropdown";
 import { useMobileScreenSize } from "@/hooks/useMobileScreenSize";
@@ -70,7 +69,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
-    const { constructQueryString, redirectWithQueryParams, searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams({ pageSize: pageSize, syncWithQueryParams: useQueryParams });
+    const { constructQueryString, redirectWithQueryParams, search, submitSearch, searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams({ pageSize: pageSize, syncWithQueryParams: useQueryParams });
 
     const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS, FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];
     const filterByList =
@@ -121,13 +120,15 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
 
     const fetchChapters = useCallback(async () => {
         try {
+
             setupLoading(true);
 
             if (!resourceId) {
                 return;
             }
 
-            const response = await fetch(`/api/resources/${resourceId}/chapters${constructQueryString()}`);
+            const fullQuery = constructQueryString();
+            const response = await fetch(`/api/resources/${resourceId}/chapters${fullQuery}`);
             const data = await response.json();
             setData(data.chapters);
             setPageCount(data.chaptersCount);
@@ -298,7 +299,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
         } else {
             fetchChapters();
         }
-    }, [sorting, pagination, useQueryParams, redirectWithQueryParams, fetchChapters]);
+    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchChapters]);
 
     // Set loading to false after data has been loaded and component has re-rendered
     useEffect(() => {
@@ -330,8 +331,11 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                 />
             </DashboardModalPortal>
             <ListingsSearchBar
+                useQueryParams={useQueryParams}
                 handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
-                onSearchSubmit={() => { setPagination({ ...pagination, pageIndex: 0 }) }}>
+                onSearchSubmit={(searchValue: string | undefined) => {
+                    submitSearch(searchValue ?? "");
+                }}>
 
                 <Link className='dashboard-primary-btn' href={'chapters/add-chapter'}><IconPlus width={24} height={24} />Add</Link>
                 <ListingsSearchFilterOptions
