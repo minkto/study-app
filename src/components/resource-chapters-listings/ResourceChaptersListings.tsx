@@ -69,7 +69,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
-    const { constructQueryString, redirectWithQueryParams, search, submitSearch, searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams({ pageSize: pageSize, syncWithQueryParams: useQueryParams });
+    const { constructQueryString, redirectWithQueryParams, search, submitSearch, searchParams, sorting, pagination, setPagination, setSorting,submitFilters,queryFilters } = useDataTableQueryParams({ pageSize: pageSize, syncWithQueryParams: useQueryParams });
 
     const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS, FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];
     const filterByList =
@@ -299,7 +299,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
         } else {
             fetchChapters();
         }
-    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchChapters]);
+    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchChapters,queryFilters]);
 
     // Set loading to false after data has been loaded and component has re-rendered
     useEffect(() => {
@@ -338,8 +338,10 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                 }}>
 
                 <Link className='dashboard-primary-btn' href={'chapters/add-chapter'}><IconPlus width={24} height={24} />Add</Link>
-                <ListingsSearchFilterOptions
-                    onFilterChange={() => { table.firstPage(); }}
+                <ListingsSearchFilterOptions useQueryParams={useQueryParams}
+                    onFilterChange={(filtersValue: string | undefined) => { 
+                        submitFilters(filtersValue ?? "") 
+                    }}
                     handleBeforeOnFilterChange={() => setupLoading(true)}
                     filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
                 {isMobileScreen ? <SelectDropdown

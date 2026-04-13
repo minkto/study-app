@@ -1,4 +1,4 @@
-import { ListingPageSizes } from "@/constants/constants";
+import { FilterByQueryKeys, ListingPageSizes } from "@/constants/constants";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { PaginationState, SortingState } from "@tanstack/react-table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -22,6 +22,7 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         pageSize: pageSize
     });
     const [search, setSearch] = useState('');
+    const [queryFilters, setQueryFilters] = useState('');
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -31,6 +32,12 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
         setSearch(value);
     }, []);
+
+    const submitFilters = useCallback((value: string) => {
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        setQueryFilters(value);
+    }, []);
+
 
     const constructQueryStringSync = useCallback(() => {
         const params = new URLSearchParams(searchParams?.toString());
@@ -56,8 +63,44 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
             params.delete("search-term");
         }
 
-        return params.size > 0 ? "?" + params.toString() : "";
-    }, [searchParams, sorting, pagination.pageIndex, search]);
+        console.log("Current query Params: ", searchParams?.toString())
+
+        const filterParams = new URLSearchParams(queryFilters?.toString());
+        if (filterParams.size > 0) {
+
+            const currentKeys = new Set(params.keys());
+            const updatedKeys = new Set(filterParams.keys());
+
+            console.log("Keys to delete:", updatedKeys)
+
+            currentKeys.forEach(c => {
+                if (!updatedKeys.has(c)) {
+                    console.log("Deleting param: ", c)
+                    params.delete(c)
+                }
+            })
+
+            updatedKeys.forEach(k => params.delete(k));
+            console.log("Params Keys after delete:", updatedKeys)
+
+            // Now append all filter values.
+            filterParams.forEach((v, k) => {
+                params.append(k, v)
+            })
+        }
+        else if (filterParams.size == 0 && params.size == 0) {
+
+            // If no filters, clear all known filter params.
+            params.delete(FilterByQueryKeys.ChapterListings.STATUS);
+            params.delete(FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED);
+        }
+
+        console.log("Filter Params: ", filterParams);
+        console.log("Filter Params String: ", filterParams.toString());
+
+        return params.size > 0 ? "?" + params.toString() : "";;
+
+    }, [searchParams, sorting, pagination.pageIndex, search, queryFilters]);
 
     const constructQueryStringLocal = useCallback(() => {
         const params = new URLSearchParams();
@@ -147,9 +190,11 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         setupInitialSort,
         setSorting,
         setPagination,
+        submitFilters,
         sorting,
         pagination,
         searchParams,
         search,
+        queryFilters
     };
 }
