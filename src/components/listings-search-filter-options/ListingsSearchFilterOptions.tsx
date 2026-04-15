@@ -42,26 +42,44 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
     const [filtersMenuOpen, setFiltersMenuOpen] = useState(false);
     const filterMenuRef = useRef<HTMLDivElement>(null);
     const [isPending, startTransition] = useTransition();
-
+    const [localQueryString, setLocalQueryString] = useState("");
 
     const handleFiltersOnChange = useCallback((filtersQueryStringVal: string | undefined) => {
-        console.log("Calling handleFiltersOnChange ")
         if (onFilterChange) {
             onFilterChange(filtersQueryStringVal)
         }
     }, [onFilterChange])
 
     const getQueryParamsFromFilterOption = (toggleState: boolean, queryLabel: string, querykey: string) => {
-        const params = new URLSearchParams(searchParams?.toString());
-        if (toggleState) {
-            params.append(querykey, queryLabel);
-        }
-        else {
-            params.delete(querykey, queryLabel);
-        }
-        console.log("Params :  ", params?.toString())
 
-        return params?.toString();
+        if (!useQueryParams) {
+
+            const params = new URLSearchParams(localQueryString);
+            if (toggleState) {
+                params.append(querykey, queryLabel);
+            }
+            else {
+                params.delete(querykey, queryLabel);
+            }
+
+            setLocalQueryString(params?.toString() ?? "");
+            return params?.toString();
+        } else {
+            const params = new URLSearchParams();
+
+            // Copy only filter-related keys from current searchParams
+            filterQueryKeys?.forEach(key => {
+                searchParams?.getAll(key).forEach(v => params.append(key, v));
+            });
+
+            if (toggleState) {
+                params.append(querykey, queryLabel);
+            }
+            else {
+                params.delete(querykey, queryLabel);
+            }
+            return params?.toString();
+        }
     }
 
     const setInitialFiltersFromQueryParams = () => {
@@ -107,7 +125,6 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
         const groupToChange = newFiltersToUse.groups[groupId];
         const optionToChange = groupToChange.options.find(x => x.id === id);
 
-        console.log("nenewFiltersToUse: ", newFiltersToUse);
         if (handleBeforeOnFilterChange) {
             handleBeforeOnFilterChange();
         }
@@ -119,7 +136,6 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
 
             if (onFilterChange) {
                 startTransition(() => {
-                    console.log("Filter change: ", getQueryParamsFromFilterOption(optionToChange?.checked, optionToChange.label, groupToChange.queryKey))
                     handleFiltersOnChange(getQueryParamsFromFilterOption(optionToChange?.checked, optionToChange.label, groupToChange.queryKey));
                 });
             }
