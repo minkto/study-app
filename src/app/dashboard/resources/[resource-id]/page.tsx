@@ -6,6 +6,7 @@ import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
 import styles from './page.module.css'
 import DescriptionCard from "@/components/description-card/DescriptionCard";
+import ResourceChaptersListings from "@/components/resource-chapters-listings/ResourceChaptersListings";
 
 export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
 
@@ -56,5 +57,10 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
             <div className={styles["resource-details__description"]}>
                 <DescriptionCard text={resource?.description} />
             </div>
+
+            <div className={styles["resource-details__chapters"]}>
+                <ResourceChaptersListings useQueryParams={false} resourceId={resource?.resourceId?.toString()}/>
+            </div>
+
         </div>)
 }

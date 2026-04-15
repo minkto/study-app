@@ -11,53 +11,54 @@ import {
 } from 'react'
 import IconSearch from '../icons/icon-search/IconSearch'
 import styles from './listings-search-box.module.css'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 interface ListingsSearchBoxProps {
-  onSearchSubmit?: () => void;
+  onSearchSubmit?: (e: string | undefined) => void;
   handleBeforeOnSearchSubmit?: () => void;
+  useQueryParams?: boolean;
 }
 
-export const ListingsSearchBox = ({ onSearchSubmit,handleBeforeOnSearchSubmit }: ListingsSearchBoxProps) => {
+export const ListingsSearchBox = ({ onSearchSubmit, handleBeforeOnSearchSubmit, useQueryParams = true, }: ListingsSearchBoxProps) => {
   const [isPending, startTransition] = useTransition();
   const [currentText, setCurrentText] = useState('');
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const hasSubmitted = useRef(false);
+  const searchParamsString = searchParams.toString();
 
   const handleTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     setCurrentText(event.target.value);
   }
 
+
   const handleOnSubmitSearch = () => {
+
+    if (!useQueryParams) {
+      if (handleBeforeOnSearchSubmit) {
+        handleBeforeOnSearchSubmit();
+      }
+
+      hasSubmitted.current = true;
+
+      return;
+    }
 
     const currentSearchParams = new URLSearchParams(searchParams?.toString());
     const currentSearchTerm = currentSearchParams.get('search-term') ?? '';
 
-    if (currentSearchTerm?.localeCompare(currentText, undefined, { sensitivity: 'accent' }) === 0) {
+    if (currentSearchTerm?.localeCompare(currentText?.trim(), undefined, { sensitivity: 'accent' }) === 0) {
       return;
     }
 
 
-    if(handleBeforeOnSearchSubmit)
-    {
+    if (handleBeforeOnSearchSubmit) {
       handleBeforeOnSearchSubmit();
     }
 
     hasSubmitted.current = true;
 
     startTransition(() => {
-      const currentSearchParams = new URLSearchParams(searchParams?.toString());
-      const trimmedSearchTerm = currentText.trim();
-
-      if (trimmedSearchTerm.length > 0) {
-        currentSearchParams.set('search-term', trimmedSearchTerm);
-        router.push(`${pathname}?${currentSearchParams.toString()}`);
-      } else {
-        currentSearchParams.delete('search-term');
-        router.replace(`${pathname}?${currentSearchParams.toString()}`);
-      }
+      onSearchSubmit?.(currentText?.trim());
     })
   }
 
@@ -78,13 +79,22 @@ export const ListingsSearchBox = ({ onSearchSubmit,handleBeforeOnSearchSubmit }:
     setupSearchBoxValue();
   }, [setupSearchBoxValue])
 
-  // Trigger onSearchSubmit only after param changes
+  // Trigger onSearchSubmit only after the text has changed
+  // and a submit has been commited.
   useEffect(() => {
-    if (hasSubmitted.current) {
-      hasSubmitted.current = false;
-      onSearchSubmit?.();
+    if (useQueryParams) {
+      if (!hasSubmitted.current) {
+        return;
+      }
     }
-  }, [searchParams?.toString()])
+    else {
+      if (hasSubmitted.current) {
+        hasSubmitted.current = false;
+        onSearchSubmit?.(currentText?.trim());
+      }
+    }
+
+  }, [searchParamsString, currentText, onSearchSubmit, useQueryParams])
 
   return (
     <div className={styles['search-box-listing']}>

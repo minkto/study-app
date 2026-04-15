@@ -1,3 +1,5 @@
+"use client"
+
 import { Chapter } from "@/shared.types";
 import { CellContext, createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, Row, RowData, useReactTable } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -16,7 +18,6 @@ import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
 import ListingsSearchFilterOptions from "../listings-search-filter-options/ListingsSearchFilterOptions";
 import { ListingsPagination } from "../listings-pagination/ListingsPagination";
 import Skeleton from "react-loading-skeleton";
-import 'react-loading-skeleton/dist/skeleton.css';
 import { isStringEmpty } from "@/utils/stringUtils";
 import SelectDropdown from "../select-dropdown/SelectDropdown";
 import { useMobileScreenSize } from "@/hooks/useMobileScreenSize";
@@ -32,6 +33,9 @@ declare module '@tanstack/react-table' {
 
 interface ResourceChaptersListingsProps {
     resourceId?: string;
+    useQueryParams?: boolean; // If true, use query param hook; else use local state
+    pageSize?: number;
+
 }
 
 const statusMapping = {
@@ -41,22 +45,22 @@ const statusMapping = {
 };
 
 const sortByOptions =
-[
-  { label: "Sort By", value: "none" },
-  { label: "Name - Asc", value: "name-asc" },
-  { label: "Name - Desc", value: "name-desc" },
-  { label: "Status - Asc", value: "statusId-asc" },
-  { label: "Status - Desc", value: "statusId-desc" },
-  { label: "Original Date Completed - Asc", value: "originaldatecompleted-asc" },
-  { label: "Original Date Completed - Desc", value: "originaldatecompleted-desc" },
-  { label: "Last Date Completed - Asc", value: "lastdatecompleted-asc" },
-  { label: "Last Date Completed - Desc", value: "lastdatecompleted-desc" },
-  { label: "Days Since Last Completed - Asc", value: "daysSinceCompleted-asc" },
-  { label: "Days Since Last Completed - Desc", value: "daysSinceCompleted-desc" },
-];
+    [
+        { label: "Sort By", value: "none" },
+        { label: "Name - Asc", value: "name-asc" },
+        { label: "Name - Desc", value: "name-desc" },
+        { label: "Status - Asc", value: "statusId-asc" },
+        { label: "Status - Desc", value: "statusId-desc" },
+        { label: "Original Date Completed - Asc", value: "originaldatecompleted-asc" },
+        { label: "Original Date Completed - Desc", value: "originaldatecompleted-desc" },
+        { label: "Last Date Completed - Asc", value: "lastdatecompleted-asc" },
+        { label: "Last Date Completed - Desc", value: "lastdatecompleted-desc" },
+        { label: "Days Since Last Completed - Asc", value: "daysSinceCompleted-asc" },
+        { label: "Days Since Last Completed - Desc", value: "daysSinceCompleted-desc" },
+    ];
 
-const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps) => {
 
+const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize }: ResourceChaptersListingsProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const isMobileScreen = useMobileScreenSize();
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
@@ -65,7 +69,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
-    const { constructQueryString, redirectWithQueryParams, searchParams, sorting, pagination, setPagination, setSorting } = useDataTableQueryParams(process.env.CHAPTERS_MAX_PAGE_SIZE);
+    const { constructQueryString, redirectWithQueryParams, search, submitSearch, searchParams, sorting, pagination, setPagination, setSorting,submitFilters,queryFilters } = useDataTableQueryParams({ pageSize: pageSize, syncWithQueryParams: useQueryParams });
 
     const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS, FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];
     const filterByList =
@@ -116,13 +120,15 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
 
     const fetchChapters = useCallback(async () => {
         try {
+
             setupLoading(true);
 
             if (!resourceId) {
                 return;
             }
 
-            const response = await fetch(`/api/resources/${resourceId}/chapters${constructQueryString()}`);
+            const fullQuery = constructQueryString();
+            const response = await fetch(`/api/resources/${resourceId}/chapters${fullQuery}`);
             const data = await response.json();
             setData(data.chapters);
             setPageCount(data.chaptersCount);
@@ -257,7 +263,7 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
             enableSorting: false,
             enableHiding: false,
         }
-    ], [columnHelper, deleteChapter, fetchChapters]);
+    ], [columnHelper, handleModalVisibility,]);
 
     const table = useReactTable({
         data,
@@ -281,14 +287,19 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
         enableSortingRemoval: true,
     });
 
-    // Upon Component Mount, fetch the chapters.
+    // Upon Component Mount, fetch the chapters. Change upon search params.
     useEffect(() => {
         fetchChapters();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
 
     useEffect(() => {
-        redirectWithQueryParams();
-    }, [sorting, pagination]);
+        if (useQueryParams) {
+            redirectWithQueryParams();
+        } else {
+            fetchChapters();
+        }
+    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchChapters,queryFilters]);
 
     // Set loading to false after data has been loaded and component has re-rendered
     useEffect(() => {
@@ -320,12 +331,17 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
                 />
             </DashboardModalPortal>
             <ListingsSearchBar
+                useQueryParams={useQueryParams}
                 handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
-                onSearchSubmit={() => { setPagination({ ...pagination, pageIndex: 0 }) }}>
+                onSearchSubmit={(searchValue: string | undefined) => {
+                    submitSearch(searchValue ?? "");
+                }}>
 
                 <Link className='dashboard-primary-btn' href={'chapters/add-chapter'}><IconPlus width={24} height={24} />Add</Link>
-                <ListingsSearchFilterOptions
-                    onFilterChange={() => { table.firstPage(); }}
+                <ListingsSearchFilterOptions useQueryParams={useQueryParams}
+                    onFilterChange={(filtersValue: string | undefined) => { 
+                        submitFilters(filtersValue ?? "") 
+                    }}
                     handleBeforeOnFilterChange={() => setupLoading(true)}
                     filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
                 {isMobileScreen ? <SelectDropdown
@@ -335,100 +351,100 @@ const ResourceChaptersListings = ({ resourceId }: ResourceChaptersListingsProps)
 
             </ListingsSearchBar>
 
-            {data?.length === 0 && (dataLoaded && !isLoading)? <ListingsNoResults/>
-             :
-             <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
-                <thead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => {
-                                const thClass = header.column.columnDef.meta?.thClassName;
-                                return (
-                                    <th className={`${styles["table-head-cell"]} ${thClass}`} key={header.id}>
-
-                                        {header.isPlaceholder ? null : (
-                                            <button
-                                                className={
-                                                    header.column.getCanSort()
-                                                        ? 'cursor-pointer select-none'
-                                                        : ''
-                                                }
-                                                onClick={header.column.getToggleSortingHandler()}
-                                                title={
-                                                    header.column.getCanSort()
-                                                        ? (() => {
-                                                            const nextOrder = header.column.getNextSortingOrder();
-                                                            return getSortDirectionTitle(nextOrder);
-                                                        })()
-                                                        : undefined
-                                                }
-                                            >
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                                {{
-                                                    asc: ' 🔼',
-                                                    desc: ' 🔽',
-                                                }[header.column.getIsSorted() as string] ?? null}
-                                            </button>
-                                        )}
-                                    </th>
-                                )
-                            }
-                            )}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody>
-                    {!dataLoaded ? (
-                        // Skeleton rows
-                        [...Array(Number(process.env.CHAPTERS_MAX_PAGE_SIZE ?? ListingPageSizes.CHAPTERS))].map((_, i) => (
-                            <tr className={styles["table-row"]} key={`skeleton-${i}`}>
-                                {table.getVisibleFlatColumns().map((col, j) => (
-                                    <td className={styles["table-row-data"]} key={`skeleton-cell-${j}`}>
-                                        <div style={{ width: '100%' }}>
-                                            <Skeleton height={53} />
-                                        </div>
-                                    </td>
-                                ))}
-                            </tr>
-                        ))
-                    ) : (
-                        // Actual rows
-                        table.getRowModel().rows.map(row => (
-                            <tr className={styles["table-row"]} key={row.id}>
-                                {row.getVisibleCells().map(cell => {
-                                    const tdClass = cell.column.columnDef.meta?.tdClassName
-                                        ? cell.column.columnDef.meta.tdClassName(cell.getContext())
-                                        : "";
-
-                                    const label = cell.column.columnDef.meta?.label
-                                        ? `${cell.column.columnDef.meta.label}`
-                                        : "";
-
-                                    const value = cell.getValue() as string;
-
+            {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults />
+                :
+                <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
+                    <thead>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <tr key={headerGroup.id}>
+                                {headerGroup.headers.map(header => {
+                                    const thClass = header.column.columnDef.meta?.thClassName;
                                     return (
-                                        <td
-                                            className={`${styles["table-row-data"]} ${tdClass}`}
-                                            key={cell.id}
-                                        >
-                                            {!isStringEmpty(value) ? (<span className={`${styles["col-label-inline"]}`}>{label}</span>) : (null)}
+                                        <th className={`${styles["table-head-cell"]} ${thClass}`} key={header.id}>
 
-                                            <span>
-
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </span>
-                                        </td>
-                                    );
-                                })}
+                                            {header.isPlaceholder ? null : (
+                                                <button
+                                                    className={
+                                                        header.column.getCanSort()
+                                                            ? 'cursor-pointer select-none'
+                                                            : ''
+                                                    }
+                                                    onClick={header.column.getToggleSortingHandler()}
+                                                    title={
+                                                        header.column.getCanSort()
+                                                            ? (() => {
+                                                                const nextOrder = header.column.getNextSortingOrder();
+                                                                return getSortDirectionTitle(nextOrder);
+                                                            })()
+                                                            : undefined
+                                                    }
+                                                >
+                                                    {flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )}
+                                                    {{
+                                                        asc: ' 🔼',
+                                                        desc: ' 🔽',
+                                                    }[header.column.getIsSorted() as string] ?? null}
+                                                </button>
+                                            )}
+                                        </th>
+                                    )
+                                }
+                                )}
                             </tr>
-                        ))
-                    )}
-                </tbody>
-            </table> 
-            }    
+                        ))}
+                    </thead>
+                    <tbody>
+                        {!dataLoaded ? (
+                            // Skeleton rows
+                            [...Array(Number(process.env.CHAPTERS_MAX_PAGE_SIZE ?? ListingPageSizes.CHAPTERS))].map((_, i) => (
+                                <tr className={styles["table-row"]} key={`skeleton-${i}`}>
+                                    {table.getVisibleFlatColumns().map((col, j) => (
+                                        <td className={styles["table-row-data"]} key={`skeleton-cell-${j}`}>
+                                            <div style={{ width: '100%' }}>
+                                                <Skeleton height={53} />
+                                            </div>
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : (
+                            // Actual rows
+                            table.getRowModel().rows.map(row => (
+                                <tr className={styles["table-row"]} key={row.id}>
+                                    {row.getVisibleCells().map(cell => {
+                                        const tdClass = cell.column.columnDef.meta?.tdClassName
+                                            ? cell.column.columnDef.meta.tdClassName(cell.getContext())
+                                            : "";
+
+                                        const label = cell.column.columnDef.meta?.label
+                                            ? `${cell.column.columnDef.meta.label}`
+                                            : "";
+
+                                        const value = cell.getValue() as string;
+
+                                        return (
+                                            <td
+                                                className={`${styles["table-row-data"]} ${tdClass}`}
+                                                key={cell.id}
+                                            >
+                                                {!isStringEmpty(value) ? (<span className={`${styles["col-label-inline"]}`}>{label}</span>) : (null)}
+
+                                                <span>
+
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </span>
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            }
             <ListingsPagination handleBeforeButtonClick={() => setupLoading(true)} table={table} />
         </div>);
 };
