@@ -35,7 +35,6 @@ interface ResourceChaptersListingsProps {
     resourceId?: string;
     useQueryParams?: boolean; // If true, use query param hook; else use local state
     pageSize?: number;
-
 }
 
 const statusMapping = {
@@ -69,7 +68,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
-    const { constructQueryString, redirectWithQueryParams, search, submitSearch, searchParams, sorting, pagination, setPagination, setSorting,submitFilters,queryFilters } = useDataTableQueryParams({ pageSize: pageSize, syncWithQueryParams: useQueryParams });
+    const { constructQueryString, redirectWithQueryParams, search, submitSearch, searchParams, sorting, pagination, setPagination, setSorting, submitFilters, queryFilters } = useDataTableQueryParams({ pageSize: pageSize, syncWithQueryParams: useQueryParams });
 
     const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS, FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];
     const filterByList =
@@ -239,7 +238,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                 return (
                     <CardDropdownMenu positionCenter={true} links={
                         [
-                            { label: "Edit Chapter", href: `chapters/${chapterId}/edit-chapter` },
+                            { label: "Edit Chapter", href: `/dashboard/resources/${resourceId}/chapters/${chapterId}/edit-chapter` },
                             {
                                 label: "Delete Chapter",
                                 onClick: async () => {
@@ -299,7 +298,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
         } else {
             fetchChapters();
         }
-    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchChapters,queryFilters]);
+    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchChapters, queryFilters]);
 
     // Set loading to false after data has been loaded and component has re-rendered
     useEffect(() => {
@@ -337,10 +336,10 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                     submitSearch(searchValue ?? "");
                 }}>
 
-                <Link className='dashboard-primary-btn' href={'chapters/add-chapter'}><IconPlus width={24} height={24} />Add</Link>
+                <Link className='dashboard-primary-btn' href={`/dashboard/resources/${resourceId}/chapters/add-chapter`}><IconPlus width={24} height={24} />Add</Link>
                 <ListingsSearchFilterOptions useQueryParams={useQueryParams}
-                    onFilterChange={(filtersValue: string | undefined) => { 
-                        submitFilters(filtersValue ?? "") 
+                    onFilterChange={(filtersValue: string | undefined) => {
+                        submitFilters(filtersValue ?? "")
                     }}
                     handleBeforeOnFilterChange={() => setupLoading(true)}
                     filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
