@@ -252,11 +252,12 @@ input[type="text"].cl-formFieldInput
 }
 
 .table-head-cell {
-    background-color: #EEEEEE;
+    background-color: var(--primary-color);
     font-size: var(--desktop-table-font-size);
 }
 
 .table-head-cell button {
+    color: var(--secondary-color);
     padding: 10px;
     width: 100%;
     appearance: button;

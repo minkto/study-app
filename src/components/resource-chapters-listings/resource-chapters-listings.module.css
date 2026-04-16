@@ -1,91 +1,53 @@
-.chapter-listings
-{
+.chapter-listings {
     overflow-x: auto;
 }
 
-.table-head-cell {
-    background-color: #EEEEEE;
-    font-size: var(--desktop-table-font-size);
-}
-
-.table-head-cell button {
-    padding: 10px;
+.progress-pill {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     width: 100%;
-    appearance: button;
-    -webkit-appearance: button;
-    background-color: transparent;
-    background-image: none;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: var(--desktop-table-font-size);
+    height: 100%;
+    border-radius: 5px;
+    padding: 0.5em;
+    gap:5px;
+    width: max-content;
 }
 
-.table-head-cell:first-child {
-
-    border-radius: 5px 0 0 0;
+.progress-pill--not-started {
+    background-color: #FFEAEA;
+    color: #8B3030;
 }
 
-.table-head-cell:last-child {
-    border-radius: 0 5px 0 0;
+.progress-pill--in-progress {
+    background-color: #FFFDEA;
+    color: #B28A06;
 }
 
-
-.table-container {
-    width: 100%;
-    border-collapse: collapse;
+.progress-pill--completed {
+    background-color: #E9FFDF;
+    color: #61885C;
 }
 
 
-.table-row-data {
-    padding: 10px;
-    font-size: var(--desktop-table-font-size);
+.progress-pill__circle {
+    border-radius: 12px;
+    height: 12px;
+    width: 12px;
 }
 
-tbody .table-row {
-    background-color: #FFFFFF;
-    transition: 0.3s;
-    border: 1px solid #EEEEEE;
+.progress-pill__circle--not-started {
+    background-color: #8B3030;
 }
 
-tbody .table-row:nth-child(2n) {
-    background-color: #FAFFF5;
-    transition: 0.3s;
+.progress-pill__circle--in-progress {
+    background-color: #B28A06;
 }
 
-
-tbody .table-row:hover,
-tbody .table-row:nth-child(2n):hover {
-    background-color: #ceff96;
+.progress-pill__circle--completed {
+    background-color: #61885C;
 }
 
-
-tbody .table-row-data.progress--completed {
-    background-color: #C8FFA6;
-}
-
-tbody .table-row-data.progress--in-progress {
-    background-color: #F5FFCB;
-}
-
-tbody .table-row-data.progress--not-started {
-    background-color: #FFD0CB;
-}
-
-.placeholder-text {
-    color: #999;
-    font-style: italic;
-}
-
-.table-head-cell,
-.table-row-data {
-    padding: 8px 12px;
-    text-align: left;
-}
-
-.col-label-inline {
-    display: none;
-}
 
 .col-name {
     width: 65%;
@@ -102,46 +64,14 @@ tbody .table-row-data.progress--not-started {
     width: 5%;
 }
 
-@media screen and (max-width:1024px) {
-
-    .table-head-cell,
-    .table-head-cell button,
-    .table-row-data {
-        font-size: var(--mobile-table-font-size);
-    }
-}
 
 @media screen and (max-width:768px) {
 
-    .table-container {
-        max-width: 800px;
-    }
-
-    .table-container thead {
-        display: none;
-    }
-
-    tbody .table-row {
-        display: flex;
-        width: 100%;
-        margin-top: 1em;
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-    .table-row-data {
-        width: 100%;
-    }
 
     .col-name {
         flex: 1 1 80%;
         background-color: #F5F5F5;
         align-content: center;
-    }
-
-    .col-menu {
-        width: 50px;
-        margin: 0 auto;
     }
 
     .col-date {
@@ -158,11 +88,6 @@ tbody .table-row-data.progress--not-started {
 
     .col-status {
         flex: 1 1 100%;
-    }
-
-    .col-label-inline {
-        display: block;
-        font-weight: 700;
     }
 
     tbody .table-row:hover,
