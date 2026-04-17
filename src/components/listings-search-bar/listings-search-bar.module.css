@@ -10,6 +10,7 @@
     flex-direction: row;
     flex: 1;
     min-height: 0;
+    gap: 5px;
 }
 
 @media screen and (max-width:1024px) {
@@ -19,7 +20,6 @@
 
     .listings-search-bar-items {
         flex-wrap: wrap;
-        align-items: center;
     }
 }
 
