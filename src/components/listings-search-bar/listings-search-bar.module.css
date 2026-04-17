@@ -10,7 +10,7 @@
     flex-direction: row;
     flex: 1;
     min-height: 0;
-    gap: 5px;
+    gap: 0.5em;
 }
 
 @media screen and (max-width:1024px) {
