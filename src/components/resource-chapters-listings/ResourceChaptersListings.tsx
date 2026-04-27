@@ -38,9 +38,9 @@ interface ResourceChaptersListingsProps {
 }
 
 const statusMapping = {
-    [ChapterStatuses.NOT_STARTED]: { text: "Not Started", class: "progress--not-started" },
-    [ChapterStatuses.IN_PROGRESS]: { text: "In Progress", class: "progress--in-progress" },
-    [ChapterStatuses.COMPLETED]: { text: "Completed", class: "progress--completed" },
+    [ChapterStatuses.NOT_STARTED]: { text: "Not Started", class: "--not-started" },
+    [ChapterStatuses.IN_PROGRESS]: { text: "In Progress", class: "--in-progress" },
+    [ChapterStatuses.COMPLETED]: { text: "Completed", class: "--completed" },
 };
 
 const sortByOptions =
@@ -172,19 +172,20 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
             cell: (info) => {
                 const value = info.getValue();
 
-                // Get the corresponding status
                 const status = statusMapping[value ?? ChapterStatuses.NOT_STARTED] || { text: "Unknown", class: "progress--unknown" };
-                return status.text;
+                const progressPillClassName = `${styles["progress-pill"]} ${styles["progress-pill" + statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`;
+                const progessPillCircleClassName = `${styles["progress-pill__circle"]} ${styles["progress-pill__circle" + statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`
+                return (
+                    <div className={`${progressPillClassName}`}>
+                        <div className={`${progessPillCircleClassName}`} ></div>
+                        <div>{status.text}
+                        </div>
+                    </div>
+                )
             },
             header: () => <span>Status</span>,
             meta: {
-                tdClassName: (info) => {
-                    const value = info.getValue();
-                    return `${styles["col-status"]} ${styles[statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`;
-                },
-                thClassName: styles["col-status"],
                 label: "Status"
-
             },
             enableSorting: true,
         }),
@@ -352,14 +353,13 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
 
             {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults />
                 :
-                <table className={styles["table-container"]} cellPadding={0} cellSpacing={0}>
+                <table className="table-container" cellPadding={0} cellSpacing={0}>
                     <thead>
                         {table.getHeaderGroups().map(headerGroup => (
                             <tr key={headerGroup.id}>
                                 {headerGroup.headers.map(header => {
-                                    const thClass = header.column.columnDef.meta?.thClassName;
                                     return (
-                                        <th className={`${styles["table-head-cell"]} ${thClass}`} key={header.id}>
+                                        <th className={`table-head-cell`} key={header.id}>
 
                                             {header.isPlaceholder ? null : (
                                                 <button
@@ -399,9 +399,9 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                         {!dataLoaded ? (
                             // Skeleton rows
                             [...Array(Number(process.env.CHAPTERS_MAX_PAGE_SIZE ?? ListingPageSizes.CHAPTERS))].map((_, i) => (
-                                <tr className={styles["table-row"]} key={`skeleton-${i}`}>
+                                <tr className="table-row" key={`skeleton-${i}`}>
                                     {table.getVisibleFlatColumns().map((col, j) => (
-                                        <td className={styles["table-row-data"]} key={`skeleton-cell-${j}`}>
+                                        <td className="table-row-data" key={`skeleton-cell-${j}`}>
                                             <div style={{ width: '100%' }}>
                                                 <Skeleton height={53} />
                                             </div>
@@ -412,7 +412,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                         ) : (
                             // Actual rows
                             table.getRowModel().rows.map(row => (
-                                <tr className={styles["table-row"]} key={row.id}>
+                                <tr className="table-row" key={row.id}>
                                     {row.getVisibleCells().map(cell => {
                                         const tdClass = cell.column.columnDef.meta?.tdClassName
                                             ? cell.column.columnDef.meta.tdClassName(cell.getContext())
@@ -426,11 +426,13 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
 
                                         return (
                                             <td
-                                                className={`${styles["table-row-data"]} ${tdClass}`}
+                                                //className={`${styles["table-row-data"]} ${tdClass}`}
+                                                //className={`${styles["table-row-data"]} ${tdClass}`}
+                                                className={`table-row-data ${tdClass ?? null}`}
+                                                //className={`${tdClass}`}
                                                 key={cell.id}
                                             >
-                                                {!isStringEmpty(value) ? (<span className={`${styles["col-label-inline"]}`}>{label}</span>) : (null)}
-
+                                                {!isStringEmpty(value) ? (<span className={"col-label-inline"}>{label}</span>) : (null)}
                                                 <span>
 
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

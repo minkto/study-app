@@ -198,24 +198,6 @@ button.form-field:disabled
   background-color: rgb(100, 100, 100);
 }
 
-/*******************************
-*
-* Buttons
-*
-*******************************/
-
-.dashboard-primary-btn
-{
-  display: flex;
-  align-items: center;
-  width: auto;
-  background-color: yellow;
-  padding: 0.5em;
-  border-radius: 5px;
-  border: none;
-  margin: 0.5em 0 0.5em 0;
-}
-
 
 /*******************************
 *
@@ -227,6 +209,55 @@ button.form-field:disabled
   margin: 0 5px 0 0;
 }
 
+
+.icon-img {
+  cursor: pointer;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.icon-img__path
+{
+  stroke: var(--secondary-color);
+  transition: all 0.3s ease-in-out;
+}
+
+/*******************************
+*
+* Buttons
+*
+*******************************/
+
+.dashboard-primary-btn
+{
+  display: flex;
+  align-items: center;
+  width: max-content;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  padding: 0.5em;
+  border-radius: 5px;
+  border: none;
+  margin: 0.5em 0 0.5em 0;
+  transition: all 0.3s ease-in-out;
+  font-size: inherit;
+}
+
+.dashboard-primary-btn:hover,
+.dashboard-primary-btn:active,
+.dashboard-primary-btn:focus
+{
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+.dashboard-primary-btn:hover .icon-img .icon-img__path,
+.dashboard-primary-btn:active .icon-img .icon-img__path,
+.dashboard-primary-btn:focus .icon-img .icon-img__path
+
+{
+    stroke: var(--primary-color)
+}
 
 /*******************************
 *
@@ -252,11 +283,13 @@ input[type="text"].cl-formFieldInput
 }
 
 .table-head-cell {
-    background-color: #EEEEEE;
+    background-color: var(--primary-color);
+    border-bottom: 1px solid var(--secondary-color);
     font-size: var(--desktop-table-font-size);
 }
 
 .table-head-cell button {
+    color: var(--secondary-color);
     padding: 10px;
     width: 100%;
     appearance: button;
@@ -296,15 +329,9 @@ tbody .table-row {
     border: 1px solid #EEEEEE;
 }
 
-tbody .table-row:nth-child(2n) {
-    background-color: #FAFFF5;
-    transition: 0.3s;
-}
-
-
-tbody .table-row:hover,
-tbody .table-row:nth-child(2n):hover {
-    background-color: #ceff96;
+tbody .table-row:hover 
+{
+    background-color: var(--primary-color);
 }
 
 .placeholder-text {

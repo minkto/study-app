@@ -99,6 +99,7 @@ export const ListingsSearchBox = ({ onSearchSubmit, handleBeforeOnSearchSubmit, 
   return (
     <div className={styles['search-box-listing']}>
       <input
+        id='search-input-field'
         onKeyDown={handleOnKeyPress}
         value={currentText}
         onChange={handleTextChange}
