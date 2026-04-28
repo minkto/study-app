@@ -1,13 +1,13 @@
 "use client"
 
 import { Chapter } from "@/shared.types";
-import { CellContext, createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, Row, RowData, useReactTable } from "@tanstack/react-table";
+import { CellContext, createColumnHelper, getCoreRowModel, getPaginationRowModel, Row, RowData, useReactTable } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
-import { ChapterStatuses, FilterByQueryKeys, ListingPageSizes } from "@/constants/constants";
+import { ChapterStatuses, FilterByQueryKeys } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
-import { getCurrentSortOrder, getInitialSortByOption, getSortDirectionTitle, nullableDateTimeSortingFn } from "@/utils/tableUtils";
+import { getCurrentSortOrder, getInitialSortByOption, nullableDateTimeSortingFn } from "@/utils/tableUtils";
 import { TZDate } from "@date-fns/tz";
 import DashboardModalPortal from "../dashboard-modal-portal/DashboardModalPortal";
 import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
@@ -17,11 +17,12 @@ import IconPlus from "../icons/icon-plus/IconPlus";
 import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
 import ListingsSearchFilterOptions from "../listings-search-filter-options/ListingsSearchFilterOptions";
 import { ListingsPagination } from "../listings-pagination/ListingsPagination";
-import Skeleton from "react-loading-skeleton";
-import { isStringEmpty } from "@/utils/stringUtils";
 import SelectDropdown from "../select-dropdown/SelectDropdown";
 import { useMobileScreenSize } from "@/hooks/useMobileScreenSize";
 import ListingsNoResults from "../listings-no-results/ListingsNoResults";
+import ChaptersDataTableListView from "./ChaptersDataTableListView";
+import ChaptersDataTableCardView from "./ChaptersDataTableCardView";
+import ProgressPill from "./ProgressPill";
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
@@ -36,12 +37,6 @@ interface ResourceChaptersListingsProps {
     useQueryParams?: boolean; // If true, use query param hook; else use local state
     pageSize?: number;
 }
-
-const statusMapping = {
-    [ChapterStatuses.NOT_STARTED]: { text: "Not Started", class: "--not-started" },
-    [ChapterStatuses.IN_PROGRESS]: { text: "In Progress", class: "--in-progress" },
-    [ChapterStatuses.COMPLETED]: { text: "Completed", class: "--completed" },
-};
 
 const sortByOptions =
     [
@@ -158,6 +153,26 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
         }
     }, [resourceId]);
 
+
+    const renderChapterOptionMenu = (chapter: Chapter) => {
+        return (<CardDropdownMenu positionCenter={true} links={
+            [
+                { label: "Edit Chapter", href: `/dashboard/resources/${resourceId}/chapters/${chapter.chapterId}/edit-chapter` },
+                {
+                    label: "Delete Chapter",
+                    onClick: async () => {
+                        try {
+                            setSelectedChapter(chapter);
+                            handleModalVisibility();
+                        } catch (error) {
+                            console.error("Failed to delete chapter:", error);
+                        }
+                    },
+                }
+            ]
+        } />)
+    }
+
     const columns = useMemo(() => [
         columnHelper.accessor('name', {
             cell: info => info.getValue(),
@@ -171,17 +186,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
         columnHelper.accessor('statusId', {
             cell: (info) => {
                 const value = info.getValue();
-
-                const status = statusMapping[value ?? ChapterStatuses.NOT_STARTED] || { text: "Unknown", class: "progress--unknown" };
-                const progressPillClassName = `${styles["progress-pill"]} ${styles["progress-pill" + statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`;
-                const progessPillCircleClassName = `${styles["progress-pill__circle"]} ${styles["progress-pill__circle" + statusMapping[value ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`
-                return (
-                    <div className={`${progressPillClassName}`}>
-                        <div className={`${progessPillCircleClassName}`} ></div>
-                        <div>{status.text}
-                        </div>
-                    </div>
-                )
+                return <ProgressPill statusId={value ?? ChapterStatuses.NOT_STARTED}/>
             },
             header: () => <span>Status</span>,
             meta: {
@@ -235,24 +240,8 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
             id: 'menuOptions',
             header: () => null,
             cell: ({ row }: { row: Row<Chapter> }) => {
-                const chapterId = row.original.chapterId
-                return (
-                    <CardDropdownMenu positionCenter={true} links={
-                        [
-                            { label: "Edit Chapter", href: `/dashboard/resources/${resourceId}/chapters/${chapterId}/edit-chapter` },
-                            {
-                                label: "Delete Chapter",
-                                onClick: async () => {
-                                    try {
-                                        setSelectedChapter(row.original);
-                                        handleModalVisibility();
-                                    } catch (error) {
-                                        console.error("Failed to delete chapter:", error);
-                                    }
-                                },
-                            }
-                        ]
-                    } />
+                const chapter = row.original
+                return (renderChapterOptionMenu(chapter)
                 )
             },
 
@@ -263,7 +252,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
             enableSorting: false,
             enableHiding: false,
         }
-    ], [columnHelper, handleModalVisibility,]);
+    ], [columnHelper, handleModalVisibility, renderChapterOptionMenu]);
 
     const table = useReactTable({
         data,
@@ -353,98 +342,17 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
 
             {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults />
                 :
-                <table className="table-container" cellPadding={0} cellSpacing={0}>
-                    <thead>
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map(header => {
-                                    return (
-                                        <th className={`table-head-cell`} key={header.id}>
-
-                                            {header.isPlaceholder ? null : (
-                                                <button
-                                                    className={
-                                                        header.column.getCanSort()
-                                                            ? 'cursor-pointer select-none'
-                                                            : ''
-                                                    }
-                                                    onClick={header.column.getToggleSortingHandler()}
-                                                    title={
-                                                        header.column.getCanSort()
-                                                            ? (() => {
-                                                                const nextOrder = header.column.getNextSortingOrder();
-                                                                return getSortDirectionTitle(nextOrder);
-                                                            })()
-                                                            : undefined
-                                                    }
-                                                >
-                                                    {flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
-                                                    {{
-                                                        asc: ' 🔼',
-                                                        desc: ' 🔽',
-                                                    }[header.column.getIsSorted() as string] ?? null}
-                                                </button>
-                                            )}
-                                        </th>
-                                    )
-                                }
-                                )}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {!dataLoaded ? (
-                            // Skeleton rows
-                            [...Array(Number(process.env.CHAPTERS_MAX_PAGE_SIZE ?? ListingPageSizes.CHAPTERS))].map((_, i) => (
-                                <tr className="table-row" key={`skeleton-${i}`}>
-                                    {table.getVisibleFlatColumns().map((col, j) => (
-                                        <td className="table-row-data" key={`skeleton-cell-${j}`}>
-                                            <div style={{ width: '100%' }}>
-                                                <Skeleton height={53} />
-                                            </div>
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))
-                        ) : (
-                            // Actual rows
-                            table.getRowModel().rows.map(row => (
-                                <tr className="table-row" key={row.id}>
-                                    {row.getVisibleCells().map(cell => {
-                                        const tdClass = cell.column.columnDef.meta?.tdClassName
-                                            ? cell.column.columnDef.meta.tdClassName(cell.getContext())
-                                            : "";
-
-                                        const label = cell.column.columnDef.meta?.label
-                                            ? `${cell.column.columnDef.meta.label}`
-                                            : "";
-
-                                        const value = cell.getValue() as string;
-
-                                        return (
-                                            <td
-                                                //className={`${styles["table-row-data"]} ${tdClass}`}
-                                                //className={`${styles["table-row-data"]} ${tdClass}`}
-                                                className={`table-row-data ${tdClass ?? null}`}
-                                                //className={`${tdClass}`}
-                                                key={cell.id}
-                                            >
-                                                {!isStringEmpty(value) ? (<span className={"col-label-inline"}>{label}</span>) : (null)}
-                                                <span>
-
-                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                </span>
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                isMobileScreen ?
+                    (
+                        <div>
+                            {table.getRowModel().rows.map(r => (
+                                <ChaptersDataTableCardView cardMenuOption={renderChapterOptionMenu(r.original)}
+                                    chapter={r.original}
+                                    key={r.original.chapterId} />
+                            ))}
+                        </div>
+                    )
+                    : <ChaptersDataTableListView table={table} dataLoaded={dataLoaded} />
             }
             <ListingsPagination handleBeforeButtonClick={() => setupLoading(true)} table={table} />
         </div>);
