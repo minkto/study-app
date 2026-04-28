@@ -1,0 +1,67 @@
+.chapter-data-table-card {
+    margin-top: 1.5em;
+    border: 1px solid #EEEEEE;
+    border-radius: var(--standard-box-radius);
+    padding: 0.5em;
+    color: var(--secondary-color);
+
+}
+
+.chapter-data-table-card__header {
+    display: flex;
+    align-items: center;
+    color: #000000;
+}
+
+.chapter-data-table-card__header-title {
+    flex-grow: 2;
+}
+
+.chapter-data-table-card__status {
+    align-self: center;
+}
+
+.chapter-data-table-card__completion {
+    display: flex;
+    flex-direction: row;
+    margin-top: 1em;
+    gap: 5px;
+    padding-top: 0.5em;
+    border-top: 1px solid #EEEEEE;
+    ;
+}
+
+.chapter-data-table-card__days-completed-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.chapter-data-table-card__completion-section {
+    flex-grow: 1;
+}
+
+.chapter-data-table-card p {
+    margin-bottom: 0.5em;
+}
+
+.chapter-data-table-card__completion-section:first-child
+{
+    flex-grow: 2;
+}
+
+.chapter-data-table-card__days-completed {
+    border-radius: var(--standard-box-radius);
+    display: flex;
+    flex-direction: row;
+    background-color: var(--primary-color);
+    width: fit-content;
+    flex-wrap: wrap;
+}
+
+.chapter-data-table-card__first-completed {
+    border-left: 1px solid #EEEEEE;
+    ;
+    padding: 0 0.5em 0 0.5em;
+    border-right: 1px solid #EEEEEE;
+    ;
+}
