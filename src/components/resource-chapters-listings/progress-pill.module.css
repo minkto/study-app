@@ -1,0 +1,45 @@
+.progress-pill {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    padding: 0.5em;
+    gap:5px;
+    width: max-content;
+}
+
+.progress-pill--not-started {
+    background-color: #FFEAEA;
+    color: #8B3030;
+}
+
+.progress-pill--in-progress {
+    background-color: #FFFDEA;
+    color: #B28A06;
+}
+
+.progress-pill--completed {
+    background-color: #E9FFDF;
+    color: #61885C;
+}
+
+
+.progress-pill__circle {
+    border-radius: 12px;
+    height: 12px;
+    width: 12px;
+}
+
+.progress-pill__circle--not-started {
+    background-color: #8B3030;
+}
+
+.progress-pill__circle--in-progress {
+    background-color: #B28A06;
+}
+
+.progress-pill__circle--completed {
+    background-color: #61885C;
+}
