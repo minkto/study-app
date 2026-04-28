@@ -14,8 +14,9 @@ export const ProgressPill = ({ statusId = ChapterStatuses.NOT_STARTED }: Progres
     };
 
     const status = statusMapping[statusId ?? ChapterStatuses.NOT_STARTED] || { text: "Unknown", class: "progress--unknown" };
-    const progressPillClassName = `${styles["progress-pill"]} ${styles["progress-pill" + statusMapping[statusId ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`;
-    const progessPillCircleClassName = `${styles["progress-pill__circle"]} ${styles["progress-pill__circle" + statusMapping[statusId ?? ChapterStatuses.NOT_STARTED].class || "progress--unknown"]}`
+    
+    const progressPillClassName = `${styles["progress-pill"]} ${styles["progress-pill" + status.class]}`;
+    const progessPillCircleClassName = `${styles["progress-pill__circle"]} ${styles["progress-pill__circle" + status.class]}`
 
     return (<div className={`${progressPillClassName}`}>
         <div className={`${progessPillCircleClassName}`} ></div>
