@@ -2,7 +2,7 @@ import { ListingPageSizes } from "@/constants/constants";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { PaginationState, SortingState } from "@tanstack/react-table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface SortQueryFilters {
     sortByValue: string;
@@ -23,6 +23,8 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
     });
     const [search, setSearch] = useState('');
     const [queryFilters, setQueryFilters] = useState('');
+    const [queryParamsLoaded, setQueryParamsLoaded] = useState(false);
+    const hasInitialized = useRef(false);
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -147,7 +149,7 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
 
     }, [getFilterParamValues])
 
-    const setupInitialState = useCallback(() => {
+    const setupInitialQueryParamsState = useCallback(() => {
         setupInitialSort();
         setupInitialSearchTerm();
         setupInitialFilters();
@@ -163,10 +165,13 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
 
     // Upon Component Mount, set the sorting, search, and filters once
     useEffect(() => {
-        if (syncWithQueryParams) {
-            setupInitialState();
-        }
-    }, [setupInitialState, syncWithQueryParams]);
+        if (syncWithQueryParams && !hasInitialized.current) {
+            setupInitialQueryParamsState();
+            hasInitialized.current = true;
+        } 
+        setQueryParamsLoaded(true);
+
+    }, [setupInitialQueryParamsState, syncWithQueryParams]);
 
     return {
         constructQueryString,
@@ -179,6 +184,7 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         pagination,
         searchParams,
         search,
-        queryFilters
+        queryFilters,
+        queryParamsLoaded
     };
 }

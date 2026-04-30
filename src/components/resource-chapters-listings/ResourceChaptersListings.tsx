@@ -62,9 +62,9 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
     const columnHelper = createColumnHelper<Chapter>();
     const [pageCount, setPageCount] = useState(0);
     const [selectedChapter, setSelectedChapter] = useState<Chapter>();
-    const [isInitialized, setIsInitialized] = useState(!useQueryParams);
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
-    const { constructQueryString, redirectWithQueryParams, search, submitSearch, searchParams, sorting, pagination, setPagination, setSorting, submitFilters, queryFilters } = useDataTableQueryParams({ pageSize: pageSize, syncWithQueryParams: useQueryParams });
+    const { constructQueryString, redirectWithQueryParams, search, submitSearch, searchParams, sorting, pagination,
+        setPagination, setSorting, submitFilters, queryFilters, queryParamsLoaded } = useDataTableQueryParams({ pageSize: pageSize, syncWithQueryParams: useQueryParams });
 
     const filterQueryParamKeys = [FilterByQueryKeys.ChapterListings.STATUS, FilterByQueryKeys.ChapterListings.DAYS_SINCE_LAST_COMPLETED];
     const filterByList =
@@ -277,39 +277,27 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
         enableSortingRemoval: true,
     });
 
-    // Initialize query params setup flag after hook initialization is complete
-    useEffect(() => {
-        if (useQueryParams) {
-            console.log("setIsInitialized")
-            const timer = setTimeout(() => {
-                setIsInitialized(true);
-            }, 0);
-            return () => clearTimeout(timer);
-        }
-    }, [useQueryParams]);
-
     // Upon Component Mount, fetch the chapters. Change upon search params.
     useEffect(() => {
-        if (!isInitialized && useQueryParams) {
+        if (!queryParamsLoaded) {
             return;
         }
 
         fetchChapters();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams, isInitialized, useQueryParams]);
+    }, [searchParams, queryParamsLoaded]);
 
     useEffect(() => {
-        if (!isInitialized && useQueryParams) {
+        if (!queryParamsLoaded) {
             return;
         }
         if (useQueryParams) {
             redirectWithQueryParams();
-
         } else {
             fetchChapters();
         }
 
-    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchChapters, queryFilters, isInitialized]);
+    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchChapters, queryFilters, queryParamsLoaded]);
 
     // Set loading to false after data has been loaded and component has re-rendered
     useEffect(() => {
