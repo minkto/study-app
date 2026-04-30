@@ -15,11 +15,17 @@ import ResourceListingsCardSkeleton from '../loaders/skeleton-loaders/ResourceLi
 import { getCurrentSortOrder, getInitialSortByOption } from '@/utils/tableUtils';
 import ListingsNoResults from '../listings-no-results/ListingsNoResults';
 
-const ResourceListings = () => {
+interface ResourceListingsProps {
+  useQueryParams?: boolean; // If true, use query param hook; else use local state
+  pageSize?: number;
+}
+
+const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
-  const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, searchParams } = useDataTableQueryParams({pageSize:Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.RESOURCES)});
+  const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, searchParams, submitSearch,
+    search, submitFilters, queryFilters } = useDataTableQueryParams({ pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.RESOURCES) });
   const [pageCount, setPageCount] = useState(0);
   const [data, setData] = useState<GetResourceDto[]>([]);
   const columnHelper = createColumnHelper<GetResourceDto>();
@@ -94,7 +100,7 @@ const ResourceListings = () => {
       setDataLoaded(true);
     }
   }
-  
+
   const getResources = useCallback(async () => {
     setupLoading(true);
     try {
@@ -133,14 +139,19 @@ const ResourceListings = () => {
       setupLoading(false);
     }
   }
-  
+
   useEffect(() => {
     getResources();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   useEffect(() => {
-    redirectWithQueryParams();
-  }, [sorting, pagination.pageIndex]);
+    if (useQueryParams) {
+      redirectWithQueryParams();
+    } else {
+      getResources();
+    }
+  }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, getResources, queryFilters]);
 
   // Set loading to false after data has been loaded and component has re-rendered
   useEffect(() => {
@@ -155,13 +166,21 @@ const ResourceListings = () => {
   return (
 
     <div className={styles["resources-listing-wrapper"]}>
-      <ListingsSearchBar handleBeforeOnSearchSubmit={() => { setupLoading(true) }} onSearchSubmit={() => { table.firstPage(); }}>
+      <ListingsSearchBar
+        useQueryParams={useQueryParams}
+        handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
+        onSearchSubmit={(searchValue: string | undefined) => {
+          submitSearch(searchValue ?? "");
+        }}>
+
         <Link className='dashboard-primary-btn' href={'resources/add-resource'}><IconPlus width={24} height={24} />Add</Link>
         <ListingsSearchFilterOptions
+          useQueryParams={useQueryParams}
+          onFilterChange={(filtersValue: string | undefined) => {
+            submitFilters(filtersValue ?? "")
+          }}
           handleBeforeOnFilterChange={() => setupLoading(true)}
-          onFilterChange={() => { table.firstPage(); }}
-          filterQueryKeys={filterQueryParamKeys}
-          filterGroups={filterByList} />
+          filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
 
         <SelectDropdown
           getDefaultValue={() => getInitialSortByOption(sorting)}

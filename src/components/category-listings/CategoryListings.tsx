@@ -2,7 +2,7 @@
 
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar"
 import IconPlus from "../icons/icon-plus/IconPlus";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormState, ListingPageSizes } from "@/constants/constants";
 import { Category } from "@/shared.types";
 import { createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, Row, useReactTable } from "@tanstack/react-table";
@@ -21,7 +21,13 @@ import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
 import { useModalVisibility } from "@/hooks/useModalVisibility";
 import { CoreModal } from "../modals/core-modal/CoreModal";
 
-export const CategoryListings = () => {
+
+interface CategoryListingsProps {
+    useQueryParams?: boolean; // If true, use query param hook; else use local state
+    pageSize?: number;
+}
+
+export const CategoryListings = ({useQueryParams = true}:CategoryListingsProps) => {
 
     const ModalActiveState = useMemo(() => ({
         NONE: 0,
@@ -33,7 +39,8 @@ export const CategoryListings = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
-    const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, searchParams } = useDataTableQueryParams({pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.DEFAULT)} );
+    const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, 
+        search,searchParams,submitSearch,queryFilters } = useDataTableQueryParams({pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.DEFAULT)} );
     const [pageCount, setPageCount] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState<Category>();
     const [activeModal, setActiveModal] = useState<number>(ModalActiveState.NONE);
@@ -143,7 +150,7 @@ export const CategoryListings = () => {
         }
     }
 
-    const fetchCateogries = async () => {
+    const fetchCateogries =  useCallback(async () => {
         try {
             setupLoading(true);
             const response = await fetch(`/api/categories${constructQueryString()}`);
@@ -157,7 +164,7 @@ export const CategoryListings = () => {
         finally {
             setupLoading(false);
         }
-    }
+    },[constructQueryString])
 
     const deleteCategory = async (categoryId: number | null | undefined) => {
         setupLoading(true);
@@ -178,15 +185,29 @@ export const CategoryListings = () => {
         }
     }
 
+    // Upon Component Mount, fetch the chapters. Change upon search params.
     useEffect(() => {
         fetchCateogries();
-    }, [searchParams])
-
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     useEffect(() => {
-        redirectWithQueryParams();
-    }, [sorting, pagination]);
+        if (useQueryParams) {
+            redirectWithQueryParams();
+        } else {
+            fetchCateogries();
+        }
+    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchCateogries, queryFilters]);
+
+    // Set loading to false after data has been loaded and component has re-rendered
+    useEffect(() => {
+        if (dataLoaded) {
+            // Use setTimeout to ensure the render cycle is complete
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 0);
+        }
+    }, [dataLoaded]);
 
     // Set loading to false after data has been loaded and component has re-rendered
     useEffect(() => {
@@ -232,8 +253,12 @@ export const CategoryListings = () => {
                 />
             </DashboardModalPortal>
             <ListingsSearchBar
+                useQueryParams={useQueryParams}
                 handleBeforeOnSearchSubmit={() => { setupLoading(true); }}
-                onSearchSubmit={() => { setPagination({ ...pagination, pageIndex: 0 }) }}>
+                onSearchSubmit={(searchValue: string | undefined) => {
+                    submitSearch(searchValue ?? "");
+                }}>
+
 
                 <button onClick={() => {
                     setSelectedCategory(undefined);
