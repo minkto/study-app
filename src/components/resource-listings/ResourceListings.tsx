@@ -25,7 +25,7 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
   const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, searchParams, submitSearch,
-    search, submitFilters, queryFilters } = useDataTableQueryParams({ pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.RESOURCES) });
+    search, submitFilters, queryFilters, queryParamsLoaded } = useDataTableQueryParams({ pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.RESOURCES), syncWithQueryParams: useQueryParams });
   const [pageCount, setPageCount] = useState(0);
   const [data, setData] = useState<GetResourceDto[]>([]);
   const columnHelper = createColumnHelper<GetResourceDto>();
@@ -141,17 +141,25 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
   }
 
   useEffect(() => {
+    if (!queryParamsLoaded) {
+        return;
+    }
+    
     getResources();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [searchParams,queryParamsLoaded]);
 
   useEffect(() => {
+    if (!queryParamsLoaded) {
+        return;
+    }
+    
     if (useQueryParams) {
       redirectWithQueryParams();
     } else {
       getResources();
     }
-  }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, getResources, queryFilters]);
+  }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, getResources, queryFilters,queryParamsLoaded]);
 
   // Set loading to false after data has been loaded and component has re-rendered
   useEffect(() => {

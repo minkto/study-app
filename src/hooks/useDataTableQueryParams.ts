@@ -2,7 +2,7 @@ import { ListingPageSizes } from "@/constants/constants";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { PaginationState, SortingState } from "@tanstack/react-table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface SortQueryFilters {
     sortByValue: string;
@@ -23,6 +23,8 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
     });
     const [search, setSearch] = useState('');
     const [queryFilters, setQueryFilters] = useState('');
+    const [queryParamsLoaded, setQueryParamsLoaded] = useState(false);
+    const hasInitialized = useRef(false);
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -82,6 +84,30 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         }
     }, [searchParams])
 
+    const getSearchTermQueryParamValues = useCallback((): string => {
+        const params = new URLSearchParams(searchParams?.toString());
+        const searchTermValue = params.get('search-term') ?? "";
+
+        return searchTermValue;
+
+    }, [searchParams])
+
+    const getFilterParamValues = useCallback((): string => {
+
+        const params = new URLSearchParams(searchParams?.toString());
+        const filterParams = new URLSearchParams();
+
+        params.forEach((v, k) => {
+            if (k !== "search-term" && k !== "sortBy" && k !== "sortOrder" && k !== "page") {
+                filterParams.append(k, v)
+            }
+        });
+
+        return filterParams?.toString();
+
+    }, [searchParams])
+
+
     const redirectWithQueryParams = useCallback(() => {
         const queryString = constructQueryString();
         if (queryString) {
@@ -105,6 +131,30 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         }
     }, [getSortByQueryParamValues])
 
+    const setupInitialSearchTerm = useCallback(() => {
+        const searchTerm = getSearchTermQueryParamValues();
+
+        if (!isStringEmpty(searchTerm)) {
+            setSearch(searchTerm);
+        }
+
+    }, [getSearchTermQueryParamValues])
+
+    const setupInitialFilters = useCallback(() => {
+        const filterParams = getFilterParamValues();
+
+        if (!isStringEmpty(filterParams)) {
+            setQueryFilters(filterParams);
+        }
+
+    }, [getFilterParamValues])
+
+    const setupInitialQueryParamsState = useCallback(() => {
+        setupInitialSort();
+        setupInitialSearchTerm();
+        setupInitialFilters();
+    }, [setupInitialSort, setupInitialSearchTerm, setupInitialFilters])
+
 
     // Only redirect when sorting changes and it's not the initial sort
     useEffect(() => {
@@ -113,18 +163,20 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         }
     }, [sorting, syncWithQueryParams, redirectWithQueryParams]);
 
-    // Upon Component Mount, set the sorting.
+    // Upon Component Mount, set the sorting, search, and filters once
     useEffect(() => {
-        if (syncWithQueryParams) {
-            setupInitialSort();
-        }
-    }, [syncWithQueryParams, setupInitialSort]);
+        if (syncWithQueryParams && !hasInitialized.current) {
+            setupInitialQueryParamsState();
+            hasInitialized.current = true;
+        } 
+        setQueryParamsLoaded(true);
+
+    }, [setupInitialQueryParamsState, syncWithQueryParams]);
 
     return {
         constructQueryString,
         redirectWithQueryParams,
         submitSearch,
-        setupInitialSort,
         setSorting,
         setPagination,
         submitFilters,
@@ -132,6 +184,7 @@ export function useDataTableQueryParams({ pageSize = Number(ListingPageSizes.DEF
         pagination,
         searchParams,
         search,
-        queryFilters
+        queryFilters,
+        queryParamsLoaded
     };
 }

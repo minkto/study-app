@@ -27,20 +27,21 @@ interface CategoryListingsProps {
     pageSize?: number;
 }
 
-export const CategoryListings = ({useQueryParams = true}:CategoryListingsProps) => {
+export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProps) => {
 
     const ModalActiveState = useMemo(() => ({
         NONE: 0,
         ADD_OR_EDIT: 1,
         DELETE: 2,
     }), []);
-    
+
     const { isVisible: modalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
-    const { setSorting, setPagination, sorting, pagination, constructQueryString, redirectWithQueryParams, 
-        search,searchParams,submitSearch,queryFilters } = useDataTableQueryParams({pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.DEFAULT)} );
+    const { setSorting, setPagination, sorting, pagination, constructQueryString,
+        redirectWithQueryParams,
+        search, searchParams, submitSearch, queryFilters, queryParamsLoaded, } = useDataTableQueryParams({ pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.DEFAULT) ,syncWithQueryParams: useQueryParams});
     const [pageCount, setPageCount] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState<Category>();
     const [activeModal, setActiveModal] = useState<number>(ModalActiveState.NONE);
@@ -150,7 +151,7 @@ export const CategoryListings = ({useQueryParams = true}:CategoryListingsProps) 
         }
     }
 
-    const fetchCateogries =  useCallback(async () => {
+    const fetchCateogries = useCallback(async () => {
         try {
             setupLoading(true);
             const response = await fetch(`/api/categories${constructQueryString()}`);
@@ -164,7 +165,7 @@ export const CategoryListings = ({useQueryParams = true}:CategoryListingsProps) 
         finally {
             setupLoading(false);
         }
-    },[constructQueryString])
+    }, [constructQueryString])
 
     const deleteCategory = async (categoryId: number | null | undefined) => {
         setupLoading(true);
@@ -187,17 +188,24 @@ export const CategoryListings = ({useQueryParams = true}:CategoryListingsProps) 
 
     // Upon Component Mount, fetch the chapters. Change upon search params.
     useEffect(() => {
+        if (!queryParamsLoaded) {
+            return;
+        }
+
         fetchCateogries();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams]);
+    }, [searchParams, queryParamsLoaded]);
 
     useEffect(() => {
+        if (!queryParamsLoaded) {
+            return;
+        }
         if (useQueryParams) {
             redirectWithQueryParams();
         } else {
             fetchCateogries();
         }
-    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchCateogries, queryFilters]);
+    }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, fetchCateogries, queryFilters, queryParamsLoaded]);
 
     // Set loading to false after data has been loaded and component has re-rendered
     useEffect(() => {
@@ -223,11 +231,11 @@ export const CategoryListings = ({useQueryParams = true}:CategoryListingsProps) 
 
         <div className={styles["data-table-listings"]}>
             <DashboardModalPortal show={modalVisible}>
-                <CoreModal 
-                title={!selectedCategory?.categoryId  ? "Add Category" : "Edit Category"}
-                onClose={hide} 
-                isActive={modalVisible 
-                && activeModal == ModalActiveState.ADD_OR_EDIT}
+                <CoreModal
+                    title={!selectedCategory?.categoryId ? "Add Category" : "Edit Category"}
+                    onClose={hide}
+                    isActive={modalVisible
+                        && activeModal == ModalActiveState.ADD_OR_EDIT}
                 >
                     <CategoryForm
                         state={!selectedCategory?.categoryId ? FormState.ADD : FormState.EDIT}
