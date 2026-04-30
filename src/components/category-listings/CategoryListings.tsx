@@ -41,7 +41,7 @@ export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProp
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const { setSorting, setPagination, sorting, pagination, constructQueryString,
         redirectWithQueryParams,
-        search, searchParams, submitSearch, queryFilters, queryParamsLoaded, } = useDataTableQueryParams({ pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.DEFAULT) });
+        search, searchParams, submitSearch, queryFilters, queryParamsLoaded, } = useDataTableQueryParams({ pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.DEFAULT) ,syncWithQueryParams: useQueryParams});
     const [pageCount, setPageCount] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState<Category>();
     const [activeModal, setActiveModal] = useState<number>(ModalActiveState.NONE);
