@@ -154,7 +154,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
     }, [resourceId]);
 
 
-    const renderChapterOptionMenu = (chapter: Chapter) => {
+    const renderChapterOptionMenu = useCallback((chapter: Chapter) => {
         return (<CardDropdownMenu positionCenter={true} links={
             [
                 { label: "Edit Chapter", href: `/dashboard/resources/${resourceId}/chapters/${chapter.chapterId}/edit-chapter` },
@@ -171,7 +171,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                 }
             ]
         } />)
-    }
+    }, [handleModalVisibility, resourceId])
 
     const columns = useMemo(() => [
         columnHelper.accessor('name', {
@@ -186,7 +186,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
         columnHelper.accessor('statusId', {
             cell: (info) => {
                 const value = info.getValue();
-                return <ProgressPill statusId={value ?? ChapterStatuses.NOT_STARTED}/>
+                return <ProgressPill statusId={value ?? ChapterStatuses.NOT_STARTED} />
             },
             header: () => <span>Status</span>,
             meta: {
@@ -252,7 +252,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
             enableSorting: false,
             enableHiding: false,
         }
-    ], [columnHelper, handleModalVisibility, renderChapterOptionMenu]);
+    ], [columnHelper, renderChapterOptionMenu]);
 
     const table = useReactTable({
         data,
