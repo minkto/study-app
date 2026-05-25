@@ -121,6 +121,7 @@ export interface ListingSearchQuery {
     sortOrder?: string;
     searchTerm?: string;
     page?: string
+    pageSize?: string
     filters?: ListingSearchQueryFilters;
     userId?: string | number | null;
 }

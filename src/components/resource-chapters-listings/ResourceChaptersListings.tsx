@@ -5,7 +5,7 @@ import { CellContext, createColumnHelper, getCoreRowModel, getPaginationRowModel
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
 import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
-import { ChapterStatuses, FilterByQueryKeys } from "@/constants/constants";
+import { ChapterStatuses, FilterByQueryKeys, ListingPageSizes } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
 import { getCurrentSortOrder, getInitialSortByOption, nullableDateTimeSortingFn } from "@/utils/tableUtils";
 import { TZDate } from "@date-fns/tz";
@@ -54,7 +54,7 @@ const sortByOptions =
     ];
 
 
-const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize }: ResourceChaptersListingsProps) => {
+const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize = Number(ListingPageSizes.DEFAULT)}: ResourceChaptersListingsProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const isMobileScreen = useMobileScreenSize();
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
@@ -122,8 +122,10 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                 return;
             }
 
-            const fullQuery = constructQueryString();
-            const response = await fetch(`/api/resources/${resourceId}/chapters${fullQuery}`);
+            const queryString = constructQueryString();
+            const pageSizeQuery = queryString ? queryString + `&pageSize=${pageSize}` : `?pageSize=${pageSize}`
+
+            const response = await fetch(`/api/resources/${resourceId}/chapters${pageSizeQuery}`);
             const data = await response.json();
             setData(data.chapters);
             setPageCount(data.chaptersCount);
@@ -133,7 +135,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
         finally {
             setupLoading(false);
         }
-    }, [resourceId, constructQueryString]);
+    }, [resourceId, constructQueryString,pageSize]);
 
     const deleteChapter = useCallback(async (chapterId: number | undefined) => {
         try {

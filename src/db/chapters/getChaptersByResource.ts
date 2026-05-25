@@ -23,7 +23,13 @@ export async function getChaptersByResource(resourceId: number, listingSearchQue
 	    INNER JOIN resources r ON c.resource_id = r.resource_id
         WHERE r.resource_id = $1 AND c.name ILIKE $2 AND r.user_id = $3`;
 
-    const pageSize = parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS);
+    const defaultPageSize = parseInt(process.env.CHAPTERS_MAX_PAGE_SIZE || ListingPageSizes.CHAPTERS);
+    let pageSize = listingSearchQuery?.pageSize ? parseInt( listingSearchQuery?.pageSize):  defaultPageSize;
+    if(pageSize > defaultPageSize)
+    {
+        pageSize = defaultPageSize;
+    }
+    
     const totalPageCount = await calculatePageCount(resourceId, listingSearchQuery, pageSize);
 
     if (isStringEmpty(listingSearchQuery?.searchTerm)) {
