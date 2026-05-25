@@ -13,7 +13,7 @@ export default function Page() {
         <div>
             <h1>Selected Resource Chapters Page</h1>
             <DashboardWidget title="Resource Chapters">
-                <ResourceChaptersListings pageSize={10} resourceId={resourceId} />
+                <ResourceChaptersListings resourceId={resourceId} />
             </DashboardWidget>
         </div>);
 }

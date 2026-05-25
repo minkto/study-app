@@ -59,7 +59,7 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
             </div>
 
             <div className={styles["resource-details__chapters"]}>
-                <ResourceChaptersListings pageSize={5} useQueryParams={false} resourceId={resource?.resourceId?.toString()}/>
+                <ResourceChaptersListings useQueryParams={false} resourceId={resource?.resourceId?.toString()}/>
             </div>
 
         </div>)

@@ -23,7 +23,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             sortBy: searchParams?.get('sortBy')?.trim(),
             sortOrder: searchParams?.get('sortOrder')?.trim(),
             page: searchParams?.get('page')?.trim(),
-            pageSize: searchParams?.get('pageSize')?.trim(),
             filters:
             {
                 status: searchParams?.getAll(FilterByQueryKeys.ChapterListings.STATUS),
