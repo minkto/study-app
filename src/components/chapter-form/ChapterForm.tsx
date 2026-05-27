@@ -27,6 +27,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
     const [formData, setFormData] = useState<Chapter>({
         name: "",
         url: "",
+        description: "",
         lastDateCompleted: startOfDay(new UTCDate()),
         originalDateCompleted: startOfDay(new UTCDate()),
         statusId: -1,
@@ -229,14 +230,19 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                     </div>
 
                     <div className="form-field-wrapper centered-fields">
+                        <label htmlFor='form-chapter__description'>Description</label>
+                        <textarea className="form-field" id="form-chapter__description" rows={5} name="description" onChange={handleChange} value={formData?.description ?? ""} />
+                    </div>
+
+                    <div className="form-field-wrapper centered-fields">
                         <label htmlFor='form-chapter__url'>URL</label>
                         <input className="form-field" id="form-chapter__url" name="url" type='text' onChange={handleChange} value={formData?.url ?? ""}></input>
                         {formErrors.urlError ? (<p className='form-field__error-message'>{formErrors.urlError}</p>) : null}
                     </div>
 
                     <div className="form-field-wrapper centered-fields">
-                        <label htmlFor='form-resource__status'>Status</label>
-                        <select className="form-field" id='form-resource__status' name="statusId" onChange={handleChange}
+                        <label htmlFor='form-chapter__status'>Status</label>
+                        <select className="form-field" id='form-chapter__status' name="statusId" onChange={handleChange}
                             value={formData?.statusId ?? -1}>
                             {
                                 statuses?.map((c: Status) =>
