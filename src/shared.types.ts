@@ -72,6 +72,7 @@ export interface Chapter {
     resourceId?: number;
     statusId?: number;
     name: string;
+    description?: string;
     url?: string;
     originalDateCompleted?: Date | null | undefined;
     lastDateCompleted?: Date | null | undefined;

@@ -9,6 +9,7 @@ export async function createChapter(chapter: Chapter) {
 	            resource_id,
 	            status_id,
 	            name,
+                description,
 	            url,
                 original_date_completed,
                 last_date_completed
@@ -20,9 +21,11 @@ export async function createChapter(chapter: Chapter) {
                 $3,
                 $4,
                 $5,
-                $6
+                $6,
+                $7
             )`,
-            values: [chapter.resourceId, chapter.statusId, chapter.name, chapter.url, chapter.originalDateCompleted?.toString(), chapter.lastDateCompleted?.toString()]
+            values: [chapter.resourceId, chapter.statusId, chapter.name, 
+                chapter.description,chapter.url, chapter.originalDateCompleted?.toString(), chapter.lastDateCompleted?.toString()]
         }
 
         const result = await queryDataRowCount(query);

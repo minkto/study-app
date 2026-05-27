@@ -57,6 +57,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
             chapterId: chapterIdNum,
             resourceId: res["resourceId"],
             name: res["name"],
+            description: res["description"],
             statusId: res["statusId"],
             url: res["url"],
             lastDateCompleted: res["lastDateCompleted"],
