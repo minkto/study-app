@@ -57,6 +57,7 @@ model Chapters {
   resource_id             Int
   status_id               Int @default(0)
   name                    String
+  description             String?
   url                     String?   @db.VarChar(800)
   original_date_completed DateTime?
   last_date_completed     DateTime?
