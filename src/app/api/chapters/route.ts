@@ -19,6 +19,7 @@ export async function POST(request: Request) {
         const chapter: Chapter =
         {
             name: res["name"],
+            description: res["description"],
             resourceId: res["resourceId"],
             statusId: res["statusId"],
             url: res["url"],
