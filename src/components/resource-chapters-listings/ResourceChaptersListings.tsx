@@ -160,9 +160,10 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
     const renderChapterOptionMenu = useCallback((chapter: Chapter) => {
         return (<CardDropdownMenu positionCenter={true} links={
             [
-                { label: "Edit Chapter", href: `/dashboard/resources/${resourceId}/chapters/${chapter.chapterId}/edit-chapter` },
+                { label: "View", href: `/dashboard/resources/${resourceId}/chapters/${chapter.chapterId}` },
+                { label: "Edit", href: `/dashboard/resources/${resourceId}/chapters/${chapter.chapterId}/edit-chapter` },
                 {
-                    label: "Delete Chapter",
+                    label: "Delete",
                     onClick: async () => {
                         try {
                             setSelectedChapter(chapter);
