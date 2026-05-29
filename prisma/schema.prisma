@@ -30,11 +30,10 @@ model Categories {
   user_id     Int
   users       Users       @relation(fields: [user_id], references: [user_id])
   color       String      @default("#ffffff") @db.VarChar(7)
-  created_at DateTime @default(now()) @db.Timestamptz(0)
-  updated_at DateTime @default(now()) @db.Timestamptz(0)
+  created_at  DateTime    @default(now()) @db.Timestamptz(0)
+  updated_at  DateTime    @default(now()) @db.Timestamptz(0)
 
-  @@unique([user_id,name])
-
+  @@unique([user_id, name])
   @@map("categories")
 }
 
@@ -55,16 +54,28 @@ model Resources {
 model Chapters {
   chapter_id              Int       @id @default(autoincrement())
   resource_id             Int
-  status_id               Int @default(0)
+  status_id               Int       @default(0)
   name                    String
   description             String?
   url                     String?   @db.VarChar(800)
   original_date_completed DateTime?
   last_date_completed     DateTime?
   resource                Resources @relation(fields: [resource_id], references: [resource_id])
-  status                  Statuses @relation(fields: [status_id], references: [status_id])
+  status                  Statuses  @relation(fields: [status_id], references: [status_id])
+  notes                   Notes[]
 
   @@map("chapters")
+}
+
+model Notes {
+  note_id    Int      @id @default(autoincrement())
+  chapter_id Int
+  content    String?  @db.VarChar(256)
+  chapter    Chapters @relation(fields: [chapter_id], references: [chapter_id])
+  created_at DateTime @default(now()) @db.Timestamptz(0)
+  updated_at DateTime @default(now()) @db.Timestamptz(0)
+
+  @@map("notes")
 }
 
 model Users {
