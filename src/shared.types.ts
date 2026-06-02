@@ -86,6 +86,16 @@ export interface Note {
     content: string;
 }
 
+export interface NoteValidationModel {
+    isValid: boolean;
+    message: string;
+    formErrors: NoteFormErrors;
+}
+
+export interface NoteFormErrors{
+    contentErrors: string;
+}
+
 export interface Category {
     categoryId?: number | undefined | null;
     userId: number;

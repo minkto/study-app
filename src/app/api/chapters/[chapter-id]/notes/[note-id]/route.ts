@@ -1,6 +1,7 @@
 import deleteNote from "@/db/chapters/notes/deleteNote";
 import { getNote } from "@/db/chapters/notes/getNote";
 import updateNote from "@/db/chapters/notes/updateNote";
+import validateNote from "@/services/validateNoteService";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -52,6 +53,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
         }
 
         noteFromDb.content = body.content;
+
+        const validationResult = validateNote(noteFromDb);
+        if (!validationResult.isValid) {
+            return NextResponse.json({ message: validationResult.message }, { status: 400 });
+        }
 
         const response = await updateNote(noteFromDb);
         if (!response) {

@@ -1,6 +1,7 @@
 import { getChapter } from "@/db/chapters/getChapter";
 import createNote from "@/db/chapters/notes/createNote";
 import getNotes from "@/db/chapters/notes/getNotes";
+import validateNote from "@/services/validateNoteService";
 import { Note } from "@/shared.types";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
@@ -25,13 +26,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ "ch
         }
 
         const chapter = await getChapter(Number(note.chapterId), userId);
-
         if (!chapter) {
             return NextResponse.json({ message: "Could not find the chapter." }, { status: 404 });
         }
 
-        const response = await createNote(note);
+        const validationResult = validateNote(note);
+        if (!validationResult.isValid) {
+            return NextResponse.json({ message: validationResult.message }, { status: 400 });
+        }
 
+        const response = await createNote(note);
         if (!response) {
             return NextResponse.json({ message: "Could not create note." }, { status: 400 });
         }

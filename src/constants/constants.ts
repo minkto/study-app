@@ -5,7 +5,6 @@ export const ChatAIErrorMessages =
     API_ERROR: "An error occurred while processing your request. Please try again later."
 }
 
-
 export const FormState =
 {
     ADD: 0,
@@ -48,3 +47,5 @@ export const DefaultUserSettings =
     AI_HELPER_CREDITS: 0,
     GLOBAL_CHAPTER_DAYS_BEFORE_REVIEW_DUE: 30
 };
+
+export const NOTE_MAX_CONTENT = 256;
