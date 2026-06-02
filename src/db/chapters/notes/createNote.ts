@@ -8,7 +8,9 @@ export const createNote = async(note: Note) => {
         const values = [note.chapterId, note.content];
 
         const result = await queryDataSingleRow(query, values);
-        return result;
+        return {
+            noteId: result.note_id
+        };
 
     } catch (error) {
         console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
