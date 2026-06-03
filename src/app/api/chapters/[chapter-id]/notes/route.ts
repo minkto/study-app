@@ -1,5 +1,6 @@
 import { getChapter } from "@/db/chapters/getChapter";
 import createNote from "@/db/chapters/notes/createNote";
+import getNoteCount from "@/db/chapters/notes/getNoteCount";
 import getNotes from "@/db/chapters/notes/getNotes";
 import validateNote from "@/services/validateNoteService";
 import { Note } from "@/shared.types";
@@ -30,6 +31,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ "ch
             return NextResponse.json({ message: "Could not find the chapter." }, { status: 404 });
         }
 
+        const MAX_NOTES = 3;
+        const notesCount = await getNoteCount(chapter.chapterId);
+
+        if (notesCount >= MAX_NOTES) {
+            return NextResponse.json({ message: `Cannot create more than ${MAX_NOTES} notes per chapter.` }, { status: 400 });
+        }
         const validationResult = validateNote(note);
         if (!validationResult.isValid) {
             return NextResponse.json({ message: validationResult.message }, { status: 400 });
