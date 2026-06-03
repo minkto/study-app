@@ -28,25 +28,10 @@
     gap: 5px;
     padding-top: 0.5em;
     border-top: 1px solid #EEEEEE;
-    ;
-}
-
-.chapter-data-table-card__days-completed-icon {
-    width: 16px;
-    height: 16px;
-}
-
-.chapter-data-table-card__completion-section {
-    flex-grow: 1;
 }
 
 .chapter-data-table-card p {
     margin-bottom: 0.5em;
-}
-
-.chapter-data-table-card__completion-section:first-child
-{
-    flex-grow: 2;
 }
 
 .chapter-data-table-card__days-completed {

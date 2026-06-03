@@ -1,0 +1,18 @@
+.chapter-days-complete-pill__days-completed-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.chapter-days-complete-pill__completion-section {
+    flex-grow: 1;
+}
+
+.chapter-days-complete-pill__days-completed {
+    border-radius: var(--standard-box-radius);
+    display: flex;
+    flex-direction: row;
+    background-color: var(--primary-color);
+    width: fit-content;
+    flex-wrap: wrap;
+    padding: 0 0.5em;
+}

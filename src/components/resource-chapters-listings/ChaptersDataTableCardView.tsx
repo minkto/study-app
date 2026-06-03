@@ -3,7 +3,7 @@ import { Chapter } from "@/shared.types";
 import styles from './chapters-data-table-card-view.module.css'
 import { TZDate } from "@date-fns/tz";
 import { ProgressPill } from "./ProgressPill";
-import IconClock from "../icons/icon-clock/IconClock";
+import ChapterDaysCompletedPill from "./ChapterDaysCompletedPill";
 
 interface ChaptersDataTableProps {
     chapter: Chapter;
@@ -20,16 +20,8 @@ const ChaptersDataTableCardView = ({ chapter, cardMenuOption }: ChaptersDataTabl
             </div>
             <ProgressPill statusId={chapter.statusId ?? ChapterStatuses.NOT_STARTED}/>
             <div className={styles["chapter-data-table-card__completion"]}>
-                
-                <div className={`${styles["chapter-data-table-card__completion-section"]}`}>
-                    <p>Last Reviewed</p> 
-                    <div className={styles["chapter-data-table-card__days-completed"]}>
-                        <IconClock className={styles["chapter-data-table-card__days-completed-icon"]} width={32} height={32}/>
-                        <div >{chapter.daysSinceCompleted} Day(s)</div>
-                    </div>
-
-                </div>
-
+                <p>Last Reviewed</p>
+                <ChapterDaysCompletedPill days={chapter.daysSinceCompleted ?? 0}/>
                 <div className={`${styles["chapter-data-table-card__completion-section"]} ${styles["chapter-data-table-card__first-completed"]}`}>
                     <p>First Completed</p>
                     {chapter?.originalDateCompleted ? new TZDate(chapter?.originalDateCompleted, Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString()
