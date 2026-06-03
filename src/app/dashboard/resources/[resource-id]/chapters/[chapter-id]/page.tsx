@@ -8,6 +8,7 @@ import ProgressPill from "@/components/resource-chapters-listings/ProgressPill";
 import { ChapterStatuses } from "@/constants/constants";
 import ChapterDaysCompletedPill from "@/components/resource-chapters-listings/ChapterDaysCompletedPill";
 import { TZDate } from "@date-fns/tz";
+import IconExternalLink from "@/components/icons/icon-external-link/IconExternalLink";
 
 export default async function Page({ params }: { params: Promise<{ "chapter-id": string }> }) {
 
@@ -70,8 +71,12 @@ export default async function Page({ params }: { params: Promise<{ "chapter-id":
                             </p>
                         </div>
 
-                        {chapterDetails?.url && (<Link className="dashboard-primary-btn" href={chapterDetails?.url} target="_blank" >View Page</Link>)}
-
+                        {chapterDetails?.url && (
+                            <div>
+                                <Link className={`dashboard-primary-btn ${styles["chapter-info__external-link"]}`} href={chapterDetails?.url} target="_blank" >
+                                    <IconExternalLink className={styles["external-link-icon"]} width={32} height={32} />
+                                    View Page</Link>
+                            </div>)}
                     </div>
                     <div className={styles["chapter-info__right-side"]}>
                         <p className="chapter-info__description">{chapterDetails.description}</p>

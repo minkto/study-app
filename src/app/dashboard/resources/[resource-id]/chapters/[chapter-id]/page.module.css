@@ -32,3 +32,15 @@
 {
     margin-bottom: 0.5em;
 }
+
+.external-link-icon
+{
+    width: 16px;
+    height: 16px;
+    margin-right: 0.5em;
+}
+
+.chapter-info__external-link
+{
+    width: 95%;
+}
