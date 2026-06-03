@@ -44,25 +44,26 @@ export default async function Page({ params }: { params: Promise<{ "chapter-id":
                 <div className={styles["chapter-info-wrapper"]}>
                     <div className={styles["chapter-info__left-side"]}>
 
-                        <div className="chapter-info__block">
-                            <p>Status</p>
+                        <div className={styles["chapter-info__block"]}>
+                            <p className={styles["chapter-info__label"]}>Status</p>
                             <ProgressPill statusId={chapterDetails.statusId ?? ChapterStatuses.NOT_STARTED} />
                         </div>
 
-                        <div className="chapter-info__block">
-                            <ChapterDaysCompletedPill days={chapterDetails.daysSinceCompleted ?? 0}/>
+                        <div className={styles["chapter-info__block"]}>
+                            <p className={styles["chapter-info__label"]}>Last Reviewed</p>
+                            <ChapterDaysCompletedPill days={chapterDetails.daysSinceCompleted ?? 0} />
                         </div>
 
-                        <div className="chapter-info__block">
-                            <p>Original Date Completed</p>
+                        <div className={styles["chapter-info__block"]}>
+                            <p className={styles["chapter-info__label"]}>Original Date Completed</p>
                             <p className="chapter-info__original-date-completed">
-                                    {chapterDetails?.originalDateCompleted ? new TZDate(chapterDetails?.originalDateCompleted, Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString()
-                                                        : "-"}
-                                </p>
+                                {chapterDetails?.originalDateCompleted ? new TZDate(chapterDetails?.originalDateCompleted, Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString()
+                                    : "-"}
+                            </p>
                         </div>
 
-                        <div className="chapter-info__block">
-                            <p>Last Completed</p>
+                        <div className={styles["chapter-info__block"]}>
+                            <p className={styles["chapter-info__label"]}>Last Completed</p>
                             <p className="chapter-info__last-date-completed">
                                 {chapterDetails?.lastDateCompleted ? new TZDate(chapterDetails?.lastDateCompleted, Intl.DateTimeFormat().resolvedOptions().timeZone).toLocaleDateString()
                                     : "-"}
@@ -75,9 +76,9 @@ export default async function Page({ params }: { params: Promise<{ "chapter-id":
                     <div className={styles["chapter-info__right-side"]}>
                         <p className="chapter-info__description">{chapterDetails.description}</p>
                     </div>
-
-                    {/* Display other chapter details as needed */}
                 </div>
+                <h2 className={styles["chapter-info__title"]}>Notes</h2>
+
             </div>)}
     </>)
 }

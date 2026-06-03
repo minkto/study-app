@@ -20,6 +20,7 @@ const ChaptersDataTableCardView = ({ chapter, cardMenuOption }: ChaptersDataTabl
             </div>
             <ProgressPill statusId={chapter.statusId ?? ChapterStatuses.NOT_STARTED}/>
             <div className={styles["chapter-data-table-card__completion"]}>
+                <p>Last Reviewed</p>
                 <ChapterDaysCompletedPill days={chapter.daysSinceCompleted ?? 0}/>
                 <div className={`${styles["chapter-data-table-card__completion-section"]} ${styles["chapter-data-table-card__first-completed"]}`}>
                     <p>First Completed</p>

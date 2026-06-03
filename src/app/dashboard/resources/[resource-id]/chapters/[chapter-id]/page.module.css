@@ -8,6 +8,7 @@
     display: flex;
     flex-direction: row;
     gap:0.5em;
+    margin-bottom: 1em;
 }
 
 .chapter-info__left-side
@@ -17,6 +18,7 @@
     min-width: 180px;
     gap: 1em;
     border-right: 1px solid #EEEEEE;
+    padding-right: 0.5em;
 }
 
 .chapter-info__right-side
@@ -24,4 +26,9 @@
     display: flex;
     flex-grow: 2;
     flex-direction: column;
+}
+
+.chapter-info__label
+{
+    margin-bottom: 0.5em;
 }
