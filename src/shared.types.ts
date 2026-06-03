@@ -76,7 +76,24 @@ export interface Chapter {
     url?: string;
     originalDateCompleted?: Date | null | undefined;
     lastDateCompleted?: Date | null | undefined;
-    daysSinceCompleted?: number
+    daysSinceCompleted?: number;
+    notes?: Note[];
+}
+
+export interface Note {
+    noteId?: number;
+    chapterId: number;
+    content: string;
+}
+
+export interface NoteValidationModel {
+    isValid: boolean;
+    message: string;
+    formErrors: NoteFormErrors;
+}
+
+export interface NoteFormErrors{
+    contentErrors: string;
 }
 
 export interface Category {
