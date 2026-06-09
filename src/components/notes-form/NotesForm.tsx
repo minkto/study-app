@@ -14,7 +14,7 @@ interface NotesFormProps {
 
 const TOP_LEVEL_ERROR_MESSAGE = "An error has occured when submitting the form.";
 
-export const NotesForm = ({ state, noteId, chapterId, onFormSubmit }: NotesFormProps) => {
+export const NotesForm = ({ chapterId, onFormSubmit }: NotesFormProps) => {
 
     const [formDisabled, setFormDisabled] = useState(false);
     const [formErrors, setFormErrors] = useState(
