@@ -2,7 +2,7 @@ import { NOTE_MAX_CONTENT } from "@/constants/constants";
 import { Note } from "@/shared.types";
 import { handleFormChange } from "@/utils/formUtils";
 import Form from "next/form";
-import { FormEvent, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { toast } from "sonner";
 
 interface NotesFormProps {
@@ -12,12 +12,11 @@ interface NotesFormProps {
     onFormSubmit?: () => void;
 }
 
+const TOP_LEVEL_ERROR_MESSAGE = "An error has occured when submitting the form.";
+
 export const NotesForm = ({ state, noteId, chapterId, onFormSubmit }: NotesFormProps) => {
 
-    const TOP_LEVEL_ERROR_MESSAGE = "An error has occured when submitting the form.";
-    const [charsRemaining, setCharsRemaining] = useState(NOTE_MAX_CONTENT);
-    const [buttonDisabled, setButtonDisabled] = useState(false);
-
+    const [formDisabled, setFormDisabled] = useState(false);
     const [formErrors, setFormErrors] = useState(
         {
             contentErrors: ''
@@ -28,15 +27,12 @@ export const NotesForm = ({ state, noteId, chapterId, onFormSubmit }: NotesFormP
         chapterId: -1,
     });
 
-    const getCharactersRemaining = (field: string, maxLimitLength: number) => {
-        return maxLimitLength - field.length;
-    }
-
+    const charsRemaining = NOTE_MAX_CONTENT - formData.content.length;
 
     const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
 
         try {
-            setButtonDisabled(true);
+            setFormDisabled(true);
             event.preventDefault();
 
             if (!isFormValid()) {
@@ -59,8 +55,7 @@ export const NotesForm = ({ state, noteId, chapterId, onFormSubmit }: NotesFormP
                 onFormSubmit();
             }
 
-            setFormData( {...formData , "content" : ""});
-            setCharsRemaining(NOTE_MAX_CONTENT);
+            setFormData(prev => ({ ...prev, content: "" }));
 
         } catch (error) {
             if (error instanceof Error) {
@@ -68,11 +63,11 @@ export const NotesForm = ({ state, noteId, chapterId, onFormSubmit }: NotesFormP
                 console.error(error);
             }
         } finally {
-            setButtonDisabled(false);
+            setFormDisabled(false);
         }
     }
 
-    const isFormValid = (): boolean => {
+    const isFormValid = useCallback((): boolean => {
 
         const errors = { contentErrors: "" };
         if (formData.content.length <= 0) {
@@ -82,23 +77,22 @@ export const NotesForm = ({ state, noteId, chapterId, onFormSubmit }: NotesFormP
         if (formData.content.length > NOTE_MAX_CONTENT) {
             errors.contentErrors = `Content must have a character length less than ${NOTE_MAX_CONTENT}.`;
         }
-        console.log("Errors:", errors);
 
         setFormErrors(errors);
         return !errors.contentErrors;
-    }
+    }, [formData.content.length])
 
+    const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        handleFormChange(setFormData,e);
+    }, []);
 
 
     return (<div className={`form-container plain`}>
         <div className='form-inner-content'>
             <Form className='form-dashboard' action="/" onSubmit={onSubmit}>
                 <div className="form-field-wrapper centered-fields">
-                    <textarea className="form-field" id="form-note__content" rows={5} maxLength={NOTE_MAX_CONTENT}
-                        name="content" onChange={(e) => {
-                            handleFormChange(setFormData, formData)(e);
-                            setCharsRemaining(getCharactersRemaining(e.target.value, NOTE_MAX_CONTENT));
-                        }}
+                    <textarea disabled={formDisabled} className="form-field" id="form-note__content" rows={5} maxLength={NOTE_MAX_CONTENT}
+                        name="content" onChange={handleContentChange}
 
                         value={formData?.content ?? ""} />
                     {formErrors.contentErrors ? (<p className='form-field__error-message'>{formErrors.contentErrors}</p>) : null}
@@ -106,7 +100,7 @@ export const NotesForm = ({ state, noteId, chapterId, onFormSubmit }: NotesFormP
 
                 <div>{charsRemaining} : Characters Remaining</div>
                 <div className="form-field-wrapper centered-fields">
-                    <button disabled={buttonDisabled} className={"form-field"} type='submit'>Save</button>
+                    <button disabled={formDisabled} className={"form-field"} type='submit'>Save</button>
                 </div>
             </Form>
         </div>
