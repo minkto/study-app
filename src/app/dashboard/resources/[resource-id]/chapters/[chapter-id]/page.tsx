@@ -9,6 +9,8 @@ import { ChapterStatuses } from "@/constants/constants";
 import ChapterDaysCompletedPill from "@/components/resource-chapters-listings/ChapterDaysCompletedPill";
 import { TZDate } from "@date-fns/tz";
 import IconExternalLink from "@/components/icons/icon-external-link/IconExternalLink";
+import AddNoteLink from "@/components/add-note-link/AddNoteLink";
+
 
 export default async function Page({ params }: { params: Promise<{ "chapter-id": string }> }) {
 
@@ -83,6 +85,9 @@ export default async function Page({ params }: { params: Promise<{ "chapter-id":
                     </div>
                 </div>
                 <h2 className={styles["chapter-info__title"]}>Notes</h2>
+                <AddNoteLink />
+
+                {chapterDetails?.notes && chapterDetails?.notes?.map(x => { return <div key={x.noteId}>{x.content}</div> })}
 
             </div>)}
     </>)
