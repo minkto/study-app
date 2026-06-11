@@ -69,3 +69,13 @@
     left: 50%;
     transform: translateX(-50%);
 }
+
+.dropdown-menu__options.position-left
+{
+    left: unset;
+}
+
+.dropdown-menu__options.position-right
+{
+    right: unset;
+}

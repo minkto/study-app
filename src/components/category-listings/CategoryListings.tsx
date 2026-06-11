@@ -10,7 +10,7 @@ import { useDataTableQueryParams } from "@/hooks/useDataTableQueryParams";
 import { isStringEmpty } from "@/utils/stringUtils";
 import Skeleton from "react-loading-skeleton";
 import { getCurrentSortOrder, getInitialSortByOption, getSortDirectionTitle } from "@/utils/tableUtils";
-import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
+import CardDropdownMenu, { CardDropdownAlignment } from "../card-dropdown-menu/CardDropdownMenu";
 import SelectDropdown from "../select-dropdown/SelectDropdown";
 import { ListingsPagination } from "../listings-pagination/ListingsPagination";
 import ListingsNoResults from "../listings-no-results/ListingsNoResults";
@@ -83,7 +83,7 @@ export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProp
             header: () => null,
             cell: ({ row }: { row: Row<Category> }) => {
                 return (
-                    <CardDropdownMenu positionCenter={true} links={
+                    <CardDropdownMenu positionState={CardDropdownAlignment.CENTER} links={
                         [
                             {
                                 label: "Edit",

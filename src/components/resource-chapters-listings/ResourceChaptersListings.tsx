@@ -4,7 +4,7 @@ import { Chapter } from "@/shared.types";
 import { CellContext, createColumnHelper, getCoreRowModel, getPaginationRowModel, Row, RowData, useReactTable } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from './resource-chapters-listings.module.css'
-import CardDropdownMenu from "../card-dropdown-menu/CardDropdownMenu";
+import CardDropdownMenu, { CardDropdownAlignment } from "../card-dropdown-menu/CardDropdownMenu";
 import { ChapterStatuses, FilterByQueryKeys, ListingPageSizes } from "@/constants/constants";
 import ListingsSearchBar from "../listings-search-bar/ListingsSearchBar";
 import { getCurrentSortOrder, getInitialSortByOption, nullableDateTimeSortingFn } from "@/utils/tableUtils";
@@ -158,7 +158,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
 
 
     const renderChapterOptionMenu = useCallback((chapter: Chapter) => {
-        return (<CardDropdownMenu positionCenter={true} links={
+        return (<CardDropdownMenu positionState={CardDropdownAlignment.LEFT} links={
             [
                 { label: "View", href: `/dashboard/resources/${resourceId}/chapters/${chapter.chapterId}` },
                 { label: "Edit", href: `/dashboard/resources/${resourceId}/chapters/${chapter.chapterId}/edit-chapter` },
