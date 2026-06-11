@@ -6,7 +6,7 @@ import IconMoreHorizontal from '../icons/icon-more-horizontal/IconMoreHorizontal
 interface CardDropdownMenuProps {
     onClose?: () => void;
     links?: DropdownMenuOption[];
-    positionCenter? : boolean;
+    positionState?: CardDropdownAlignmentType;
 }
 
 interface DropdownMenuOption {
@@ -15,8 +15,20 @@ interface DropdownMenuOption {
     onClick?: () => void;
 }
 
+export type CardDropdownAlignmentType = typeof CardDropdownAlignment[keyof typeof CardDropdownAlignment];
 
-const CardDropdownMenu = ({ links,positionCenter }: CardDropdownMenuProps) => {
+
+export const CardDropdownAlignment =
+{
+    NONE: 0,
+    LEFT: 1,
+    RIGHT: 2,
+    CENTER: 3
+}
+
+
+
+const CardDropdownMenu = ({ links, positionState }: CardDropdownMenuProps) => {
 
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -48,6 +60,25 @@ const CardDropdownMenu = ({ links,positionCenter }: CardDropdownMenuProps) => {
         (() => setDropdownMenuOpen(!dropdownMenuOpen)), [dropdownMenuOpen]
     );
 
+    const getPosition = useCallback((pos: CardDropdownAlignmentType) => {
+
+        switch (pos) {
+            case CardDropdownAlignment.LEFT:
+                return "position-left";
+
+            case CardDropdownAlignment.RIGHT:
+                return "position-right";
+
+            case CardDropdownAlignment.CENTER:
+                return "position-center";
+
+            case CardDropdownAlignment.NONE:
+            default:
+                return "position-center";
+
+        }
+    }, [])
+
     useEffect(() => {
         const onOutsideClick = (e: MouseEvent | KeyboardEvent) => {
             if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -68,7 +99,7 @@ const CardDropdownMenu = ({ links,positionCenter }: CardDropdownMenuProps) => {
 
     return (
         <div className={styles["dropdown-menu"]}>
-            {dropdownMenuOpen ? <div className={`${styles["dropdown-menu__options"]} ${positionCenter ? styles["position-center"] : ""}`} ref={modalRef}>
+            {dropdownMenuOpen ? <div className={`${styles["dropdown-menu__options"]} ${styles[getPosition(positionState?? CardDropdownAlignment.NONE)]}`} ref={modalRef}>
                 <ul className={styles['dropdown-menu__list']}>
                     {renderDropdownMenuOptions(links)}
                 </ul>
