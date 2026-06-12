@@ -8,6 +8,7 @@ import { Note } from "@/shared.types";
 import NotesForm from "../notes-form/NotesForm";
 import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
 import { useCallback, useMemo, useState } from "react";
+import styles from './notes-card.module.css';
 
 interface NotesCardProps {
     note: Note;
@@ -15,7 +16,7 @@ interface NotesCardProps {
 }
 
 
-export const NotesCard = ({ note,noteNumber }: NotesCardProps) => {
+export const NotesCard = ({ note, noteNumber }: NotesCardProps) => {
 
     const ModalActiveState = useMemo(() => ({
         ADD: 0,
@@ -43,7 +44,7 @@ export const NotesCard = ({ note,noteNumber }: NotesCardProps) => {
     }, [ModalActiveState.ADD, ModalActiveState.DELETE, ModalActiveState.EDIT, ModalActiveState.VIEW])
 
     return (
-        <div className="notes-card">
+        <div className={styles["notes-card"]}>
             <DashboardModalPortal show={modalVisible}>
                 <CoreModal title={getModalTitle(activeModal)} onClose={hide}
                     isActive={modalVisible &&
@@ -64,32 +65,34 @@ export const NotesCard = ({ note,noteNumber }: NotesCardProps) => {
                     headingText="Delete Note"
                 />
             </DashboardModalPortal>
-            <div className="notes-card-header">
-                {<CardDropdownMenu positionState={CardDropdownAlignment.RIGHT} links={
-                    [
-                        {
-                            label: "View",
-                            onClick: () => {
-                                setActiveModal(ModalActiveState.VIEW);
-                                handleModalVisibility();
-                            }
-                        },
-                        {
-                            label: "Edit",
-                            onClick: () => {
-                                setActiveModal(ModalActiveState.EDIT);
-                                handleModalVisibility();
-                            }
-                        },
-                        {
-                            label: "Delete",
-                            onClick: () => {
-                                setActiveModal(ModalActiveState.DELETE);
-                                handleModalVisibility();
-                            }
-                        },
-                    ]
-                } />}
+            <div className={styles["notes-card-header"]}>
+                <span className={styles["note-card__note-number"]}>#{noteNumber}</span>
+                {<CardDropdownMenu
+                    positionState={CardDropdownAlignment.CENTER} links={
+                        [
+                            {
+                                label: "View",
+                                onClick: () => {
+                                    setActiveModal(ModalActiveState.VIEW);
+                                    handleModalVisibility();
+                                }
+                            },
+                            {
+                                label: "Edit",
+                                onClick: () => {
+                                    setActiveModal(ModalActiveState.EDIT);
+                                    handleModalVisibility();
+                                }
+                            },
+                            {
+                                label: "Delete",
+                                onClick: () => {
+                                    setActiveModal(ModalActiveState.DELETE);
+                                    handleModalVisibility();
+                                }
+                            },
+                        ]
+                    } />}
 
             </div>
             <p className="notes-card__content">{note.content}</p>

@@ -1,0 +1,7 @@
+.notes-card-listings
+{
+    display: flex;
+    gap: 0.5em;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
