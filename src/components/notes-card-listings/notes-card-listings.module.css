@@ -1,5 +1,8 @@
-.notes-card-listings
-{
+.notes-card-listings {
+    display: block;
+}
+
+.notes-card-listings__items {
     display: flex;
     gap: 0.5em;
     flex-direction: row;

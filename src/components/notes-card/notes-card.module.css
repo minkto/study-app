@@ -1,9 +1,10 @@
 .notes-card {
     background-color: white;
     width: 250px;
-    height: 200px;
+    height: 250px;
     border-radius: 5px;
     box-shadow: 1px 2px 3px 1px #d0d0d0;
+    word-break: break-all;
 }
 
 .notes-card-header {
@@ -21,12 +22,6 @@
 }
 
 @media screen and (max-width:1024px) {
-    .notes-card {
-        width: 95%;
-    }
-}
-
-@media screen and (max-width:768px) {
     .notes-card {
         width: 95%;
     }
