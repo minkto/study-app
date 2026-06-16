@@ -8,7 +8,9 @@ export const ChatAIErrorMessages =
 export const FormState =
 {
     ADD: 0,
-    EDIT: 1
+    EDIT: 1,
+    VIEW: 2,
+    DELETE: 3,
 };
 
 export const DEFAULT_CATEGORY_COLOR = "#FFFFFF"

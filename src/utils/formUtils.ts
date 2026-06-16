@@ -1,3 +1,4 @@
+import { FormState } from "@/constants/constants";
 import { Dispatch, SetStateAction, ChangeEvent } from "react";
 
 export const handleFormChange = <TFormDataState extends object>(
@@ -12,3 +13,18 @@ export const handleFormChange = <TFormDataState extends object>(
         setFormDataCallback((prev: TFormDataState) => ({ ...prev, [target.name]: target.value }));
     }
 };
+
+export const getFormMethod = (formState: number) => {
+    switch (formState) {
+        case FormState.ADD:
+            return "POST";
+        case FormState.EDIT:
+            return "PUT";
+        case FormState.VIEW:
+            return "GET";
+        case FormState.DELETE:
+            return "DELETE";
+        default:
+            return "";
+    }
+}
