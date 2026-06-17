@@ -9,9 +9,7 @@ export default function RootLayout({
     return (
         <div className="dashboard">
             <SidebarNavigation/>
-            
             <div className="dashboard__main-content">
-                <p>Dashboard Layout - This is the main content for dashboard.</p>
                 <div className="dashboard__widgets-container">
                     {children}
                 </div>
