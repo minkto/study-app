@@ -17,7 +17,7 @@ export default async function Page() {
     return (
         <div className={styles["dashboard-statistics"]}>
             <div className={styles["dashboard-statistics__heading"]}>
-                <h2>Home</h2>
+                <h2>Dashboard</h2>
             </div>
             <div className={styles["dashboard-statistics-row"]}>
                 <div className={styles["sa-col-1"]}>

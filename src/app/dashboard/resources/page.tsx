@@ -9,7 +9,6 @@ export default function Page() {
     return (
         <Suspense fallback={<>...</>}>
             <div>
-                <h1>Resources Page</h1>
                 <DashboardWidget title="Resources">
                     <ResourceListings />
                 </DashboardWidget>

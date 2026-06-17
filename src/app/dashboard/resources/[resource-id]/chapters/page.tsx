@@ -11,7 +11,6 @@ export default function Page() {
 
     return (
         <div>
-            <h1>Selected Resource Chapters Page</h1>
             <DashboardWidget title="Resource Chapters">
                 <ResourceChaptersListings pageSize={10} resourceId={resourceId} />
             </DashboardWidget>
