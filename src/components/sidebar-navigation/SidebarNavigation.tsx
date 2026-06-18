@@ -65,28 +65,32 @@ export const SidebarNavigation = () => {
                 </div>
             </div>
             <div ref={overlayRef} className={styles["sidebar__container-overlay"]}></div>
-            <div ref={hoverMenuRef} className={styles["sidebar__container-middle"]}>
+            <div ref={hoverMenuRef} className={styles[`sidebar__container-middle${sidebarToggle ? "--expanded" : ""}`]}>
                 <div className={styles["sidebar__container-menu"]}>
                     <ul className={styles["sidebar__container-menu-list"]}>
-                        <li className={styles["sidebar__container-menu-list-item"]}>
-                            <Link onClick={closeSidebar} href={"/dashboard/"}><IconGrid width={32} height={32} />Dashboard</Link>
+                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                            <Link onClick={closeSidebar} href={"/dashboard/"}><IconGrid width={32} height={32} />
+                            <span>Dashboard</span>
+                            </Link>
                         </li>
-                        <li className={styles["sidebar__container-menu-list-item"]}>
-                            <Link onClick={closeSidebar} href={"/dashboard/resources/"}><IconBook width={32} height={32} />Resources</Link>
+                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                            <Link onClick={closeSidebar} href={"/dashboard/resources/"}><IconBook width={32} height={32} />
+                            <span>Resources</span>
+                            </Link>
                         </li>
-                        <li className={styles["sidebar__container-menu-list-item"]}>
-                            <Link onClick={closeSidebar} href={"/dashboard/ai/helper/"}><IconAISpark width={32} height={32} />AI Helper</Link>
+                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                            <Link onClick={closeSidebar} href={"/dashboard/ai/helper/"}><IconAISpark width={32} height={32} /><span>AI Helper</span></Link>
                         </li>
-                        <li className={styles["sidebar__container-menu-list-item"]}>
-                            <Link onClick={closeSidebar} href={"/dashboard/settings/"}><IconSettings width={32} height={32} />Settings</Link>
+                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                            <Link onClick={closeSidebar} href={"/dashboard/settings/"}><IconSettings width={32} height={32} /><span>Settings</span></Link>
                         </li>
-                        <li className={styles["sidebar__container-menu-list-item"]}>
-                            <Link title="User Profile" onClick={closeSidebar} href={"/dashboard/settings/user-profile"}><IconUserProfile width={32} height={32} />User Profile</Link>
+                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                            <Link title="User Profile" onClick={closeSidebar} href={"/dashboard/settings/user-profile"}><IconUserProfile width={32} height={32} /><span>User Profile</span></Link>
                         </li>
-                        <li className={styles["sidebar__container-menu-list-item"]}>
+                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
                             <SignOutButton >
                                 <button title="Logout" aria-label="Logout">
-                                <IconLogout  width={32} height={32}/> Logout       
+                                <IconLogout  width={32} height={32}/><span> Logout</span>       
                                 </button>                         
                             </SignOutButton>
                         </li>
