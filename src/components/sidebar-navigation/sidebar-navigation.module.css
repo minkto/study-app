@@ -82,11 +82,22 @@
     margin: 0 5px 0 5px;
 }
 
-.sidebar__container-menu-toggle {
+.sidebar__container-menu-toggle button {
     align-items: end;
     flex-grow: 0;
+    border: transparent;
+    background-color: transparent;
+    padding: 0.5em;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
+
+.sidebar__container-menu-toggle button:hover,
+.sidebar__container-menu-toggle button:active,
+.sidebar__container-menu-toggle button:focus {
+    background-color: #F3F3F3;
+}
 
 .sidebar__container-middle,
 .sidebar__container-middle--expanded {
