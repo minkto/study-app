@@ -11,11 +11,13 @@ import styles from './sidebar-navigation.module.css';
 import { SignOutButton } from "@clerk/nextjs";
 import IconAISpark from "../icons/icon-ai-spark/IconAISpark";
 import IconUserProfile from "../icons/icon-user-profile/IconUserProfile";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import 'overlayscrollbars/styles/overlayscrollbars.css';
+
 
 export const SidebarNavigation = () => {
     const [sidebarToggle, setSidebarToggle] = useState(false);
     const overlayRef = useRef<HTMLDivElement>(null);
-    const hoverMenuRef = useRef<HTMLDivElement>(null);
 
     const toggleSidebar = () => {
         setSidebarToggle(!sidebarToggle);
@@ -50,7 +52,6 @@ export const SidebarNavigation = () => {
     return (<aside className={styles[`sidebar${sidebarToggle ? "--expanded" : ""}`]}>
         <div className={styles["sidebar__container"]}>
             <div className={styles["sidebar__container-top"]}>
-
                 <div className={styles["sidebar__container-icon"]}>
                 </div>
 
@@ -65,8 +66,12 @@ export const SidebarNavigation = () => {
                 </div>
             </div>
             <div ref={overlayRef} className={styles["sidebar__container-overlay"]}></div>
-            <div ref={hoverMenuRef} className={styles[`sidebar__container-middle${sidebarToggle ? "--expanded" : ""}`]}>
-                <div className={styles["sidebar__container-menu"]}>
+            <OverlayScrollbarsComponent 
+                element="div"
+                options={{ scrollbars: { autoHide: "scroll", theme: "os-theme-dark" } }}
+                className={styles[`sidebar__container-middle${sidebarToggle ? "--expanded" : ""}`]}
+            >
+                <div className={styles[`sidebar__container-menu${sidebarToggle ? "--expanded" : ""}`]}>
                     <ul className={styles["sidebar__container-menu-list"]}>
                         <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
                             <Link onClick={closeSidebar} href={"/dashboard/"}><IconGrid width={32} height={32} />
@@ -90,14 +95,14 @@ export const SidebarNavigation = () => {
                         <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
                             <SignOutButton >
                                 <button title="Logout" aria-label="Logout">
-                                <IconLogout  width={32} height={32}/><span> Logout</span>       
+                                <IconLogout  width={32} height={32}/><span>Logout</span>       
                                 </button>                         
                             </SignOutButton>
                         </li>
                     </ul>
                 </div>
-            </div>
-
+            </OverlayScrollbarsComponent>
+            <div className={styles["sidebar__container-bottom"]}></div>
         </div>
     </aside>)
 }
