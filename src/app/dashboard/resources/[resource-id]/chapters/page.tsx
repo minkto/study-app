@@ -1,17 +1,24 @@
-"use client";
-
 import { DashboardWidget } from "@/components/dashboard/DashboardWidget";
 import ResourceChaptersListings from "@/components/resource-chapters-listings/ResourceChaptersListings";
-import { useParams } from "next/navigation";
+import { getResourceDto } from "@/services/resourceService";
+import { isStringEmpty } from "@/utils/stringUtils";
+import { auth } from "@clerk/nextjs/server";
 
-export default function Page() {
-    const params = useParams();
+export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
+    const { "resource-id": resourceId } = await params;
 
-    const resourceId = params?.["resource-id"] as string;
+
+    const { userId, redirectToSignIn } = await auth();
+    if (isStringEmpty(userId)) {
+        redirectToSignIn();
+    }
+
+    const resource = await getResourceDto(Number(resourceId), userId);
 
     return (
         <div>
-            <DashboardWidget title="Resource Chapters">
+            <h1>{resource?.name}</h1>
+            <DashboardWidget>
                 <ResourceChaptersListings pageSize={10} resourceId={resourceId} />
             </DashboardWidget>
         </div>);

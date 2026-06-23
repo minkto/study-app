@@ -315,6 +315,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
 
     return (
         <div className={`${styles["chapter-listings"]}`}>
+            <h2>Chapters</h2>
             <DashboardModalPortal show={deleteModalVisible}>
                 <ConfirmationModal
                     onClose={hide}
