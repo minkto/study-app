@@ -3,14 +3,18 @@ import { Chapter } from "@/shared.types";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { getSortDirectionTitle } from "@/utils/tableUtils";
 import { flexRender, Table } from "@tanstack/react-table";
-import Skeleton from "react-loading-skeleton";
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+
 
 interface ChaptersDataTableProps {
     table: Table<Chapter>;
     dataLoaded: boolean;
+    pageSize: number;
 }
 
-const ChaptersDataTableListView = ({ table, dataLoaded }: ChaptersDataTableProps) => {
+const ChaptersDataTableListView = ({ table, dataLoaded, pageSize }: ChaptersDataTableProps) => {
+
     return (
         <table className="table-container" cellPadding={0} cellSpacing={0}>
             <thead>
@@ -57,9 +61,9 @@ const ChaptersDataTableListView = ({ table, dataLoaded }: ChaptersDataTableProps
             <tbody>
                 {!dataLoaded ? (
                     // Skeleton rows
-                    [...Array(Number(process.env.CHAPTERS_MAX_PAGE_SIZE ?? ListingPageSizes.CHAPTERS))].map((_, i) => (
+                    [...Array(Number(pageSize ?? process.env.CHAPTERS_MAX_PAGE_SIZE ?? ListingPageSizes.CHAPTERS))].map((_, i) => (
                         <tr className="table-row" key={`skeleton-${i}`}>
-                            {table.getVisibleFlatColumns().map((col, j) => (
+                            {table.getVisibleFlatColumns().map((_col, j) => (
                                 <td className="table-row-data" key={`skeleton-cell-${j}`}>
                                     <div style={{ width: '100%' }}>
                                         <Skeleton height={53} />

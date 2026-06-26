@@ -365,7 +365,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                             ))}
                         </div>
                     )
-                    : <ChaptersDataTableListView table={table} dataLoaded={dataLoaded} />
+                    : <ChaptersDataTableListView pageSize={pageSize} table={table} dataLoaded={dataLoaded} />
             }
             <ListingsPagination handleBeforeButtonClick={() => setupLoading(true)} table={table} />
         </div>);

@@ -20,6 +20,7 @@ import DashboardModalPortal from "../dashboard-modal-portal/DashboardModalPortal
 import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
 import { useModalVisibility } from "@/hooks/useModalVisibility";
 import { CoreModal } from "../modals/core-modal/CoreModal";
+import 'react-loading-skeleton/dist/skeleton.css';
 
 
 interface CategoryListingsProps {
