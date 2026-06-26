@@ -4,6 +4,8 @@
   --standard-box-radius: 5px;
   --background: #ffffff;
   --foreground: #171717;
+  --dashboard-main-content-bg-color: #FAFBFC;
+  --dashboard-bg-color: #FAFBFC;
   --breakpoint-small-mobile: 480px;
   --breakpoint-mobile: 768px;
   --breakpoint-tablet: 1024px;
