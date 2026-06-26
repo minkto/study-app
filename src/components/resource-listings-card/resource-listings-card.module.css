@@ -1,11 +1,10 @@
 .resources-listing-card {
     border-radius: 5px;
-    border: 2px solid #EEEEEE;
     margin-top: 1em;
     background-color: #FFFFFF;
-    -webkit-box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-    box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    -webkit-box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    -moz-box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 .max-lines {

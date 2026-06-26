@@ -4,14 +4,13 @@
     border-radius: 5px;
     align-items: normal;
     background-color: #fff;
-    border: 2px solid #eee;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     display: flex;
     margin: 0.5em;
     padding: 0.5em;
     flex-direction: column;
     padding: 5px;
 }
-
 .dashboard-list-card__title {
     padding: 0.5em;
     margin-left: 0.5em;
