@@ -13,9 +13,11 @@ import IconAISpark from "../icons/icon-ai-spark/IconAISpark";
 import IconUserProfile from "../icons/icon-user-profile/IconUserProfile";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import 'overlayscrollbars/styles/overlayscrollbars.css';
+import { usePathname } from "next/navigation";
 
 
 export const SidebarNavigation = () => {
+    const pathName = usePathname();
     const [sidebarToggle, setSidebarToggle] = useState(false);
     const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -27,6 +29,18 @@ export const SidebarNavigation = () => {
         if (sidebarToggle) {
             setSidebarToggle(false);
         }
+    }
+
+
+    /**
+     * Get the class for the list item based on the current path and sidebar toggle state.
+     * @param path 
+     * @returns Class name for the list item.
+     */
+    const getLiClass = (path: string) => {
+        const base = styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`];
+        const active = pathName === path ? styles["sidebar__container-menu-list-item--active"] : "";
+        return `${base}${active ? ` ${active}` : ""}`;
     }
 
     useEffect(() => {
@@ -73,23 +87,23 @@ export const SidebarNavigation = () => {
             >
                 <div className={styles[`sidebar__container-menu${sidebarToggle ? "--expanded" : ""}`]}>
                     <ul className={styles["sidebar__container-menu-list"]}>
-                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                        <li className={getLiClass("/dashboard")}>
                             <Link onClick={closeSidebar} href={"/dashboard/"}><IconGrid width={32} height={32} />
                             <span>Dashboard</span>
                             </Link>
                         </li>
-                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                        <li className={getLiClass("/dashboard/resources")}>
                             <Link onClick={closeSidebar} href={"/dashboard/resources/"}><IconBook width={32} height={32} />
                             <span>Resources</span>
                             </Link>
                         </li>
-                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                        <li className={getLiClass("/dashboard/ai/helper")}>
                             <Link onClick={closeSidebar} href={"/dashboard/ai/helper/"}><IconAISpark width={32} height={32} /><span>AI Helper</span></Link>
                         </li>
-                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                        <li className={getLiClass("/dashboard/settings")}>
                             <Link onClick={closeSidebar} href={"/dashboard/settings/"}><IconSettings width={32} height={32} /><span>Settings</span></Link>
                         </li>
-                        <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
+                        <li className={getLiClass("/dashboard/settings/user-profile")}>
                             <Link title="User Profile" onClick={closeSidebar} href={"/dashboard/settings/user-profile"}><IconUserProfile width={32} height={32} /><span>User Profile</span></Link>
                         </li>
                         <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
