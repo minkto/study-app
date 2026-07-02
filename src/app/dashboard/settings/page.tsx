@@ -22,7 +22,7 @@ export default async function Page() {
                     {
                         label: "Categories",
                         content:
-                            <CategoryListings/>
+                            <CategoryListings useQueryParams={false} />
 
                     }
                 ]} />
