@@ -14,6 +14,10 @@ import IconUserProfile from "../icons/icon-user-profile/IconUserProfile";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import 'overlayscrollbars/styles/overlayscrollbars.css';
 import { usePathname } from "next/navigation";
+import Image from 'next/image'
+import logo from '../../../public/learnlobe-logo.svg'
+
+
 
 
 export const SidebarNavigation = () => {
@@ -67,6 +71,7 @@ export const SidebarNavigation = () => {
         <div className={styles["sidebar__container"]}>
             <div className={styles["sidebar__container-top"]}>
                 <div className={styles["sidebar__container-icon"]}>
+                    <Image src={logo} alt="logo"></Image>
                 </div>
 
                 <div className={styles[`sidebar__container-name${sidebarToggle ? "--expanded" : ""}`]}>

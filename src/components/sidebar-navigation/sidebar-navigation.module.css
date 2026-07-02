@@ -50,14 +50,6 @@
     display: none;
 }
 
-.sidebar__container-icon {
-    background-color: gray;
-    border-radius: 50%;
-    width: 3em;
-    height: 3em;
-    margin: 0 5px;
-}
-
 .sidebar .sidebar__container-icon {
     margin-bottom: 10px;
 }
