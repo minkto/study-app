@@ -154,23 +154,30 @@ const CardDropdownMenu = ({ links, positionState }: CardDropdownMenuProps) => {
     }, [dropdownMenuOpen, toggleDropdown, closeDropdown]);
 
     return (
-        <div className={styles["dropdown-menu"]}>
-            {dropdownMenuOpen ? <div className={`${styles["dropdown-menu__options"]} ${styles[getPosition(positionState ?? CardDropdownAlignment.NONE)]}`} ref={modalRef}>
+    <div className={styles["dropdown-menu"]}>
+        <button
+            ref={triggerRef}
+            aria-label="More Options"
+            aria-haspopup="menu"
+            aria-expanded={dropdownMenuOpen}
+            className={styles["dropdown-menu__options-button"]}
+            onClick={toggleDropdown}
+            onKeyDown={handleTriggerKeyDown}
+        >
+            <IconMoreHorizontal width={32} height={32} />
+        </button>
+        {dropdownMenuOpen ? (
+            <div
+                className={`${styles["dropdown-menu__options"]} ${styles[getPosition(positionState ?? CardDropdownAlignment.NONE)]}`}
+                ref={modalRef}
+            >
                 <ul className={styles['dropdown-menu__list']}>
                     {renderDropdownMenuOptions(links)}
                 </ul>
-            </div> : null}
-            <button
-                ref={triggerRef}
-                aria-label="More Options"
-                aria-expanded={dropdownMenuOpen}
-                aria-haspopup="menu"
-                className={styles["dropdown-menu__options-button"]}
-                onClick={toggleDropdown}
-                onKeyDown={handleTriggerKeyDown}>
-                <IconMoreHorizontal width={32} height={32} />
-            </button>
-        </div>);
+            </div>
+        ) : null}
+    </div>
+);
 }
 
 export default CardDropdownMenu;
