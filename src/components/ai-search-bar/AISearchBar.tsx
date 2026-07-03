@@ -61,7 +61,7 @@ const AISearchBar = ({ onSearchSubmit,isLoading }: AISearchBarProps) => {
                 <div className={`${styles["ai-search-bar__icon"]} ${styles[AISparkIconColor]}`}><IconAISpark useCurrentColor={true} removeStroke={true} width={32} height={32} /></div>
                 <textarea disabled={isLoading} ref={textareaRef} name="ai-search" onChange={handleInputChange} placeholder="Enter your resource idea..." className={styles["ai-search-bar__input"]} />
                 <div className={styles["ai-search-bar__button-wrapper"]}>
-                    <button disabled={buttonDisabled || isLoading} className={styles["ai-search-bar__button"]}><IconArrowDown useCurrentColor={true} width={32} height={32} /></button>
+                    <button aria-label="Search AI Prompt" disabled={buttonDisabled || isLoading} className={styles["ai-search-bar__button"]}><IconArrowDown useCurrentColor={true} width={32} height={32} /></button>
                 </div>
             </form>
         </div>)
