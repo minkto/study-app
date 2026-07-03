@@ -16,7 +16,16 @@
     cursor: pointer;
     border-radius: 5px;
     font-weight: bold;
+    transition: all 0.5s ease-in-out;
 
+}
+
+.pagination-container button:hover,
+.pagination-container button:active,
+.pagination-container button:focus
+{
+    background-color: #555555;
+    outline: 0.2em solid #000;
 }
 
 .pagination-container button:disabled {
