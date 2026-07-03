@@ -99,6 +99,7 @@ export const ListingsSearchBox = ({ onSearchSubmit, handleBeforeOnSearchSubmit, 
   return (
     <div className={styles['search-box-listing']}>
       <input
+        aria-label='Search Input'
         id='search-input-field'
         onKeyDown={handleOnKeyPress}
         value={currentText}
@@ -110,6 +111,7 @@ export const ListingsSearchBox = ({ onSearchSubmit, handleBeforeOnSearchSubmit, 
         disabled={isPending}
         onClick={handleOnSubmitSearch}
         className={styles['search-box-listing__submit-btn']}
+        aria-label='Submit Search'
       >
         <IconSearch width={20} height={20} />
       </button>
