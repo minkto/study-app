@@ -100,10 +100,10 @@ const ConfirmationModal = ({
                 </div>
 
                 <div className={styles['modal-content-inner-block-buttons']}>
-                    <button ref={firstFocusElement} className={styles['modal-content-inner-block-buttons__cancel']} onClick={onClose}>
+                    <button ref={firstFocusElement} className="dashboard-dark-btn" onClick={onClose}>
                         {cancelText}
                     </button>
-                    <button ref={secondFocusElement} className={styles['modal-content-inner-block-buttons__confirm']} onClick={handleOnConfirm}>
+                    <button ref={secondFocusElement} className="dashboard-primary-btn" onClick={handleOnConfirm}>
                         {confirmText}
                     </button>
                 </div>

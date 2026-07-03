@@ -241,7 +241,8 @@ button.form-field:disabled
 *
 *******************************/
 
-.dashboard-primary-btn
+.dashboard-primary-btn,
+.dashboard-dark-btn
 {
   display: flex;
   align-items: center;
@@ -272,6 +273,21 @@ button.form-field:disabled
 {
     stroke: var(--primary-color)
 }
+
+.dashboard-dark-btn
+{
+  background-color: #000;
+  color: #fff;
+}
+
+.dashboard-dark-btn:hover,
+.dashboard-dark-btn:active,
+.dashboard-dark-btn:focus
+{
+  background-color: #2f2f2f;
+  color: #fff;
+}
+
 
 /*******************************
 *

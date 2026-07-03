@@ -52,40 +52,5 @@
     gap: 1rem;
     justify-content: center;
     margin-top: 2em;
-}
-
-.modal-content-inner-block-buttons__confirm
-{
-    background-color: #B1FFC5;
-    border: none;
-}
-
-.modal-content-inner-block-buttons__confirm:hover,
-.modal-content-inner-block-buttons__confirm:active,
-.modal-content-inner-block-buttons__confirm:focus
-{
-    background-color: #87e69f;
-}
-
-.modal-content-inner-block-buttons__cancel 
-{
-    background-color: rgb(255, 255, 255);
-    border: 1px solid rgb(0, 0, 0);
-}
-
-.modal-content-inner-block-buttons__cancel:hover,
-.modal-content-inner-block-buttons__cancel:active,
-.modal-content-inner-block-buttons__cancel:focus
-{
-    background-color: rgb(226, 226, 226);
-}
-
-.modal-content-inner-block-buttons__confirm,
-.modal-content-inner-block-buttons__cancel {
-    flex: 1;
-    min-width: 100px;
-    padding: 0.5em;
-    border-radius: 5px;
-    font-weight: bold;
     font-size: 1.2rem;
 }
