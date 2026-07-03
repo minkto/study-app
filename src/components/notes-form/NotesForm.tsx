@@ -94,7 +94,7 @@ export const NotesForm = ({ state, noteId, chapterId, onFormSubmit }: NotesFormP
             return (
                 <Form className='form-dashboard' action="/" onSubmit={onSubmit}>
                     <div className="form-field-wrapper centered-fields">
-                        <textarea disabled={formDisabled} className="form-field" id="form-note__content" rows={5} maxLength={NOTE_MAX_CONTENT}
+                        <textarea aria-label="Note description" disabled={formDisabled} className="form-field" id="form-note__content" rows={5} maxLength={NOTE_MAX_CONTENT}
                             name="content" onChange={handleContentChange}
 
                             value={formData?.content ?? ""} />
