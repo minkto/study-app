@@ -22,8 +22,9 @@
     border: none;
     transition: 0.3s;
 }
-
-.dropdown-menu__options-button:hover {
+.dropdown-menu__options-button:hover,
+.dropdown-menu__options-button:active,
+.dropdown-menu__options-button:focus {
     background-color: rgb(241, 240, 240);
     border-radius: 5px;
 }
@@ -50,7 +51,11 @@
 }
 
 .dropdown-menu__link:hover,
-.dropdown-menu__button:hover {
+.dropdown-menu__link:active,
+.dropdown-menu__link:focus,
+.dropdown-menu__button:hover,
+.dropdown-menu__button:active,
+.dropdown-menu__button:focus{
     background-color: rgb(241, 240, 240);
 }
 
