@@ -14,12 +14,12 @@ export const ListingsPagination = <TData,>({ table, handleBeforeButtonClick }: L
     }
 
     return (<div className={styles["pagination-container"]} >
-        <button onClick={() => { handleOnPaginationButtonClick(); table.firstPage() }} disabled={!table.getCanPreviousPage()}>{'<<'} </button>
-        <button onClick={() => { handleOnPaginationButtonClick(); table.previousPage() }} disabled={!table.getCanPreviousPage()}>{'<'}</button>
+        <button aria-label='First Page' onClick={() => { handleOnPaginationButtonClick(); table.firstPage() }} disabled={!table.getCanPreviousPage()}>{'<<'} </button>
+        <button aria-label='Previous Page' onClick={() => { handleOnPaginationButtonClick(); table.previousPage() }} disabled={!table.getCanPreviousPage()}>{'<'}</button>
         <div>
             Page {table.getState().pagination.pageIndex + 1} of {table?.getPageCount() === 0 || isNaN(table?.getPageCount()) ? 1 : table.getPageCount().toLocaleString()}
         </div>
-        <button onClick={() => { handleOnPaginationButtonClick(); table.nextPage() }} disabled={!table.getCanNextPage()}>{'>'}</button>
-        <button onClick={() => { handleOnPaginationButtonClick(); table.lastPage() }} disabled={!table.getCanNextPage()}>{'>>'}</button>
+        <button aria-label='Next Page' onClick={() => { handleOnPaginationButtonClick(); table.nextPage() }} disabled={!table.getCanNextPage()}>{'>'}</button>
+        <button aria-label='Last Page' onClick={() => { handleOnPaginationButtonClick(); table.lastPage() }} disabled={!table.getCanNextPage()}>{'>>'}</button>
     </div>)
 }

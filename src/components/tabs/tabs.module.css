@@ -1,3 +1,8 @@
+.tabs-container
+{
+    margin-top: 1em;
+}
+
 .tab-headers {
     display: flex;
     gap: 10px;
@@ -13,16 +18,20 @@ button.tab-header {
     cursor: pointer;
     text-decoration: underline;
     padding: 0.5em;
+    font-size: 1em;
 }
 
-
+button.tab-header:active,
+button.tab-header:focus,
 button.tab-header:hover {
     background-color: #e1e1e1;
     transition: all 0.5s;
+    border-radius: 5px 5px 0 0;
 }
 
 button.tab-header.active {
     background-color: rgb(217, 217, 217);
+    border-radius: 5px 5px 0 0;
 }
 
 

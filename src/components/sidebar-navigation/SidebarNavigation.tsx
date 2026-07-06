@@ -79,7 +79,7 @@ export const SidebarNavigation = () => {
                 </div>
 
                 <div className={styles[`sidebar__container-menu-toggle`]}>
-                    <button onClick={toggleSidebar}>
+                    <button aria-expanded={sidebarToggle} aria-label="Toggle Sidebar" onClick={toggleSidebar}>
                         <IconSidebar width={32} height={32} />
                     </button>
                 </div>
