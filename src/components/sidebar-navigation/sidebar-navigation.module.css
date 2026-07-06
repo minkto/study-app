@@ -106,10 +106,7 @@
 /* Hide label text in collapsed state */
 .sidebar__container-menu-list-item span,
 .sidebar__container-menu-list-item button span {
-    display: block;
-    overflow: hidden;
-    width: 1px;
-    height: 1px;
+    display: none;
 }
 
 .sidebar__container-menu-list-item,
