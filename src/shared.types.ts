@@ -206,3 +206,22 @@ export interface ListItem {
     subTitle?: string;
     value?: string;
 }
+
+export interface FilterGroup {
+    groupId: number;
+    queryKey: string;
+    title?: string;
+    options: FilterOption[];
+    toggled?: boolean;
+}
+
+export interface FilterOption {
+    id: number;
+    label: string;
+    checked: boolean;
+}
+
+
+export interface FilterGroupList {
+    groups: FilterGroup[];
+}
