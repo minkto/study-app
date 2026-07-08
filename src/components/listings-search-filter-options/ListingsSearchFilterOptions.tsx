@@ -3,24 +3,7 @@ import IconChevronDown from '../icons/icon-chevron-down/IconChevronDown';
 import IconFilter from '../icons/icon-filter/IconFilter';
 import styles from './listings-search-filter-options.module.css'
 import { useSearchParams } from 'next/navigation';
-
-interface FilterOption {
-    id: number;
-    label: string;
-    checked: boolean;
-}
-
-interface FilterGroup {
-    groupId: number;
-    queryKey: string;
-    title?: string;
-    options: FilterOption[];
-    toggled?: boolean;
-}
-
-interface FilterGroupList {
-    groups: FilterGroup[];
-}
+import { FilterGroupList } from '@/shared.types';
 
 interface ListingsSearchFilterOptionsProps {
     filterGroups: FilterGroupList;
@@ -82,44 +65,6 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
         }
     }
 
-    const setInitialFiltersFromQueryParams = () => {
-        if (filterQueryKeys !== undefined) {
-            filterQueryKeys.forEach(filterQueryKey => {
-                setOnMountFilters(filterQueryKey);
-            });
-        }
-    }
-
-    /**
-     * Sets the current filters based on the Query parameters from the URL.
-     * @param queryKey The key of the filter to set
-     */
-    const setOnMountFilters = (queryKey: string) => {
-        const params = new URLSearchParams(searchParams?.toString());
-        const statusFilter = params.getAll(queryKey);
-        const currentFilters = filtersToUse.groups.find(x => x.queryKey === queryKey);
-
-        if (currentFilters) {
-            // Creates a copy of the options, and changes the checkbox if query key
-            // exists.
-            const optionsToUpdate = currentFilters?.options?.map(option => {
-                return {
-                    ...option,
-                    checked: statusFilter.includes(option.label)
-                }
-            });
-
-            setFiltersToUse(prev => ({
-                ...prev,
-                groups: prev.groups.map(group =>
-                    group.queryKey === queryKey
-                        ? { ...group, options: optionsToUpdate }
-                        : group
-                )
-            }))
-        }
-    }
-
     const setCheckboxOption = (id: number, groupId: number) => {
         const newFiltersToUse: FilterGroupList = { ...filtersToUse };
         const groupToChange = newFiltersToUse.groups[groupId];
@@ -157,8 +102,29 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
     }
 
     useEffect(() => {
-        setInitialFiltersFromQueryParams();
-    }, []);
+        if (!useQueryParams) {
+            return;
+        }
+
+        const params = new URLSearchParams(searchParams?.toString());
+
+        setFiltersToUse(prev => ({
+            ...filterGroups,
+            groups: filterGroups.groups.map(group => {
+                const prevGroup = prev.groups.find(existing => existing.queryKey === group.queryKey);
+                const selectedValues = params.getAll(group.queryKey);
+
+                return {
+                    ...group,
+                    toggled: prevGroup?.toggled ?? group.toggled,
+                    options: group.options.map(option => ({
+                        ...option,
+                        checked: selectedValues.includes(option.label),
+                    })),
+                };
+            }),
+        }));
+    }, [filterGroups, searchParams, useQueryParams]);
 
     useEffect(() => {
         const onClickOutsideMenu = (e: MouseEvent | KeyboardEvent) => {

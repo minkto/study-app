@@ -1,4 +1,4 @@
-import { GetResourceDto } from '@/shared.types';
+import { Category, FilterGroupList, GetResourceDto } from '@/shared.types';
 import ResourceListingsCard from '../resource-listings-card/ResourceListingsCard';
 import styles from './resource-listings.module.css'
 import { useCallback, useEffect, useState } from 'react';
@@ -39,23 +39,17 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
     ];
 
   const filterQueryParamKeys = [FilterByQueryKeys.ResourceListings.CATEGORY];
-  const filterByList =
-  {
-    groups:
-      [
-        {
-          groupId: 0,
-          queryKey: "Category",
-          title: "Category",
-          options: [
-            { id: 0, label: "C#", checked: false },
-            { id: 1, label: "SQL", checked: false },
-          ],
-          toggled: true
-        },
-
-      ]
-  };
+  const [categoriesFilterOptions, setCategoriesFilterOptions] = useState<FilterGroupList>({
+    groups: [
+      {
+        groupId: 0,
+        queryKey: FilterByQueryKeys.ResourceListings.CATEGORY,
+        title: "Category",
+        options: [],
+        toggled: true,
+      },
+    ],
+  });
 
   const columns = [
     columnHelper.accessor('name', {
@@ -101,6 +95,32 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
     }
   }
 
+  const getCategories = useCallback(async () => {
+    try {
+      const response = await fetch('/api/categories');
+      const result = await response.json();
+      const categories = result.categories ?? [];
+
+      setCategoriesFilterOptions({
+        groups: [
+          {
+            groupId: 0,
+            queryKey: FilterByQueryKeys.ResourceListings.CATEGORY,
+            title: "Category",
+            options: (categories ?? []).map((category: Category) => ({
+              id: category.categoryId ?? 0,
+              label: category.name ?? "",
+              checked: false,
+            })),
+            toggled: true,
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("An error has occurred while getting the categories: ", error);
+    }
+  }, []);
+
   const getResources = useCallback(async () => {
     setupLoading(true);
     try {
@@ -141,25 +161,27 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
   }
 
   useEffect(() => {
-    if (!queryParamsLoaded) {
-        return;
-    }
-    
-    getResources();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams,queryParamsLoaded]);
+    getCategories();
+  }, [getCategories]);
 
   useEffect(() => {
     if (!queryParamsLoaded) {
-        return;
+      return;
     }
-    
+    getResources();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, queryParamsLoaded]);
+
+  useEffect(() => {
+    if (!queryParamsLoaded) {
+      return;
+    }
     if (useQueryParams) {
       redirectWithQueryParams();
     } else {
       getResources();
     }
-  }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, getResources, queryFilters,queryParamsLoaded]);
+  }, [sorting, pagination, useQueryParams, search, redirectWithQueryParams, getResources, queryFilters, queryParamsLoaded]);
 
   // Set loading to false after data has been loaded and component has re-rendered
   useEffect(() => {
@@ -188,7 +210,7 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
             submitFilters(filtersValue ?? "")
           }}
           handleBeforeOnFilterChange={() => setupLoading(true)}
-          filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
+          filterQueryKeys={filterQueryParamKeys} filterGroups={categoriesFilterOptions} />
 
         <SelectDropdown
           getDefaultValue={() => getInitialSortByOption(sorting)}
