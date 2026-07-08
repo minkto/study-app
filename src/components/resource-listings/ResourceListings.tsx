@@ -221,7 +221,7 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
       {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults /> :
         <div className={styles["resources-listing"]}>
           {!dataLoaded ? (
-            <ResourceListingsCardSkeleton count={3} />
+            <ResourceListingsCardSkeleton count={6} />
           ) : (
 
             table.getRowModel().rows.map(r => (
