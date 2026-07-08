@@ -155,7 +155,12 @@ export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProp
     const fetchCateogries = useCallback(async () => {
         try {
             setupLoading(true);
-            const response = await fetch(`/api/categories${constructQueryString()}`);
+
+            const queryString = constructQueryString();
+            const pageSize = Number(process.env.CATEGORIES_MAX_PAGE_SIZE ?? ListingPageSizes.CATEGORIES);
+            const pageSizeQuery = queryString ? queryString + `&pageSize=${pageSize}` : `?pageSize=${pageSize}`
+
+            const response = await fetch(`/api/categories${pageSizeQuery}`);
             const result = await response.json();
 
             setData(result.categories);

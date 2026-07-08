@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
             sortBy: searchParams?.get('sortBy')?.trim(),
             sortOrder: searchParams?.get('sortOrder')?.trim(),
             page: searchParams?.get('page')?.trim(),
+            pageSize: searchParams?.get('pageSize')?.trim(),
             userId: userId
         };
 

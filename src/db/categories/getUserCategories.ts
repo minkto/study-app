@@ -8,12 +8,17 @@ export async function getUserCategories(query: ListingSearchQuery): Promise<Cate
 
     try {
         const values = [];
+        let excludePageLimit = false;
 
         if (!isStringEmpty(query.searchTerm)) {
             values.push(`%${query.searchTerm}%`);
         }
 
-        const queryResult = await queryData(buildGetUserCategoriesQuery(query), values);
+        if (query.pageSize === undefined || query.pageSize === null || query.pageSize === "" ){
+            excludePageLimit = true;
+        }
+
+        const queryResult = await queryData(buildGetUserCategoriesQuery(query,excludePageLimit), values);
         if (queryResult?.length > 0) {
             const categories = queryResult.map<Category>((x) => (
                 {
