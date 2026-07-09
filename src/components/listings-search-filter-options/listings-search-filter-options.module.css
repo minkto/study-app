@@ -100,20 +100,6 @@
     font-size: 1.2rem;
 }
 
-.filter-by-menu-pointer {
-    margin: 0;
-    position: absolute;
-    top: -18px;
-    right: 10px;
-    width: 0;
-    height: 0;
-    border-bottom: 10px solid aquamarine;
-    border-top: 10px solid #009dff00;
-    border-left: 10px solid #009dff00;
-    border-right: 10px solid #009dff00;
-    z-index: -1;
-}
-
 .filter-by-menu-group .filter-by-menu-group-heading .icon-wrapper {
     transform: rotate(0deg);
     transition: transform 0.3s ease-in-out;

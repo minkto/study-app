@@ -148,6 +148,18 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
             if (filterMenuRef.current && !filterMenuRef.current.contains(e.target as Node)) {
                 toggleFiltersMenuOption();
             }
+
+            else if (filtersMenuOpen && e instanceof KeyboardEvent && e.key === 'Escape') {
+                toggleFiltersMenuOption();
+            }
+
+            // Exit the menu when tabbing backwards from the first option in the menu.
+            else if (filtersMenuOpen &&
+                firstOption.current &&
+                document.activeElement === firstOption.current &&
+                e instanceof KeyboardEvent && e.key === 'Tab' && e.shiftKey) {
+                toggleFiltersMenuOption();
+            }
         }
 
         if (filtersMenuOpen) {
@@ -171,7 +183,6 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
     return (<div className={styles["search-filter-options"]}>
         {filtersMenuOpen &&
             <div className={styles["filter-by-menu"]} ref={filterMenuRef} >
-                <div className={styles["filter-by-menu-pointer"]}></div>
                 {filtersToUse.groups.map(x => (
                     <div key={x.groupId} className={`${styles["filter-by-menu-group"]} ${!x.toggled ? styles["filter-by-menu-group--hidden"] : ""}`}                    >
                         <div className={styles["filter-by-menu-group-heading"]} onClick={() => toggleFilterMenuGroup(x.groupId)}>
@@ -183,7 +194,7 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
                             {x.options?.map((y, index) => (
                                 <li className={`${styles["filter-by-group__option"]} ${y.checked ? styles["filter-by-group__option--checked"] : ""}`} key={y.id}  >
                                     <label>
-                                        <input ref={index === 0 ? firstOption : null} type='checkbox' checked={y.checked}
+                                        <input ref={index === 0 && x.groupId === 0 ? firstOption : null} type='checkbox' checked={y.checked}
                                             onChange={(e) => {
                                                 handleOptionActive(e, y.id, x.groupId);
                                             }}
