@@ -27,7 +27,7 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
     const filterMenuRef = useRef<HTMLDivElement>(null);
     const [isPending, startTransition] = useTransition();
     const [localQueryString, setLocalQueryString] = useState("");
-    const firstOption = useRef<HTMLInputElement>(null);
+    const firstOption = useRef<HTMLButtonElement>(null);
 
     const handleFiltersOnChange = useCallback((filtersQueryStringVal: string | undefined) => {
         if (onFilterChange) {
@@ -185,16 +185,18 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
             <div className={styles["filter-by-menu"]} ref={filterMenuRef} >
                 {filtersToUse.groups.map(x => (
                     <div key={x.groupId} className={`${styles["filter-by-menu-group"]} ${!x.toggled ? styles["filter-by-menu-group--hidden"] : ""}`}                    >
-                        <div className={styles["filter-by-menu-group-heading"]} onClick={() => toggleFilterMenuGroup(x.groupId)}>
-                            <IconChevronDown className={styles["icon-wrapper"]} width={20} height={20} />
-                            <h3 className={styles['filter-by-menu-group-heading__title']}>{x.title}</h3>
+                        <div className={styles["filter-by-menu-group-heading"]}>
+                            <button ref={x.groupId === 0 ? firstOption : null} onClick={() => toggleFilterMenuGroup(x.groupId)} className={`btn-reset ${styles["filter-by-menu-group-heading__toggle"]}`} aria-label={`Toggle ${x.title} filter options`} aria-expanded={x.toggled}>
+                                <IconChevronDown className={styles["icon-wrapper"]} width={20} height={20} />
+                                <h3 className={styles['filter-by-menu-group-heading__title']}>{x.title}</h3>
+                            </button>
                         </div>
 
-                        <ul>
-                            {x.options?.map((y, index) => (
+                       {x.toggled && <ul>
+                            {x.options?.map((y) => (
                                 <li className={`${styles["filter-by-group__option"]} ${y.checked ? styles["filter-by-group__option--checked"] : ""}`} key={y.id}  >
                                     <label>
-                                        <input ref={index === 0 && x.groupId === 0 ? firstOption : null} type='checkbox' checked={y.checked}
+                                        <input type='checkbox' checked={y.checked}
                                             onChange={(e) => {
                                                 handleOptionActive(e, y.id, x.groupId);
                                             }}
@@ -202,7 +204,7 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
                                         {y.label}</label>
                                 </li>)
                             )}
-                        </ul>
+                        </ul>} 
                     </div>
                 ))}
             </div>

@@ -53,12 +53,15 @@
 }
 
 
+.filter-by-menu-group-heading { 
+    cursor: pointer;
+}
 
-.filter-by-menu-group-heading {
+.filter-by-menu-group-heading__toggle
+{
     display: flex;
     align-items: center;
     width: 100%;
-    border-bottom: 1px solid #EEEEEE;
 }
 
 .filter-by-menu-group-heading__title {
