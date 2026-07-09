@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import IconChevronDown from '../icons/icon-chevron-down/IconChevronDown';
 import IconFilter from '../icons/icon-filter/IconFilter';
 import styles from './listings-search-filter-options.module.css'
@@ -13,6 +13,7 @@ interface ListingsSearchFilterOptionsProps {
     useQueryParams?: boolean;
 }
 
+const CHECKED_CLASS_NAME = "filter-by-group__option--checked";
 
 export const ListingsSearchFilterOptions = ({ filterGroups,
     filterQueryKeys,
@@ -26,6 +27,7 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
     const filterMenuRef = useRef<HTMLDivElement>(null);
     const [isPending, startTransition] = useTransition();
     const [localQueryString, setLocalQueryString] = useState("");
+    const firstOption = useRef<HTMLInputElement>(null);
 
     const handleFiltersOnChange = useCallback((filtersQueryStringVal: string | undefined) => {
         if (onFilterChange) {
@@ -101,6 +103,21 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
         }
     }
 
+    const setCheckboxOptionClassName = (checkboxElement: HTMLInputElement) => {
+        const optionListElement = checkboxElement.parentNode as HTMLLIElement;
+        optionListElement?.classList.toggle(CHECKED_CLASS_NAME);
+    }
+
+    const handleOptionActive = (e: ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLLIElement>, id: number, groupId: number) => {
+        e.stopPropagation();
+        if (e instanceof HTMLInputElement) {
+            setCheckboxOptionClassName(e as HTMLInputElement);
+        } else {
+            e.currentTarget.classList.toggle(CHECKED_CLASS_NAME);
+        }
+        setCheckboxOption(id, groupId);
+    }
+
     useEffect(() => {
         if (!useQueryParams) {
             return;
@@ -145,6 +162,12 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
 
     }, [toggleFiltersMenuOption, filtersMenuOpen]);
 
+    useEffect(() => {
+        if (filtersMenuOpen && firstOption.current) {
+            firstOption.current.focus();
+        }
+    }, [filtersMenuOpen])
+
     return (<div className={styles["search-filter-options"]}>
         {filtersMenuOpen &&
             <div className={styles["filter-by-menu"]} ref={filterMenuRef} >
@@ -157,10 +180,15 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
                         </div>
 
                         <ul>
-                            {x.options?.map(y => (
-                                <li key={y.id} onClick={() => setCheckboxOption(y.id, x.groupId)} className={styles["filter-by-group__option"]}>
-                                    <input type='checkbox' checked={y.checked} onChange={(e) => { e.stopPropagation() }} />
-                                    <label>{y.label}</label>
+                            {x.options?.map((y, index) => (
+                                <li className={`${styles["filter-by-group__option"]} ${y.checked ? styles["filter-by-group__option--checked"] : ""}`} key={y.id}  >
+                                    <label>
+                                        <input ref={index === 0 ? firstOption : null} type='checkbox' checked={y.checked}
+                                            onChange={(e) => {
+                                                handleOptionActive(e, y.id, x.groupId);
+                                            }}
+                                        />
+                                        {y.label}</label>
                                 </li>)
                             )}
                         </ul>
