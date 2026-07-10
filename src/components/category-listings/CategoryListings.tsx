@@ -21,6 +21,7 @@ import ConfirmationModal from "../modals/confirmation-modal/ConfirmationModal";
 import { useModalVisibility } from "@/hooks/useModalVisibility";
 import { CoreModal } from "../modals/core-modal/CoreModal";
 import 'react-loading-skeleton/dist/skeleton.css';
+import { useMobileScreenSize } from "@/hooks/useMobileScreenSize";
 
 
 interface CategoryListingsProps {
@@ -40,6 +41,7 @@ export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProp
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+    const isMobileScreen = useMobileScreenSize();
     const { setSorting, setPagination, sorting, pagination, constructQueryString,
         redirectWithQueryParams,
         search, searchParams, submitSearch, queryFilters, queryParamsLoaded, } = useDataTableQueryParams({ pageSize: Number(process.env.RESOURCES_MAX_PAGE_SIZE) ?? Number(ListingPageSizes.DEFAULT) ,syncWithQueryParams: useQueryParams});
@@ -273,7 +275,11 @@ export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProp
                     submitSearch(searchValue ?? "");
                 }}>
 
-
+                {isMobileScreen ? <SelectDropdown
+                    className='table-dropdown-mobile'
+                    getDefaultValue={() => getInitialSortByOption(sorting)}
+                    onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
+                    dropdownOptions={sortByOptions} /> : null}
                 <button onClick={() => {
                     setSelectedCategory(undefined);
                     setActiveModal(ModalActiveState.ADD_OR_EDIT);
@@ -281,11 +287,6 @@ export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProp
                 }} className='dashboard-primary-btn'>
                     <IconPlus width={24} height={24} />Add
                 </button>
-
-                <SelectDropdown
-                    getDefaultValue={() => getInitialSortByOption(sorting)}
-                    onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
-                    dropdownOptions={sortByOptions} />
             </ListingsSearchBar>
             {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults />
                 : <table className="table-container" cellPadding={0} cellSpacing={0}>

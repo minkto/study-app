@@ -203,19 +203,21 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
           submitSearch(searchValue ?? "");
         }}>
 
-        <Link className='dashboard-primary-btn' href={'resources/add-resource'}><IconPlus width={24} height={24} />Add</Link>
-        <ListingsSearchFilterOptions
-          useQueryParams={useQueryParams}
-          onFilterChange={(filtersValue: string | undefined) => {
-            submitFilters(filtersValue ?? "")
-          }}
-          handleBeforeOnFilterChange={() => setupLoading(true)}
-          filterQueryKeys={filterQueryParamKeys} filterGroups={categoriesFilterOptions} />
-
         <SelectDropdown
+          className="table-dropdown-mobile"
           getDefaultValue={() => getInitialSortByOption(sorting)}
           onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
           dropdownOptions={sortByOptions} />
+        <div className="table-btn-list">
+          <ListingsSearchFilterOptions
+            useQueryParams={useQueryParams}
+            onFilterChange={(filtersValue: string | undefined) => {
+              submitFilters(filtersValue ?? "")
+            }}
+            handleBeforeOnFilterChange={() => setupLoading(true)}
+            filterQueryKeys={filterQueryParamKeys} filterGroups={categoriesFilterOptions} />
+          <Link className='dashboard-primary-btn' href={'resources/add-resource'}><IconPlus width={24} height={24} />Add</Link>
+        </div>
       </ListingsSearchBar>
 
       {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults /> :
