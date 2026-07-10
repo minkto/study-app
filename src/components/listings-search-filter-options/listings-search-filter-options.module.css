@@ -27,12 +27,16 @@
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
+.filter-by-menu__scrollable {
+    max-height: 320px;
+}
+
 .filter-by-menu-group {
     margin: 5px 5px 15px 5px;
     white-space: nowrap;
     transition: all 0.3s ease-in-out;
     max-height: 500px;
-    overflow: hidden;
+    max-width: 300px;
 }
 
 .filter-by-menu-group--hidden {
@@ -90,7 +94,7 @@
 
 .filter-by-group__option label {
     cursor: pointer;
-    padding: 0.5em;
+    padding: 1em;
     display: flex;
     align-items: center;
     width: 100%;
