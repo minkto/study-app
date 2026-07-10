@@ -275,7 +275,11 @@ export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProp
                     submitSearch(searchValue ?? "");
                 }}>
 
-
+                {isMobileScreen ? <SelectDropdown
+                    className='table-dropdown-mobile'
+                    getDefaultValue={() => getInitialSortByOption(sorting)}
+                    onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
+                    dropdownOptions={sortByOptions} /> : null}
                 <button onClick={() => {
                     setSelectedCategory(undefined);
                     setActiveModal(ModalActiveState.ADD_OR_EDIT);
@@ -283,12 +287,6 @@ export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProp
                 }} className='dashboard-primary-btn'>
                     <IconPlus width={24} height={24} />Add
                 </button>
-                
-                {isMobileScreen ? <SelectDropdown
-                    className='table-dropdown-mobile'
-                    getDefaultValue={() => getInitialSortByOption(sorting)}
-                    onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
-                    dropdownOptions={sortByOptions} /> : null}
             </ListingsSearchBar>
             {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults />
                 : <table className="table-container" cellPadding={0} cellSpacing={0}>
