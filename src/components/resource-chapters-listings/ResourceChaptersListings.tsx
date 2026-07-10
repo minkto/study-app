@@ -54,7 +54,7 @@ const sortByOptions =
     ];
 
 
-const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize = Number(ListingPageSizes.DEFAULT)}: ResourceChaptersListingsProps) => {
+const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize = Number(ListingPageSizes.DEFAULT) }: ResourceChaptersListingsProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const isMobileScreen = useMobileScreenSize();
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
@@ -135,7 +135,7 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
         finally {
             setupLoading(false);
         }
-    }, [resourceId, constructQueryString,pageSize]);
+    }, [resourceId, constructQueryString, pageSize]);
 
     const deleteChapter = useCallback(async (chapterId: number | undefined) => {
         try {
@@ -339,18 +339,21 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                     submitSearch(searchValue ?? "");
                 }}>
 
-                <Link className='dashboard-primary-btn' href={`/dashboard/resources/${resourceId}/chapters/add-chapter`}><IconPlus width={24} height={24} />Add</Link>
-                <ListingsSearchFilterOptions useQueryParams={useQueryParams}
-                    onFilterChange={(filtersValue: string | undefined) => {
-                        submitFilters(filtersValue ?? "")
-                    }}
-                    handleBeforeOnFilterChange={() => setupLoading(true)}
-                    filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
                 {isMobileScreen ? <SelectDropdown
+                    className='table-dropdown-mobile'
                     getDefaultValue={() => getInitialSortByOption(sorting)}
                     onChangeCallback={(e) => { setupLoading(true); setSorting(getCurrentSortOrder(e)); }}
                     dropdownOptions={sortByOptions} /> : null}
 
+                <div className="table-btn-list">
+                    <ListingsSearchFilterOptions useQueryParams={useQueryParams}
+                        onFilterChange={(filtersValue: string | undefined) => {
+                            submitFilters(filtersValue ?? "")
+                        }}
+                        handleBeforeOnFilterChange={() => setupLoading(true)}
+                        filterQueryKeys={filterQueryParamKeys} filterGroups={filterByList} />
+                    <Link className='dashboard-primary-btn' href={`/dashboard/resources/${resourceId}/chapters/add-chapter`}><IconPlus width={24} height={24} />Add</Link>
+                </div>
             </ListingsSearchBar>
 
             {data?.length === 0 && (dataLoaded && !isLoading) ? <ListingsNoResults />
