@@ -5,6 +5,7 @@ interface SelectDropdownProps {
     getDefaultValue?: () => string;
     onChangeCallback?: (e: ChangeEvent<HTMLSelectElement>) => void;
     dropdownOptions: SelectDropdownOption[];
+    className?: string;
 }
 
 interface SelectDropdownOption {
@@ -12,7 +13,7 @@ interface SelectDropdownOption {
     value?: string;
 }
 
-export const SelectDropdown = ({ dropdownOptions, getDefaultValue, onChangeCallback }: SelectDropdownProps) => {
+export const SelectDropdown = ({ className,dropdownOptions, getDefaultValue, onChangeCallback }: SelectDropdownProps) => {
     const [selectedOption, setSelectedOption] = useState("");
 
     useEffect(() => {
@@ -22,7 +23,7 @@ export const SelectDropdown = ({ dropdownOptions, getDefaultValue, onChangeCallb
     }, [getDefaultValue])
 
     return (
-        <select className={styles['listing-dropdown']} value={selectedOption} name="sort-by" onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+        <select className={styles['listing-dropdown'] + (className ? ` ${className}` : '')} value={selectedOption} name="sort-by" onChange={(e: ChangeEvent<HTMLSelectElement>) => {
             if (onChangeCallback !== undefined) {
                 onChangeCallback(e);
             }
