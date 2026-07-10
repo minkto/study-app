@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import IconChevronDown from '../icons/icon-chevron-down/IconChevronDown';
 import IconFilter from '../icons/icon-filter/IconFilter';
 import styles from './listings-search-filter-options.module.css'
 import { useSearchParams } from 'next/navigation';
 import { FilterGroupList } from '@/shared.types';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 interface ListingsSearchFilterOptionsProps {
     filterGroups: FilterGroupList;
@@ -13,6 +14,7 @@ interface ListingsSearchFilterOptionsProps {
     useQueryParams?: boolean;
 }
 
+const CHECKED_CLASS_NAME = "filter-by-group__option--checked";
 
 export const ListingsSearchFilterOptions = ({ filterGroups,
     filterQueryKeys,
@@ -26,6 +28,7 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
     const filterMenuRef = useRef<HTMLDivElement>(null);
     const [isPending, startTransition] = useTransition();
     const [localQueryString, setLocalQueryString] = useState("");
+    const firstOption = useRef<HTMLButtonElement>(null);
 
     const handleFiltersOnChange = useCallback((filtersQueryStringVal: string | undefined) => {
         if (onFilterChange) {
@@ -101,6 +104,21 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
         }
     }
 
+    const setCheckboxOptionClassName = (checkboxElement: HTMLInputElement) => {
+        const optionListElement = checkboxElement.parentNode as HTMLLIElement;
+        optionListElement?.classList.toggle(CHECKED_CLASS_NAME);
+    }
+
+    const handleOptionActive = (e: ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLLIElement>, id: number, groupId: number) => {
+        e.stopPropagation();
+        if (e instanceof HTMLInputElement) {
+            setCheckboxOptionClassName(e as HTMLInputElement);
+        } else {
+            e.currentTarget.classList.toggle(CHECKED_CLASS_NAME);
+        }
+        setCheckboxOption(id, groupId);
+    }
+
     useEffect(() => {
         if (!useQueryParams) {
             return;
@@ -131,6 +149,18 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
             if (filterMenuRef.current && !filterMenuRef.current.contains(e.target as Node)) {
                 toggleFiltersMenuOption();
             }
+
+            else if (filtersMenuOpen && e instanceof KeyboardEvent && e.key === 'Escape') {
+                toggleFiltersMenuOption();
+            }
+
+            // Exit the menu when tabbing backwards from the first option in the menu.
+            else if (filtersMenuOpen &&
+                firstOption.current &&
+                document.activeElement === firstOption.current &&
+                e instanceof KeyboardEvent && e.key === 'Tab' && e.shiftKey) {
+                toggleFiltersMenuOption();
+            }
         }
 
         if (filtersMenuOpen) {
@@ -145,32 +175,57 @@ export const ListingsSearchFilterOptions = ({ filterGroups,
 
     }, [toggleFiltersMenuOption, filtersMenuOpen]);
 
-    return (<div className={styles["search-filter-options"]}>
-        {filtersMenuOpen &&
-            <div className={styles["filter-by-menu"]} ref={filterMenuRef} >
-                <div className={styles["filter-by-menu-pointer"]}></div>
-                {filtersToUse.groups.map(x => (
-                    <div key={x.groupId} className={`${styles["filter-by-menu-group"]} ${!x.toggled ? styles["filter-by-menu-group--hidden"] : ""}`}                    >
-                        <div className={styles["filter-by-menu-group-heading"]} onClick={() => toggleFilterMenuGroup(x.groupId)}>
-                            <IconChevronDown className={styles["icon-wrapper"]} width={20} height={20} />
-                            <h3 className={styles['filter-by-menu-group-heading__title']}>{x.title}</h3>
-                        </div>
-
-                        <ul>
-                            {x.options?.map(y => (
-                                <li key={y.id} onClick={() => setCheckboxOption(y.id, x.groupId)} className={styles["filter-by-group__option"]}>
-                                    <input type='checkbox' checked={y.checked} onChange={(e) => { e.stopPropagation() }} />
-                                    <label>{y.label}</label>
-                                </li>)
-                            )}
-                        </ul>
-                    </div>
-                ))}
-            </div>
+    useEffect(() => {
+        if (filtersMenuOpen && firstOption.current) {
+            firstOption.current.focus();
         }
+    }, [filtersMenuOpen])
 
-        <button disabled={isPending} onClick={toggleFiltersMenuOption} className={"dashboard-primary-btn"}><IconFilter className={"icon-wrapper"} width={20} height={20} />Filter By</button>
-    </div>)
+    return (
+        <div className={styles["search-filter-options"]}>
+            {filtersMenuOpen &&
+
+                <div className={styles["filter-by-menu"]} ref={filterMenuRef} >
+                    <OverlayScrollbarsComponent
+                        options={{ scrollbars: { theme: 'os-theme-dark', clickScroll: true } }}
+                        className={styles["filter-by-menu__scrollable"]}
+                    >
+                        {filtersToUse.groups.map(x => (
+                            <div key={x.groupId} className={`${styles["filter-by-menu-group"]} ${!x.toggled ? styles["filter-by-menu-group--hidden"] : ""}`}                    >
+                                <div className={styles["filter-by-menu-group-heading"]}>
+                                    <button ref={x.groupId === 0 ? firstOption : null} onClick={() => toggleFilterMenuGroup(x.groupId)} className={`btn-reset ${styles["filter-by-menu-group-heading__toggle"]}`} aria-label={`Toggle ${x.title} filter options`} aria-expanded={x.toggled}>
+                                        <IconChevronDown className={styles["icon-wrapper"]} width={20} height={20} />
+                                        <h3 className={styles['filter-by-menu-group-heading__title']}>{x.title}</h3>
+                                    </button>
+                                </div>
+
+                                {x.toggled && (
+                                    <ul>
+                                        {x.options?.map((y) => (
+                                            <li
+                                                className={`${styles["filter-by-group__option"]} ${y.checked ? styles["filter-by-group__option--checked"] : ""}`}
+                                                key={y.id}
+                                            >
+                                                <label>
+                                                    <input
+                                                        className="checkbox"
+                                                        type="checkbox"
+                                                        checked={y.checked}
+                                                        onChange={(e) => handleOptionActive(e, y.id, x.groupId)}
+                                                    />
+                                                    {y.label}
+                                                </label>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        ))}
+                    </OverlayScrollbarsComponent>
+                </div>
+            }
+            <button disabled={isPending} onClick={toggleFiltersMenuOption} className={"dashboard-primary-btn"}><IconFilter className={"icon-wrapper"} width={20} height={20} />Filter By</button>
+        </div>)
 }
 
 export default ListingsSearchFilterOptions;

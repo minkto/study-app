@@ -18,12 +18,17 @@
 
 .filter-by-menu {
     position: absolute;
-    top: 60px;
+    top: 50px;
     right: 0;
-    background-color: aquamarine;
+    background-color: white;
+    border: 1px solid #EEEEEE;
     z-index: 1;
-    padding: 10px;
     border-radius: 5px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.filter-by-menu__scrollable {
+    max-height: 320px;
 }
 
 .filter-by-menu-group {
@@ -31,7 +36,7 @@
     white-space: nowrap;
     transition: all 0.3s ease-in-out;
     max-height: 500px;
-    overflow: hidden;
+    max-width: 300px;
 }
 
 .filter-by-menu-group--hidden {
@@ -52,8 +57,12 @@
 }
 
 
+.filter-by-menu-group-heading { 
+    cursor: pointer;
+}
 
-.filter-by-menu-group-heading {
+.filter-by-menu-group-heading__toggle
+{
     display: flex;
     align-items: center;
     width: 100%;
@@ -66,32 +75,36 @@
 
 }
 
-.filter-by-menu-group ul li {
+.filter-by-group__option {
     list-style: none;
-    padding: 5px;
-    margin-bottom: 5px;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #EEEEEE;
 }
 
-.filter-by-menu-group ul li input[type='checkbox'] {
+.filter-by-group__option:hover,
+.filter-by-group__option:active,
+.filter-by-group__option:focus
+{
+    background-color: var(--primary-color);
+    transition: all 0.3s ease-in-out;
+}
+
+.filter-by-group__option--checked {
+    background-color: var(--primary-color);
+}
+
+.filter-by-group__option label {
+    cursor: pointer;
+    padding: 1em;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.filter-by-group__option input[type='checkbox'] {
     margin-right: 5px;
     width: 1.15em;
     height: 1.15em;
     font-size: 1.2rem;
-}
-
-.filter-by-menu-pointer {
-    margin: 0;
-    position: absolute;
-    top: -18px;
-    right: 10px;
-    width: 0;
-    height: 0;
-    border-bottom: 10px solid aquamarine;
-    border-top: 10px solid #009dff00;
-    border-left: 10px solid #009dff00;
-    border-right: 10px solid #009dff00;
-    z-index: -1;
 }
 
 .filter-by-menu-group .filter-by-menu-group-heading .icon-wrapper {
