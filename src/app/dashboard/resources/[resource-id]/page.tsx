@@ -7,6 +7,7 @@ import { auth } from "@clerk/nextjs/server";
 import styles from './page.module.css'
 import DescriptionCard from "@/components/description-card/DescriptionCard";
 import ResourceChaptersListings from "@/components/resource-chapters-listings/ResourceChaptersListings";
+import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
 
@@ -33,6 +34,10 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
     }
 
     const resource: GetResourceDto | null = await getResourceDetails();
+    if(!resource)
+    {
+        return notFound();
+    }
 
     return (
         <div>

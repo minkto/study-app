@@ -10,6 +10,7 @@ import ChapterDaysCompletedPill from "@/components/resource-chapters-listings/Ch
 import { TZDate } from "@date-fns/tz";
 import IconExternalLink from "@/components/icons/icon-external-link/IconExternalLink";
 import NotesCardListings from "@/components/notes-card-listings/NotesCardListings";
+import { notFound } from "next/navigation";
 
 
 export default async function Page({ params }: { params: Promise<{ "chapter-id": string }> }) {
@@ -37,7 +38,10 @@ export default async function Page({ params }: { params: Promise<{ "chapter-id":
     }
 
     const chapterDetails = await loadChapterDetails(Number(chapterId), userId);
-
+    if(!chapterDetails)
+    {
+        return notFound();
+    }
 
     return (<>
         {chapterDetails && (

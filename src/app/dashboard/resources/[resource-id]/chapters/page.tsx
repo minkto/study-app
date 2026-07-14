@@ -3,6 +3,7 @@ import ResourceChaptersListings from "@/components/resource-chapters-listings/Re
 import { getResourceDto } from "@/services/resourceService";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
+import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
     const { "resource-id": resourceId } = await params;
@@ -14,6 +15,10 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
     }
 
     const resource = await getResourceDto(Number(resourceId), userId);
+    if(!resource)
+    {
+        return notFound();
+    }
 
     return (
         <div>
