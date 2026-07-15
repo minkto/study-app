@@ -9,10 +9,10 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 interface ResourceFormProps {
     state?: number;
-    resourceId?: string;
+    resource?: Resource;
 }
 
-const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
+const ResourceForm = ({ resource, state }: ResourceFormProps) => {
 
     const [formErrors, setFormErrors] = useState({
         nameError: "",
@@ -30,12 +30,10 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
     const router = useRouter();
 
     const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        if(event.target.type === "checkbox" && event.target instanceof HTMLInputElement)
-        {
-            setFormData({ ...formData, [event.target.name]:  event.target.checked});
+        if (event.target.type === "checkbox" && event.target instanceof HTMLInputElement) {
+            setFormData({ ...formData, [event.target.name]: event.target.checked });
         }
-        else
-        {
+        else {
             setFormData({ ...formData, [event.target.name]: event.target.value });
         }
     }
@@ -56,8 +54,7 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
     const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (formData?.categoryId && formData.categoryId <= -1)
-        {
+        if (formData?.categoryId && formData.categoryId <= -1) {
             formData.categoryId = null;
         }
 
@@ -101,9 +98,10 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
 
         const loadResourceDetails = async () => {
             try {
-                const response = await fetch(`/api/resources/${resourceId}`);
-                const data: Resource = await response.json();
-                setFormData(data);
+
+                if (resource?.resourceId && resource.resourceId > 0) {
+                    setFormData(resource);
+                }
 
             } catch (error) {
                 if (error instanceof Error) {
@@ -122,7 +120,7 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
                 break;
         }
 
-    }, [resourceId, state]);
+    }, [resource, state]);
 
     return (<div className="form-container">
         <div className="form-header">
@@ -139,18 +137,17 @@ const ResourceForm = ({ state, resourceId }: ResourceFormProps) => {
                 <div className="form-field-wrapper centered-fields">
                     <label htmlFor='form-resource__category'>Categories</label>
                     <select className="form-field" id='form-resource__category' name="categoryId" onChange={handleChange}
-                        value={formData?.categoryId ?? -1 }
+                        value={formData?.categoryId ?? -1}
                     >
                         <option key={-1} value={-1}>-- None --</option>
                         {categories?.length ? (
-                        categories.map((c: Category) => (
-                            <option key={c.categoryId} value={c.categoryId ?? -1}>
-                            {c.name}
-                            </option>
-                        ))
-                        
+                            categories.map((c: Category) => (
+                                <option key={c.categoryId} value={c.categoryId ?? -1}>
+                                    {c.name}
+                                </option>
+                            ))
                         ) : (
-                        <option disabled>No categories available</option>
+                            <option disabled>No categories available</option>
                         )}
                     </select>
                 </div>
