@@ -1,3 +1,5 @@
+"use client";
+
 import { ChapterStatuses, FormState } from "@/constants/constants";
 import { Chapter, ChapterFormErrors, Status } from "@/shared.types";
 import Form from "next/form";
@@ -10,12 +12,11 @@ import { UTCDate } from "@date-fns/utc";
 import { validateChapter } from "@/services/validateChaptersService";
 
 interface ChapterFormProps {
-    resourceId: string;
-    chapterId?: string;
     formState: number;
+    chapter?: Chapter | undefined;
 }
 
-const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => {
+const ChapterForm = ({ chapter, formState }: ChapterFormProps) => {
 
     const [formErrors, setFormErrors] = useState<ChapterFormErrors>({
         nameError: "",
@@ -49,8 +50,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
     const isFormValid = (): boolean => {
         const validationModel = validateChapter(formData);
 
-        if(!validationModel.isValid)
-        {
+        if (!validationModel.isValid) {
             setFormErrors(validationModel?.formErrors);
         }
 
@@ -65,7 +65,9 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
             formData.statusId = statuses[0]?.statusId;
         }
 
-        formData.resourceId = parseInt(resourceId);
+        if (chapter?.resourceId && chapter?.resourceId > 0) {
+            formData.resourceId = chapter?.resourceId;
+        }
     }
 
     const setFormDataDateValues = () => {
@@ -153,8 +155,12 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
         }
 
         try {
+            let apiUrl = "/api/chapters"
+            if (chapter?.chapterId && chapter.chapterId > 0) {
+                apiUrl = `/api/chapters/${chapter.chapterId}`
+            }
+
             setButtonDisabled(true);
-            const apiUrl = formState === FormState.ADD ? '/api/chapters' : `/api/chapters/${chapterId}`
             const response = await fetch(apiUrl, {
                 method: formState === FormState.ADD ? 'POST' : 'PUT',
                 body: JSON.stringify(formData)
@@ -164,7 +170,9 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                 throw new Error('Failed to submit the data. Please try again.')
             }
 
-            router.push(`/dashboard/resources/${resourceId}/chapters`);
+            if (chapter?.resourceId && chapter.resourceId > 0) {
+                router.push(`/dashboard/resources/${chapter.resourceId}/chapters`);
+            }
 
         } catch (error) {
             if (error instanceof Error) {
@@ -192,11 +200,12 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
 
         const loadChapterDetails = async () => {
             try {
-                const response = await fetch(`/api/chapters/${chapterId}`);
-                const data: Chapter = await response.json();
-                setFormData(data);
-                setLastDateCompleted(data?.lastDateCompleted);
-                setOriginalDateCompleted(data?.originalDateCompleted);
+
+                if (chapter?.chapterId && chapter?.chapterId > 0) {
+                    setFormData(chapter);
+                    setLastDateCompleted(chapter?.lastDateCompleted);
+                    setOriginalDateCompleted(chapter?.originalDateCompleted);
+                }
 
             } catch (error) {
                 if (error instanceof Error) {
@@ -214,7 +223,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                 loadChapterDetails();
                 break;
         }
-    }, [formState, chapterId]);
+    }, [formState, chapter]);
 
     return (
         <div className="form-container">
@@ -222,7 +231,7 @@ const ChapterForm = ({ resourceId, chapterId, formState }: ChapterFormProps) => 
                 <h1 className='form-header__title'>{formState === FormState.ADD ? "Add" : "Edit"} Chapter</h1>
             </div>
             <div className='form-inner-content'>
-                <Form className='form-dashboard' onSubmit={onSubmit} action={`/dashboard/resources/${resourceId}/chapters`}>
+                <Form className='form-dashboard' onSubmit={onSubmit} action={`/dashboard/resources/${chapter?.resourceId ? chapter?.resourceId : -1}/chapters`}>
                     <div className="form-field-wrapper centered-fields">
                         <label htmlFor='form-chapter__name'>Name</label>
                         <input className="form-field" id="form-chapter__name" name="name" type='text' onChange={handleChange} value={formData?.name}></input>

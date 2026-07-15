@@ -1,12 +1,24 @@
-"use client"
-
 import ResourceForm from "@/components/resource-form/ResourceForm";
 import { FormState } from "@/constants/constants";
-import { useParams } from "next/navigation";
+import { getResource } from "@/db/resources/getResource";
+import { isStringEmpty } from "@/utils/stringUtils";
+import { auth } from "@clerk/nextjs/server";
+import { notFound } from "next/navigation";
 
-export default function Page() {
-    const params = useParams();
-    const resourceId = params["resource-id"] as string;
+export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
 
-    return (<ResourceForm state={FormState.EDIT} resourceId={resourceId} />)
+    const { "resource-id": resourceId } = await params;
+
+    const { userId, redirectToSignIn } = await auth();
+    if (isStringEmpty(userId)) {
+        redirectToSignIn();
+    }
+
+    const resource = await getResource(Number(resourceId),userId);
+    if(!resource)
+    {
+        return notFound();
+    }
+
+    return (resource && <ResourceForm state={FormState.EDIT} resource={resource} />)
 }

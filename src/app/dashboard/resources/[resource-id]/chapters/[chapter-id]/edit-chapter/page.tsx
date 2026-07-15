@@ -1,13 +1,38 @@
-"use client";
-
 import ChapterForm from "@/components/chapter-form/ChapterForm";
 import { FormState } from "@/constants/constants";
-import { useParams } from "next/navigation";
+import { getChapter } from "@/db/chapters/getChapter";
+import { Chapter } from "@/shared.types";
+import { isStringEmpty } from "@/utils/stringUtils";
+import { auth } from "@clerk/nextjs/server";
+import { notFound } from "next/navigation";
 
-export default function Page() {
-    const params = useParams();
-    const resourceId = params["resource-id"] as string;
-    const chapterId = params["chapter-id"] as string;
+export default async function Page({ params }: { params: Promise<{ "chapter-id": string }> }) {
 
-    return (<ChapterForm resourceId={resourceId} chapterId={chapterId} formState={FormState.EDIT} />)
+    const { "chapter-id": chapterId } = await params;
+    const { userId, redirectToSignIn } = await auth();
+    if (isStringEmpty(userId)) {
+        redirectToSignIn();
+    }
+
+    const loadChapterDetails = async (): Promise<Chapter | undefined | null> => {
+        try {
+
+            const chapterIdNum = Number(chapterId);
+            const response = await getChapter(chapterIdNum, userId);
+
+            return response;
+
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error(error);
+            }
+        }
+    }
+
+    const chapter = await loadChapterDetails();
+    if (!chapter) {
+        return notFound();
+    }
+
+    return (chapter && <ChapterForm chapter={chapter} formState={FormState.EDIT} />)
 }

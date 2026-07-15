@@ -1,15 +1,23 @@
-"use client";
-
 import ChapterForm from "@/components/chapter-form/ChapterForm"
 import { FormState } from "@/constants/constants";
-import { useParams } from "next/navigation";
+import resourceWithUserExists from "@/db/resources/resourceWithUserExists";
+import { isStringEmpty } from "@/utils/stringUtils";
+import { auth } from "@clerk/nextjs/server";
+import { notFound } from "next/navigation";
 
-const Page = () =>
-{
-    const params = useParams();
-    const resourceId = params["resource-id"] as string;
+export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
 
-    return(<ChapterForm resourceId={resourceId} formState={FormState.ADD}/>)
+    const { "resource-id": resourceId } = await params;
+
+    const { userId, redirectToSignIn } = await auth();
+    if (isStringEmpty(userId)) {
+        redirectToSignIn();
+    }
+
+    const resourceExists = await resourceWithUserExists(Number(resourceId), userId);
+    if (!resourceExists) {
+        return notFound();
+    }
+
+    return (resourceExists && <ChapterForm chapter={{ name: "", resourceId: Number(resourceId) }} formState={FormState.ADD} />)
 }
-
-export default Page;
