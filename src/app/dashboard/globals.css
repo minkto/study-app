@@ -1,0 +1,669 @@
+:root {
+  --primary-color: #ECFFB1;
+  --secondary-color: #415700;
+  --standard-box-radius: 5px;
+  --background: #ffffff;
+  --foreground: #171717;
+  --dashboard-main-content-bg-color: #FAFBFC;
+  --dashboard-bg-color: #FAFBFC;
+  --breakpoint-small-mobile: 480px;
+  --breakpoint-mobile: 768px;
+  --breakpoint-tablet: 1024px;
+  --breakpoint-desktop: 1200px;
+  --mobile-table-font-size: .875rem;
+  --desktop-table-font-size: 1.2rem;
+  --default-border-radius: 5px;
+
+  --font-size-sm: 1.2rem;
+  --font-size-md: 1.4rem;
+  --font-size-lg: 1.6rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+h1
+{
+  font-size: 2.1rem;
+}
+
+.text-sm
+{
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+}
+
+.text-md
+{
+  font-size: var(--font-size-md);
+}
+
+.text-fw-md
+{
+  font-weight: 600;
+}
+
+input[type]
+{
+  font-size: var(--desktop-table-font-size);
+}
+
+textarea
+{
+  font-size: var(--desktop-table-font-size);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.btn-reset {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  text-align: inherit;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  cursor: pointer;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+/******************************
+*
+* Checkbox
+*
+*******************************/
+.checkbox {
+   --active: #000;
+   --active-inner: #fff;
+   --focus: 2px rgba(71,75,255,0.3);
+   --border: #aaabd8;
+   --border-hover: #a0a0a0;
+   --background: #fff;
+   --disabled: #b8b8d3;
+   --disabled-inner: #b8b8d3;
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   height: 21px;
+   outline: none;
+   display: inline-block;
+   vertical-align: top;
+   position: relative;
+   margin: 0;
+   cursor: pointer;
+   border: 1px solid var(--bc, var(--border));
+   background: var(--b, var(--background));
+   transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
+}
+
+.checkbox:after {
+   content: "";
+   display: block;
+   left: 0;
+   top: 0;
+   position: absolute;
+   transition: transform var(--d-t, 0.3s) var(--d-t-e, ease), opacity var(--d-o, 0.2s);
+}
+
+.checkbox:checked {
+   --b: var(--active);
+   --bc: var(--active);
+   --d-o: .3s;
+   --d-t: .6s;
+   --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
+}
+
+.checkbox:disabled {
+   --b: var(--disabled);
+   cursor: not-allowed;
+   opacity: 0.9;
+}
+
+.checkbox:disabled:checked {
+   --b: var(--disabled-inner);
+   --bc: var(--border);
+}
+
+.checkbox:disabled + label {
+   cursor: not-allowed;
+}
+
+.checkbox:hover:not(:checked):not(:disabled) {
+   --bc: var(--border-hover);
+}
+
+.checkbox:focus {
+   box-shadow: 0 0 0 var(--focus);
+}
+
+.checkbox:not(.switch) {
+   width: 21px;
+}
+
+.checkbox:not(.switch):after {
+   opacity: var(--o, 0);
+}
+
+.checkbox:not(.switch):checked {
+   --o: 1;
+}
+
+.checkbox + label {
+   display: inline-block;
+   vertical-align: middle;
+   cursor: pointer;
+   margin-left: 8px;
+}
+
+.checkbox:not(.switch) {
+   border-radius: 7px;
+}
+
+.checkbox:not(.switch):after {
+   width: 5px;
+   height: 9px;
+   border: 2px solid var(--active-inner);
+   border-top: 0;
+   border-left: 0;
+   left: 7px;
+   top: 4px;
+   transform: rotate(var(--r, 20deg));
+}
+
+.checkbox:not(.switch):checked {
+   --r: 43deg;
+}
+/******************************
+*
+* Forms
+*
+*******************************/
+.form-container {
+  --border-color: #CFCBCB;
+  border-radius: 5px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-color);
+  margin: 10px;
+  -webkit-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.25);
+}
+
+.form-container.plain {
+  border-radius: 5px;
+  background-color: #FFFFFF;
+  border: none;
+  margin: 0;
+  box-shadow: none;
+}
+
+.form-inner-content {
+  padding: 10px;
+}
+
+.form-header {
+  padding: 0.5em;
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+  background-color: #FBFBFB;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+
+}
+
+.centered-container,
+.centered-fields {
+  margin: 1.3em auto;
+  width: 95%;
+}
+
+.react-datepicker-wrapper 
+{
+  width: 100%;
+}
+
+
+.form-field-wrapper>.react-datepicker-wrapper input[type].form-field,
+.form-field-wrapper>input[type].form-field,
+.form-field-wrapper>select.form-field,
+.form-field-wrapper>textarea.form-field,
+.form-field-wrapper>button.form-field {
+  width: 100%;
+  padding: calc(0.3rem * 2);
+  border-radius: 5px;
+}
+
+.form-field-wrapper label {
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+textarea.form-field {
+  resize: none;
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.2rem;
+}
+
+.form-field__error-message {
+  color: red;
+}
+
+button.form-field {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  font-weight: bold;
+  border: none;
+}
+
+button.form-field:hover,
+button.form-field:active,
+button.form-field:focus {
+  background-color: var(--secondary-color);
+  color:  var(--primary-color);
+}
+
+
+
+.form-field-wrapper> input[type="checkbox"].form-field
+{
+    display: block;
+    width: 2em;
+    padding: 5px;
+    height: 2em;
+}
+
+button.form-field:disabled
+{
+  background-color: rgb(100, 100, 100);
+}
+
+
+/*******************************
+*
+* Icon
+*
+*******************************/
+.icon-wrapper
+{
+  margin: 0 5px 0 0;
+}
+
+
+.icon-img {
+  cursor: pointer;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.icon-img__path
+{
+  stroke: var(--secondary-color);
+  transition: all 0.3s ease-in-out;
+}
+
+/*******************************
+*
+* Buttons
+*
+*******************************/
+
+.dashboard-primary-btn,
+.dashboard-dark-btn
+{
+  display: flex;
+  align-items: center;
+  width: max-content;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  padding: 0.5em;
+  border-radius: 5px;
+  border: none;
+  margin: 0.5em 0 0.5em 0;
+  transition: all 0.3s ease-in-out;
+  font-size: inherit;
+  cursor:pointer;
+}
+
+.dashboard-primary-btn:hover,
+.dashboard-primary-btn:active,
+.dashboard-primary-btn:focus
+{
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+.dashboard-primary-btn:hover .icon-img .icon-img__path,
+.dashboard-primary-btn:active .icon-img .icon-img__path,
+.dashboard-primary-btn:focus .icon-img .icon-img__path
+
+{
+    stroke: var(--primary-color)
+}
+
+.dashboard-dark-btn
+{
+  background-color: #000;
+  color: #fff;
+}
+
+.dashboard-dark-btn:hover,
+.dashboard-dark-btn:active,
+.dashboard-dark-btn:focus
+{
+  background-color: #2f2f2f;
+  color: #fff;
+}
+
+
+/*******************************
+*
+* Clerk Customization
+*
+*******************************/
+input[type="password"].cl-formFieldInput__password,
+input[type="text"].cl-formFieldInput
+{
+  font-size: var(--mobile-table-font-size);
+}
+
+
+/*********************************
+*
+* Data Table Listings
+*
+**********************************/
+.data-table-listings
+{
+    overflow-x: auto;
+
+}
+
+.table-head-cell {
+    background-color: var(--primary-color);
+    border-bottom: 1px solid var(--secondary-color);
+    font-size: var(--desktop-table-font-size);
+    color: var(--secondary-color);
+    height: 90px;
+}
+
+.table-head-cell button {
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+    appearance: button;
+    -webkit-appearance: button;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: var(--desktop-table-font-size);
+    transition: all 0.3s ease-in-out;
+}
+
+.table-head-cell button:active, 
+.table-head-cell button:focus, 
+.table-head-cell button:hover 
+{
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+
+.table-head-cell:first-child {
+
+    border-radius: 5px 0 0 0;
+}
+
+.table-head-cell:last-child {
+    border-radius: 0 5px 0 0;
+}
+
+
+.table-container {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+.table-row-data {
+    padding: 8px 12px;
+    font-size: var(--desktop-table-font-size);
+}
+
+tbody .table-row {
+    background-color: #FFFFFF;
+    transition: 0.3s;
+    border: 1px solid #EEEEEE;
+}
+
+tbody .table-row:hover 
+{
+    background-color: var(--primary-color);
+}
+
+.placeholder-text {
+    color: #999;
+    font-style: italic;
+}
+
+.col-label-inline {
+    display: none;
+}
+
+.col-menu {
+    width: 5%;
+}
+
+.table-btn-list
+{
+  display: flex;
+  gap: 0.5em;
+}
+
+.table-dropdown-mobile
+{
+    flex-grow: 2;
+}
+
+@media screen and (max-width:1024px) {
+
+    .table-head-cell,
+    .table-head-cell button,
+    .table-row-data {
+        font-size: var(--mobile-table-font-size);
+    }
+}
+
+@media screen and (max-width:768px) {
+
+    .table-container {
+        max-width: 800px;
+    }
+
+    .table-container thead {
+        display: none;
+    }
+
+    tbody .table-row {
+        display: flex;
+        width: 100%;
+        margin-top: 1em;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .table-row-data {
+        width: 100%;
+    }
+
+
+    .col-menu {
+        width: 50px;
+        margin: 0 auto;
+    }
+
+    .col-label-inline {
+        display: block;
+        font-weight: 700;
+    }
+
+    tbody .table-row:hover,
+    tbody .table-row:nth-child(2n):hover {
+        background-color: #f8fff1;
+    }
+}
+
+/****************************************
+*
+* Modal
+*
+***************************************/
+.modal-background {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgb(0 0 0 / 50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    margin: 0 auto;
+    min-width: 150px;
+    max-width: 480px;
+    width: 80%;
+    padding: 1em;
+    background-color: white;
+    color: black;
+    background-color: rgb(255 255 255);
+    border-radius: 5px;
+    height: auto;
+    max-height: calc(100dvh - 64px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.modal-content-inner-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-content-inner-block__heading {
+    text-align: center;
+    font-size: 2rem;
+    margin: 0;
+    flex: 2;
+    border-bottom: 1px solid rgb(225, 225, 225);
+}
+
+.modal-content-inner-block__text {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-top: 2em;
+}
+
+.modal-content-inner-block__sub-text{
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-top: 2em;
+}
+
+.modal-content-inner-block-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2em;
+}
+
+.modal-content-inner-block-buttons__confirm
+{
+    background-color: #B1FFC5;
+    border: none;
+}
+
+.modal-content-inner-block-buttons__confirm:hover,
+.modal-content-inner-block-buttons__confirm:active,
+.modal-content-inner-block-buttons__confirm:focus
+{
+    background-color: #87e69f;
+}
+
+.modal-content-inner-block-buttons__cancel 
+{
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(0, 0, 0);
+}
+
+.modal-content-inner-block-buttons__cancel:hover,
+.modal-content-inner-block-buttons__cancel:active,
+.modal-content-inner-block-buttons__cancel:focus
+{
+    background-color: rgb(226, 226, 226);
+}
+
+.modal-content-inner-block-buttons__confirm,
+.modal-content-inner-block-buttons__cancel {
+    flex: 1;
+    min-width: 100px;
+    padding: 0.5em;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/****************************************
+*
+* React Colourful - Overrides
+*
+***************************************/
+.react-colorful.full-width
+{
+  width: 100%;
+}
