@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: 'Sign In | LearnLobe',
-  description: 'Sign In to start using managing your resources for learning.',
+  description: 'Sign In to start managing your resources for learning.',
 }
 
 export default function Page() {
