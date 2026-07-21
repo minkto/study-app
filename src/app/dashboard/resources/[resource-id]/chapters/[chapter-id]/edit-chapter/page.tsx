@@ -4,7 +4,13 @@ import { getChapter } from "@/db/chapters/getChapter";
 import { Chapter } from "@/shared.types";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: 'Edit Chapter | LearnLobe',
+  description: 'Edit an existing chapter',
+}
 
 export default async function Page({ params }: { params: Promise<{ "chapter-id": string }> }) {
 

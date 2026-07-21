@@ -1,6 +1,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import styles from './not-found.module.css'
+import { Metadata } from 'next'
+
+
+export const metadata: Metadata = {
+    title: '404 - Page Not Found | LearnLobe',
+    description: 'The requested page could not be found.',
+}
 
 export default function NotFound() {
   return (

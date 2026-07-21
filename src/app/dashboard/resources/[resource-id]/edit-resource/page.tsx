@@ -3,7 +3,13 @@ import { FormState } from "@/constants/constants";
 import { getResource } from "@/db/resources/getResource";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+export const metadata: Metadata = {
+    title: 'Edit Resource | LearnLobe',
+    description: 'Edit an existing resource.',
+}
 
 export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
 
@@ -14,9 +20,8 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
         redirectToSignIn();
     }
 
-    const resource = await getResource(Number(resourceId),userId);
-    if(!resource)
-    {
+    const resource = await getResource(Number(resourceId), userId);
+    if (!resource) {
         return notFound();
     }
 

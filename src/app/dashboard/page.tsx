@@ -6,6 +6,13 @@ import { isStringEmpty } from '@/utils/stringUtils';
 import DashboardProgressCard from '@/components/dashboard/dashboard-progress-card/DashboardProgressCard';
 import DashboardListCard from '@/components/dashboard/dashboard-list-card/DashboardListCard';
 
+import type { Metadata } from 'next'
+ 
+export const metadata: Metadata = {
+  title: 'Dashboard | LearnLobe',
+  description: 'The main page for showing statistics about the resources and chapters.',
+}
+
 export default async function Page() {
     const { userId, redirectToSignIn } = await auth();
     if (isStringEmpty(userId)) {
