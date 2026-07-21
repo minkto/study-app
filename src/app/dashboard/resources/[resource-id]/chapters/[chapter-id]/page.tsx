@@ -11,7 +11,12 @@ import { TZDate } from "@date-fns/tz";
 import IconExternalLink from "@/components/icons/icon-external-link/IconExternalLink";
 import NotesCardListings from "@/components/notes-card-listings/NotesCardListings";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: 'Chapter Details | LearnLobe',
+  description: 'Shows the current details regarding the selected chapter.',
+}
 
 export default async function Page({ params }: { params: Promise<{ "chapter-id": string }> }) {
 

@@ -3,7 +3,13 @@ import { FormState } from "@/constants/constants";
 import resourceWithUserExists from "@/db/resources/resourceWithUserExists";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { auth } from "@clerk/nextjs/server";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: 'Add Chapter | LearnLobe',
+  description: 'Add a chapter to the current resource.',
+}
 
 export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
 

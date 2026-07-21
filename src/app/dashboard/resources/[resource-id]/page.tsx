@@ -8,6 +8,12 @@ import styles from './page.module.css'
 import DescriptionCard from "@/components/description-card/DescriptionCard";
 import ResourceChaptersListings from "@/components/resource-chapters-listings/ResourceChaptersListings";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: 'Resource Details | LearnLobe',
+    description: 'View the details of the current resource.',
+}
 
 export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
 
@@ -34,8 +40,7 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
     }
 
     const resource: GetResourceDto | null = await getResourceDetails();
-    if(!resource)
-    {
+    if (!resource) {
         return notFound();
     }
 
@@ -64,7 +69,7 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
             </div>
 
             <div className={styles["resource-details__chapters"]}>
-                <ResourceChaptersListings pageSize={5} useQueryParams={false} resourceId={resource?.resourceId?.toString()}/>
+                <ResourceChaptersListings pageSize={5} useQueryParams={false} resourceId={resource?.resourceId?.toString()} />
             </div>
 
         </div>)
