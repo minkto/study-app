@@ -16,7 +16,8 @@ export default function GlobalError({
     return (
         <html lang="en">
             <head>
-                <title>500 - Internal Server Error</title>
+                <title>500 - Internal Server Error | LearnLobe</title>
+                <meta name='description' content='An unexpected error has occured.'/>
             </head>
             <body className={styles["error-container-body"]}>
                 <main className={styles["error-container"]}>
