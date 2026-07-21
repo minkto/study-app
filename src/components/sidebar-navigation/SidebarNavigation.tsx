@@ -71,7 +71,7 @@ export const SidebarNavigation = () => {
         <div className={styles["sidebar__container"]}>
             <div className={styles["sidebar__container-top"]}>
                 <div className={styles["sidebar__container-icon"]}>
-                    <Image src={logo} alt="logo"></Image>
+                    <Image src={logo} width={50} alt="logo"></Image>
                 </div>
 
                 <div className={styles[`sidebar__container-name${sidebarToggle ? "--expanded" : ""}`]}>
