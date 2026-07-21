@@ -1,3 +1,5 @@
+"use client"
+
 import { Category, FilterGroupList, GetResourceDto } from '@/shared.types';
 import ResourceListingsCard from '../resource-listings-card/ResourceListingsCard';
 import styles from './resource-listings.module.css'
