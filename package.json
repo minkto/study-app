@@ -18,6 +18,8 @@
     "@date-fns/utc": "^2.1.0",
     "@prisma/client": "^6.16.2",
     "@tanstack/react-table": "^8.21.2",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.2",
     "dotenv-cli": "^10.0.0",

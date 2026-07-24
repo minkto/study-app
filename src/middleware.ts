@@ -1,12 +1,16 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextFetchEvent, NextRequest } from "next/server";
+import rateLimitMiddleware from './rateLimitMiddleware';
+import { clerkMiddleware } from "@clerk/nextjs/server";
+import { authMiddleware } from "./authMiddleware";
 
-const isPublicRoute = createRouteMatcher(['/api/webhooks/clerk/users','/auth/sign-in(.*)','/auth/sign-up(.*)'])
 
-export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
-    await auth.protect()
+export default async function middleware(req: NextRequest, event: NextFetchEvent) {
+  const rateLimited = await rateLimitMiddleware(req);
+  if (rateLimited) {
+    return rateLimited;
   }
-})
+  return await clerkMiddleware(authMiddleware)(req, event)
+}
 
 export const config = {
   matcher: [
