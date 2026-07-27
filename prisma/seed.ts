@@ -10,7 +10,11 @@ const statusData: Prisma.StatusesCreateInput[] = [
 
 export async function main() {
     for (const status of statusData) {
-        await prisma.statuses.create({ data: status });
+        await prisma.statuses.upsert({
+            where: { status_id: status.status_id },
+            update: { name: status.name },
+            create: status,
+        });
     }
 }
 
