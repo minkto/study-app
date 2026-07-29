@@ -21,7 +21,7 @@ export default function GlobalError({
             </head>
             <body className={styles["error-container-body"]}>
                 <main className={styles["error-container"]}>
-                    <Image src="/avatar/learn-lobe-500-image.svg" alt="500" width={200} height={200} />
+                    <Image src="/static/images/avatar/learn-lobe-500-image.svg" alt="500" width={200} height={200} />
                     <h1 className={styles["error-title"]}>500</h1>
                     <h2 className={styles["error-subtitle"]}>Internal Server Error</h2>
                     <h3>Something went wrong! An unexpected error has occured.</h3>
