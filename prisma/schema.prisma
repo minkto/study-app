@@ -9,9 +9,14 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
+/**
+* url and Direct URL differ as the DATABASE_URL is what is used for queries,
+* and the DIRECT_URL is what is used for Migrations.
+**/
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Statuses {
