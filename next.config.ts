@@ -6,7 +6,8 @@ const nextConfig: NextConfig = {
       RESOURCES_MAX_PAGE_SIZE: process.env.RESOURCES_MAX_PAGE_SIZE,
       CATEGORIES_MAX_PAGE_SIZE: process.env.CATEGORIES_MAX_PAGE_SIZE,
       DEFAULT_DAYS_BEFORE_CHAPTER_REVIEW_DUE : process.env.DEFAULT_DAYS_BEFORE_CHAPTER_REVIEW_DUE
-    }
+    },
+    output: "standalone"
 };
 
 export default nextConfig;
