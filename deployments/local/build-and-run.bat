@@ -49,7 +49,7 @@ if "%ENABLE_DB_MIGRATION%"=="1" (
 )
 
 :: Copy standalone folder to Web Application folder
-xcopy "%PROJECT_PATH%\.next\standalone" "%DEST_DIR%\standalone\" /E /I /Y
+xcopy "%PROJECT_PATH%\.next\standalone\study-app" "%DEST_DIR%\standalone\" /E /I /Y
 
 
 :: Copy standalone folder to Web Application folder
