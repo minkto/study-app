@@ -22,7 +22,7 @@ const SettingsForm = ({ userId }: SettingsFormProps) => {
     const [formData, setFormData] = useState<UserSettings>(
         {
             aiHelperCredits: 0,
-            userId: -1,
+            userId: "",
             globalChapterDaysBeforeReviewDue: 30,
             userSettingId: - 1
         });
