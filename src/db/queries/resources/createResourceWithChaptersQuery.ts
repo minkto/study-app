@@ -4,11 +4,11 @@ import { Resource } from "@/shared.types";
 export function createResourceWithChaptersQuery(resource: Resource): DbQuery {
 
     const chapterValuesSql = resource?.chapters?.map((c, index) => {
-        const startingInsertTokenIndex = 4;
+        const startingInsertTokenIndex = 5;
         const columnCount = 4;
         const baseIndex = startingInsertTokenIndex + (index * columnCount);
 
-        return `($${baseIndex}, $${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${baseIndex + 4})`
+        return `($${baseIndex}, $${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3})`
     }).join(',\n')
 
 
@@ -35,14 +35,14 @@ export function createResourceWithChaptersQuery(resource: Resource): DbQuery {
         CROSS JOIN (
             VALUES 
                 ${chapterValuesSql}
-        ) AS chapter_data(status_id, name, url, original_date_completed, last_date_completed)
+        ) AS chapter_data(name, url, original_date_completed, last_date_completed)
     `
 
     const values = [
         resource.name,
         resource.description,
         resource.categoryId,
-        resource.userId?.toString(),
+        resource.userId,
     ];
 
     if (resource.chapters) {
