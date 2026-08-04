@@ -38,19 +38,19 @@ export interface CreateBulkResourceDto {
 
 
 export interface User {
-    userId: number;
+    userId: string;
     clerkUserId: string;
 }
 
 export interface AppUser {
-    userId: number;
+    userId: string;
     clerkUserId?: string;
 }
 
 
 export interface UserSettings {
     userSettingId?: number;
-    userId?: number;
+    userId?: string;
     aiHelperCredits?: number;
     globalChapterDaysBeforeReviewDue?: number;
 }
@@ -98,7 +98,7 @@ export interface NoteFormErrors{
 
 export interface Category {
     categoryId?: number | undefined | null;
-    userId: number;
+    userId: string;
     name: string | null;
     description?: string | null;
     color: string;
