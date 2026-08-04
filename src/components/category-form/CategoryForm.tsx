@@ -26,7 +26,7 @@ export const CategoryForm = ({ categoryId, onFormSubmit, state }: CategoryFormPr
         categoryId: -1,
         description: "",
         color: DEFAULT_CATEGORY_COLOR,
-        userId: -1
+        userId: ""
     });
 
     const onSubmit = async (event: FormEvent<HTMLFormElement>) => {

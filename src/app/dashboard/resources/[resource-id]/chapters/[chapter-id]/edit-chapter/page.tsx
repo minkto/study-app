@@ -1,9 +1,8 @@
 import ChapterForm from "@/components/chapter-form/ChapterForm";
 import { FormState } from "@/constants/constants";
 import { getChapter } from "@/db/chapters/getChapter";
+import { getCurrentAppUser, redirectToSignInPage } from "@/services/auth/userService";
 import { Chapter } from "@/shared.types";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -15,10 +14,14 @@ export const metadata: Metadata = {
 export default async function Page({ params }: { params: Promise<{ "chapter-id": string }> }) {
 
     const { "chapter-id": chapterId } = await params;
-    const { userId, redirectToSignIn } = await auth();
-    if (isStringEmpty(userId)) {
-        redirectToSignIn();
+    const currentUser = await getCurrentAppUser();
+
+    if (!currentUser) {
+        redirectToSignInPage();
+        return;
     }
+
+    const { userId } = currentUser;
 
     const loadChapterDetails = async (): Promise<Chapter | undefined | null> => {
         try {

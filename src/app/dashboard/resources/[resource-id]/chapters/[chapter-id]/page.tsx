@@ -1,7 +1,5 @@
 import { getChapterDetails } from "@/services/chaptersService";
 import { Chapter } from "@/shared.types";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import styles from './page.module.css'
 import ProgressPill from "@/components/resource-chapters-listings/ProgressPill";
@@ -12,6 +10,7 @@ import IconExternalLink from "@/components/icons/icon-external-link/IconExternal
 import NotesCardListings from "@/components/notes-card-listings/NotesCardListings";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { getCurrentAppUser, redirectToSignInPage } from "@/services/auth/userService";
 
 export const metadata: Metadata = {
   title: 'Chapter Details | LearnLobe',
@@ -37,10 +36,14 @@ export default async function Page({ params }: { params: Promise<{ "chapter-id":
     };
 
     const { "chapter-id": chapterId } = await params;
-    const { userId, redirectToSignIn } = await auth();
-    if (isStringEmpty(userId)) {
-        redirectToSignIn();
+    const currentUser = await getCurrentAppUser();
+
+    if (!currentUser) {
+        redirectToSignInPage();
+        return;
     }
+
+    const { userId } = currentUser;
 
     const chapterDetails = await loadChapterDetails(Number(chapterId), userId);
     if(!chapterDetails)

@@ -1,12 +1,11 @@
 import DashboardCounterCard from '@/components/dashboard/dashboard-counter-card/DashboardCounterCard'
 import styles from './page.module.css'
 import { getChaptersSummary } from '@/services/dashboardStatisticsService';
-import { auth } from '@clerk/nextjs/server';
-import { isStringEmpty } from '@/utils/stringUtils';
 import DashboardProgressCard from '@/components/dashboard/dashboard-progress-card/DashboardProgressCard';
 import DashboardListCard from '@/components/dashboard/dashboard-list-card/DashboardListCard';
 
 import type { Metadata } from 'next'
+import { getCurrentAppUser, redirectToSignInPage } from '@/services/auth/userService';
  
 export const metadata: Metadata = {
   title: 'Dashboard | LearnLobe',
@@ -14,10 +13,15 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-    const { userId, redirectToSignIn } = await auth();
-    if (isStringEmpty(userId)) {
-        redirectToSignIn();
+    const currentUser = await getCurrentAppUser();
+
+    if (!currentUser) {
+        redirectToSignInPage();
+        return;
     }
+
+    const { userId } = currentUser;
+
 
     const summary = await getChaptersSummary(userId);
 

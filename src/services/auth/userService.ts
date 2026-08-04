@@ -7,3 +7,8 @@ export const getCurrentAppUser = async (): Promise<AppUser | null> => {
 
     return await getUserByClerkUserId(userId);
 }
+
+export const redirectToSignInPage = async () => {
+    const { redirectToSignIn } = await auth();
+    redirectToSignIn();
+}

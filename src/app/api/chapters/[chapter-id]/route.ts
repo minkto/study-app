@@ -1,19 +1,23 @@
 import { deleteChapter } from "@/db/chapters/deleteChapter";
 import { getChapter } from "@/db/chapters/getChapter";
 import { updateChapter } from "@/db/chapters/updateChapter";
+import { getCurrentAppUser } from "@/services/auth/userService";
 import { validateChapter } from "@/services/validateChaptersService";
 import { Chapter } from "@/shared.types";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const slug = (await params);
         const chapterIdNum = Number(slug["chapter-id"]);
@@ -35,11 +39,16 @@ export async function GET(_request: Request, { params }: { params: Promise<{ "ch
 export async function PUT(request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
     try {
 
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const res = await request.json();
         const slug = (await params);
@@ -84,12 +93,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
 export async function DELETE(_request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
     try {
 
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
 
+        const { userId } = currentUser;
         const slug = (await params);
         const chapterIdNum = Number(slug["chapter-id"]);
 
