@@ -55,15 +55,16 @@ export const SidebarNavigation = () => {
             }
         }
 
-        if (overlayRef.current) {
-            overlayRef.current?.addEventListener('keydown', handleOutsideFocus);
-            overlayRef.current?.addEventListener('mousedown', handleOutsideFocus);
+        const currentOverlayRef = overlayRef.current;
+
+        if (currentOverlayRef) {
+            currentOverlayRef?.addEventListener('keydown', handleOutsideFocus);
+            currentOverlayRef?.addEventListener('mousedown', handleOutsideFocus);
         }
 
-
         return () => {
-            overlayRef.current?.removeEventListener('keydown', handleOutsideFocus);
-            overlayRef.current?.removeEventListener('mousedown', handleOutsideFocus);
+            currentOverlayRef?.removeEventListener('keydown', handleOutsideFocus);
+            currentOverlayRef?.removeEventListener('mousedown', handleOutsideFocus);
         }
     })
 
@@ -85,7 +86,7 @@ export const SidebarNavigation = () => {
                 </div>
             </div>
             <div ref={overlayRef} className={styles["sidebar__container-overlay"]}></div>
-            <OverlayScrollbarsComponent 
+            <OverlayScrollbarsComponent
                 element="div"
                 options={{ scrollbars: { autoHide: "scroll", theme: "os-theme-dark" } }}
                 className={styles[`sidebar__container-middle${sidebarToggle ? "--expanded" : ""}`]}
@@ -94,12 +95,12 @@ export const SidebarNavigation = () => {
                     <ul className={styles["sidebar__container-menu-list"]}>
                         <li className={getLiClass("/dashboard")}>
                             <Link onClick={closeSidebar} href={"/dashboard/"}><IconGrid width={32} height={32} />
-                            <span>Dashboard</span>
+                                <span>Dashboard</span>
                             </Link>
                         </li>
                         <li className={getLiClass("/dashboard/resources")}>
                             <Link onClick={closeSidebar} href={"/dashboard/resources/"}><IconBook width={32} height={32} />
-                            <span>Resources</span>
+                                <span>Resources</span>
                             </Link>
                         </li>
                         <li className={getLiClass("/dashboard/ai/helper")}>
@@ -114,8 +115,8 @@ export const SidebarNavigation = () => {
                         <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
                             <SignOutButton >
                                 <button title="Logout" aria-label="Logout">
-                                <IconLogout  width={32} height={32}/><span>Logout</span>       
-                                </button>                         
+                                    <IconLogout width={32} height={32} /><span>Logout</span>
+                                </button>
                             </SignOutButton>
                         </li>
                     </ul>
