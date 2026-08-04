@@ -1,7 +1,7 @@
 import { Category } from "@/shared.types";
 import { queryData } from "../dbHelper";
 
-export async function getCategory(categoryId: number, userId: number | null): Promise<Category | null> {
+export async function getCategory(categoryId: number, userId: string | null): Promise<Category | null> {
 
     try {
         if (!userId) {

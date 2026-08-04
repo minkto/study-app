@@ -14,7 +14,7 @@ export const getUserByClerkUserId = async (clerkUserId: string | null): Promise<
 
     if (result !== null && result !== undefined) {
         return {
-            userId: Number(result['user_id']),
+            userId: result['user_id'],
             clerkUserId: result['clerk_user_id'],
         }
     }

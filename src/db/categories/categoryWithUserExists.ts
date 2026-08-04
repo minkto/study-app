@@ -12,7 +12,7 @@ export default async function categoryWithUserExists(category: Category): Promis
 
         if (category.categoryId) {
             query += " AND c.category_id != $3";
-            values.push(category.categoryId);
+            values.push(category.categoryId?.toString());
         }
 
         const result = await queryDataSingleRow(query, values);

@@ -1,7 +1,7 @@
 import { queryDataSingleRow } from "@/db/dbHelper"
 import { UserSettings } from "@/shared.types";
 
-export async function getUserSettings(userId: number) {
+export async function getUserSettings(userId: string) {
 
     const query =
     {
