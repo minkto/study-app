@@ -2,21 +2,25 @@ import { FilterByQueryKeys } from "@/constants/constants";
 import { createResource } from "@/db/resources/createResource";
 import { getResource } from "@/db/resources/getResource";
 import { updateResource } from "@/db/resources/updateResource";
+import { getCurrentAppUser } from "@/services/auth/userService";
 import { getResourcesDto } from "@/services/resourceService";
 import { ListingSearchQuery, Resource } from "@/shared.types";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
 
     try {
 
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const searchParams = request.nextUrl.searchParams;
         const listingSearchQuery: ListingSearchQuery =
@@ -47,11 +51,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const res = await request.json();
 
@@ -75,12 +84,16 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
 
+        const { userId } = currentUser;
         const res = await request.json();
 
         const resourceFromDb = await getResource(res["resourceId"], userId);

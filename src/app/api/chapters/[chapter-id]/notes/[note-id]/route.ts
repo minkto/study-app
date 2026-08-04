@@ -1,19 +1,23 @@
 import deleteNote from "@/db/chapters/notes/deleteNote";
 import { getNote } from "@/db/chapters/notes/getNote";
 import updateNote from "@/db/chapters/notes/updateNote";
+import { getCurrentAppUser } from "@/services/auth/userService";
 import validateNote from "@/services/validateNoteService";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ "chapter-id": string, "note-id": string }> }) {
 
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const idSlugs = (await params);
         const chapterIdNum = Number(idSlugs["chapter-id"]);
@@ -36,11 +40,16 @@ export async function GET(_request: Request, { params }: { params: Promise<{ "ch
 
 export async function PUT(request: Request, { params }: { params: Promise<{ "chapter-id": string, "note-id": string }> }) {
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const idSlugs = (await params);
         const body = await request.json();
@@ -75,10 +84,13 @@ export async function PUT(request: Request, { params }: { params: Promise<{ "cha
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ "chapter-id": string, "note-id": string }> }) {
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
 
         const idSlugs = (await params);

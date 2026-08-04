@@ -1,8 +1,7 @@
 import { FilterByQueryKeys } from "@/constants/constants";
 import { getChaptersByResource } from "@/db/chapters/getChaptersByResource";
+import { getCurrentAppUser } from "@/services/auth/userService";
 import { ListingSearchQuery } from "@/shared.types";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ "resource-id": string }> }) {
@@ -11,12 +10,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const resourceIdNum = Number(slug["resource-id"]);
         const searchParams = request.nextUrl.searchParams;
 
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
 
+        const { userId } = currentUser;
         const listingSearchQuery: ListingSearchQuery =
         {
             searchTerm: searchParams?.get('search-term')?.trim(),

@@ -2,20 +2,24 @@ import { getChapter } from "@/db/chapters/getChapter";
 import createNote from "@/db/chapters/notes/createNote";
 import getNoteCount from "@/db/chapters/notes/getNoteCount";
 import getNotes from "@/db/chapters/notes/getNotes";
+import { getCurrentAppUser } from "@/services/auth/userService";
 import validateNote from "@/services/validateNoteService";
 import { Note } from "@/shared.types";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
     try {
 
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const res = await request.json();
         const idSlug = (await params);
@@ -59,11 +63,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ "ch
 
 export async function GET(_request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const slugs = await params;
 

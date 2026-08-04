@@ -1,16 +1,20 @@
 import { deleteResource } from "@/db/resources/deleteResource";
 import { getResource } from "@/db/resources/getResource";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentAppUser } from "@/services/auth/userService";
 import { NextResponse } from "next/server";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ "resource-id": string }> }) {
     try {
-        const { userId } = await auth();
+        const currentUser = await getCurrentAppUser();
 
-        if (isStringEmpty(userId)) {
-            return new Response("Unauthorized", { status: 401 });
+        if (!currentUser) {
+            return new Response(
+                JSON.stringify({ error: "Unauthorized" }),
+                { status: 401 }
+            );
         }
+
+        const { userId } = currentUser;
 
         const slug = (await params);
         const resourceIdNum = Number(slug["resource-id"]);
@@ -30,12 +34,16 @@ export async function GET(_request: Request, { params }: { params: Promise<{ "re
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ "resource-id": string }> }) {
-    const { userId } = await auth();
-    
-    if (isStringEmpty(userId)) {
-        return new Response("Unauthorized", { status: 401 });
+    const currentUser = await getCurrentAppUser();
+
+    if (!currentUser) {
+        return new Response(
+            JSON.stringify({ error: "Unauthorized" }),
+            { status: 401 }
+        );
     }
 
+    const { userId } = currentUser;
     const slug = (await params);
     const resourceIdNum = Number(slug["resource-id"]);
     const resourceFromDb = await getResource(resourceIdNum, userId);
