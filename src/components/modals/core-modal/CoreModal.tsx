@@ -55,22 +55,25 @@ export const CoreModal = ({ title, children, isActive, onConfirm, onClose }: Cor
             }
         }
 
+        const backgroundElTarget = backgroundEl.current;
+
+
         if (isActive) {
             // Focus on the second button, to confirm
             firstFocusElement.current?.focus();
 
-            backgroundEl.current?.addEventListener('mousedown', handleClose);
-            backgroundEl.current?.addEventListener('keydown', handleClose);
-            backgroundEl.current?.addEventListener('keydown', handleTrapFocus);
+            backgroundElTarget?.addEventListener('mousedown', handleClose);
+            backgroundElTarget?.addEventListener('keydown', handleClose);
+            backgroundElTarget?.addEventListener('keydown', handleTrapFocus);
         }
 
         return () => {
-            backgroundEl.current?.removeEventListener('mousedown', handleClose);
-            backgroundEl.current?.removeEventListener('keydown', handleClose);
-            backgroundEl.current?.removeEventListener('keydown', handleTrapFocus);
+            backgroundElTarget?.removeEventListener('mousedown', handleClose);
+            backgroundElTarget?.removeEventListener('keydown', handleClose);
+            backgroundElTarget?.removeEventListener('keydown', handleTrapFocus);
         }
 
-    }, [isActive])
+    }, [isActive, onClose])
     return (
         isActive && <div ref={backgroundEl} className="modal-background" >
             <div className={'modal-content'}>
