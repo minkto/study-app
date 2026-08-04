@@ -17,7 +17,8 @@ export async function updateResource(id: number, resource: Resource) {
             name = $2,
             description = $3,
             category_id = $4,
-            is_pinned = $5
+            is_pinned = $5,
+            updated_at = now()
         WHERE resource_id = $1`,
         [
             resourceToUpdate.resourceId,
