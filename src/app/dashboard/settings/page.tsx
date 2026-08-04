@@ -2,7 +2,7 @@ import CategoryListings from "@/components/category-listings/CategoryListings";
 import { DashboardWidget } from "@/components/dashboard/DashboardWidget";
 import SettingsForm from "@/components/settings-form/SettingsForm";
 import { Tabs } from "@/components/tabs/Tabs";
-import { currentUser } from "@clerk/nextjs/server";
+import { getCurrentAppUser, redirectToSignInPage } from "@/services/auth/userService";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,7 +12,15 @@ export const metadata: Metadata = {
 
 export default async function Page() {
 
-    const user = await currentUser();
+    const currentUser = await getCurrentAppUser();
+
+    if (!currentUser) {
+        redirectToSignInPage();
+        return;
+    }
+
+    const { userId } = currentUser;
+
 
     return (
         <div>
@@ -22,7 +30,7 @@ export default async function Page() {
                         label: "General",
                         content:
                             <div>
-                                <SettingsForm userId={user?.id} />
+                                <SettingsForm userId={userId} />
                             </div>
                     },
                     {

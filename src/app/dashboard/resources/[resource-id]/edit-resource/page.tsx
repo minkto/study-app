@@ -1,8 +1,7 @@
 import ResourceForm from "@/components/resource-form/ResourceForm";
 import { FormState } from "@/constants/constants";
 import { getResource } from "@/db/resources/getResource";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentAppUser, redirectToSignInPage } from "@/services/auth/userService";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -15,11 +14,14 @@ export default async function Page({ params }: { params: Promise<{ "resource-id"
 
     const { "resource-id": resourceId } = await params;
 
-    const { userId, redirectToSignIn } = await auth();
-    if (isStringEmpty(userId)) {
-        redirectToSignIn();
+    const currentUser = await getCurrentAppUser();
+
+    if (!currentUser) {
+        redirectToSignInPage();
+        return;
     }
 
+    const { userId } = currentUser;
     const resource = await getResource(Number(resourceId), userId);
     if (!resource) {
         return notFound();

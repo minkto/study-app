@@ -2,13 +2,12 @@ import CategoryPill from "@/components/category-pill/CategoryPill";
 import ResourceProgressBar from "@/components/resource-progress-bar/ResourceProgressBar";
 import { getResourceDto } from "@/services/resourceService";
 import { GetResourceDto } from "@/shared.types";
-import { isStringEmpty } from "@/utils/stringUtils";
-import { auth } from "@clerk/nextjs/server";
 import styles from './page.module.css'
 import DescriptionCard from "@/components/description-card/DescriptionCard";
 import ResourceChaptersListings from "@/components/resource-chapters-listings/ResourceChaptersListings";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { getCurrentAppUser, redirectToSignInPage } from "@/services/auth/userService";
 
 export const metadata: Metadata = {
     title: 'Resource Details | LearnLobe',
@@ -18,10 +17,15 @@ export const metadata: Metadata = {
 export default async function Page({ params }: { params: Promise<{ "resource-id": string }> }) {
 
     const { "resource-id": resourceId } = await params;
-    const { userId, redirectToSignIn } = await auth();
-    if (isStringEmpty(userId)) {
-        redirectToSignIn();
+    const currentUser = await getCurrentAppUser();
+
+    if (!currentUser) {
+        redirectToSignInPage();
+        return;
     }
+
+    const { userId } = currentUser;
+
 
     const getResourceDetails = async () => {
         try {
