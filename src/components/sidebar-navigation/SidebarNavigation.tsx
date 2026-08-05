@@ -113,7 +113,7 @@ export const SidebarNavigation = () => {
                             <Link title="User Profile" onClick={closeSidebar} href={"/dashboard/settings/user-profile"}><IconUserProfile width={32} height={32} /><span>User Profile</span></Link>
                         </li>
                         <li className={styles[`sidebar__container-menu-list-item${sidebarToggle ? "--expanded" : ""}`]}>
-                            <SignOutButton >
+                            <SignOutButton redirectUrl="/auth/sign-in"  >
                                 <button title="Logout" aria-label="Logout">
                                     <IconLogout width={32} height={32} /><span>Logout</span>
                                 </button>
