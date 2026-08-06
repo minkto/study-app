@@ -38,7 +38,7 @@ async function handleUserCreation(clerkUserId: string) {
     }
 
     const userSettingsResult = await createUserSettings({ userId: newUser?.userId });
-    if (userSettingsResult && userSettingsResult > 0) {
+    if (userSettingsResult && userSettingsResult.userSettingId > 0) {
         console.log("Clerk User created in DB with clerk id: ", clerkUserId);
         return NextResponse.json({ success: true }, { status: 200 })
     } else {

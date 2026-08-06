@@ -1,7 +1,7 @@
 import { AppUser } from "@/shared.types";
 import { queryDataSingleRow } from "../dbHelper"
 
-export const getUserByClerkUserId = async (clerkUserId: string | null): Promise<AppUser | null> => {
+export const getUserByClerkUserId = async (clerkUserId: string | null | undefined): Promise<AppUser | null | undefined> => {
 
     const query = `SELECT 
                         u.user_id,

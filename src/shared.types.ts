@@ -36,15 +36,9 @@ export interface CreateBulkResourceDto {
     resources?: Resource[];
 }
 
-
-export interface User {
-    userId: string;
-    clerkUserId: string;
-}
-
 export interface AppUser {
     userId: string;
-    clerkUserId?: string;
+    clerkUserId: string;
 }
 
 
