@@ -7,6 +7,18 @@ export const pool = new Pool({
   database: process.env.POSTGRES_DATABASE,
   password: process.env.POSTGRES_PASSWORD,
   port: Number(process.env.POSTGRES_PORT),
+  max: 10,
+  idleTimeoutMillis: 10_000,
 });
+
+pool.on('error', (err) => console.error('Unexpected pool error', err));
+
+setInterval(() => {
+  console.log('pool stats', {
+    total: pool.totalCount,
+    idle: pool.idleCount,
+    waiting: pool.waitingCount,
+  });
+}, 5000);
 
 export default pool
