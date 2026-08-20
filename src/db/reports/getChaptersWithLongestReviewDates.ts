@@ -42,5 +42,6 @@ export const getChaptersWithLongestReviewDates = async (userId: string) => {
     }
     catch (error) {
         console.log("An error has occured in the database: ", error);
+        throw error;
     }
 }

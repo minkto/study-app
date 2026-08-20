@@ -15,6 +15,6 @@ export default async function resourceWithUserExists(resourceId: number, userId:
     }
     catch (error) {
         console.log("Database error: ", error);
-        return false;
+        throw error;
     }
 }

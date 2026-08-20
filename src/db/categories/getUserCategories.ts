@@ -32,10 +32,12 @@ export async function getUserCategories(query: ListingSearchQuery): Promise<Cate
             return categories;
         }
 
+        return null;
+
     } catch (error) {
         console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
+        throw error;
     }
-    return null;
 
 }
 

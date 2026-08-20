@@ -2,7 +2,8 @@ import { ChapterStatuses } from "@/constants/constants";
 import { queryDataSingleRow } from "../dbHelper";
 
 export const getChaptersReviewedAndInProgress = async (userId: string) => {
-    const query = `WITH c1 AS
+    try {
+        const query = `WITH c1 AS
 ( SELECT
 	r.user_id,
 	COUNT(CASE 
@@ -25,17 +26,21 @@ WHERE r.user_id = $1
 GROUP BY r.user_id
 )
 
-SELECT 
-	c1.chapters_completed_today, 
+SELECT
+	c1.chapters_completed_today,
 	c1.chapters_completed_current_month,
 	c1.total_in_progress_chapters
 FROM c1`
-    const result = await queryDataSingleRow(query, [userId, ChapterStatuses.IN_PROGRESS]);
+        const result = await queryDataSingleRow(query, [userId, ChapterStatuses.IN_PROGRESS]);
 
-    return {
-        chaptersCompletedToday: result?.chapters_completed_today,
-        chaptersCompletedCurrentMonth: result?.chapters_completed_current_month ,
-        chaptersInProgress: result?.total_in_progress_chapters
+        return {
+            chaptersCompletedToday: result?.chapters_completed_today,
+            chaptersCompletedCurrentMonth: result?.chapters_completed_current_month ,
+            chaptersInProgress: result?.total_in_progress_chapters
+        }
+    } catch (error) {
+        console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
+        throw error;
     }
 }
 

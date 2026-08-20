@@ -32,5 +32,6 @@ export async function createUserFromClerk(clerkUserId: string): Promise<AppUser 
     }
     catch (error) {
         console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
+        throw error;
     }
 }
