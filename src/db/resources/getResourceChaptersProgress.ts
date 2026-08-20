@@ -22,6 +22,7 @@ export async function getChaptersProgressDetails(resourceId: number) : Promise<C
     }
     catch (error) {
         console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
+        throw error;
     }
 }
 

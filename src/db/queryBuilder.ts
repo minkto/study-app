@@ -42,18 +42,22 @@ export const calculatePageCount = async (
     values: Array<string | number | boolean | undefined | null> = [],
     buildFilterQuery?: (listingSearchQuery: ListingSearchQuery) => string): Promise<number> => {
 
+    try {
+        if (buildFilterQuery && listingSearchQuery) {
+            countQuery += buildFilterQuery(listingSearchQuery);
+        }
 
-    if (buildFilterQuery && listingSearchQuery) {
-        countQuery += buildFilterQuery(listingSearchQuery);
+        if (listingSearchQuery?.searchTerm !== undefined) {
+            values.push(`%${listingSearchQuery?.searchTerm}%`);
+        }
+
+        const countQueryResult = await queryData(countQuery, values);
+        const totalPageCount = Math.ceil(Number(countQueryResult.length / pageCount));
+        return totalPageCount;
+    } catch (error) {
+        console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
+        throw error;
     }
-
-    if (listingSearchQuery?.searchTerm !== undefined) {
-        values.push(`%${listingSearchQuery?.searchTerm}%`);
-    }
-
-    const countQueryResult = await queryData(countQuery, values);
-    const totalPageCount = Math.ceil(Number(countQueryResult.length / pageCount));
-    return totalPageCount;
 }
 
 const mapSortOrderColumnsToSql = (sortOrderValue: string | undefined) => {

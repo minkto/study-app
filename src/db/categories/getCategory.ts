@@ -24,10 +24,11 @@ export async function getCategory(categoryId: number, userId: string | null): Pr
                 color: rowResult.color
             }
         }
+
+        return null;
     }
     catch (error) {
         console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
+        throw error;
     }
-
-    return null;
 }

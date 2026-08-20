@@ -23,5 +23,6 @@ export const getPinnedResources = async (userId: string) =>
        }
        catch (error) {
            console.log("An error has occured in the database: ", error);
-       } 
+           throw error;
+       }
 }

@@ -14,7 +14,7 @@ export const createNote = async(note: Note) => {
 
     } catch (error) {
         console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
-        return null;
+        throw error;
     }
 }
 
