@@ -1,4 +1,3 @@
-import { ListingSearchQuery } from "@/shared.types";
 import { isStringEmpty } from "@/utils/stringUtils";
 import { queryData } from "./dbHelper";
 
@@ -36,24 +35,14 @@ export const buildPageLimit = (pageSize: number, currentPage: number) => {
 }
 
 export const calculatePageCount = async (
-    listingSearchQuery: ListingSearchQuery | undefined,
-    pageCount: number,
+    pageSize: number,
     countQuery: string,
-    values: Array<string | number | boolean | undefined | null> = [],
-    buildFilterQuery?: (listingSearchQuery: ListingSearchQuery) => string): Promise<number> => {
+    values: Array<string | number | boolean | undefined | null> = []): Promise<number> => {
 
     try {
-        if (buildFilterQuery && listingSearchQuery) {
-            countQuery += buildFilterQuery(listingSearchQuery);
-        }
-
-        if (listingSearchQuery?.searchTerm !== undefined) {
-            values.push(`%${listingSearchQuery?.searchTerm}%`);
-        }
-
         const countQueryResult = await queryData(countQuery, values);
-        const totalPageCount = Math.ceil(Number(countQueryResult.length / pageCount));
-        return totalPageCount;
+        const totalCount = Number(countQueryResult[0]?.count ?? 0);
+        return Math.ceil(totalCount / pageSize);
     } catch (error) {
         console.error("Database error:", { message: 'Database error', error: error instanceof Error ? error.message : error });
         throw error;
