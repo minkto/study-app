@@ -1,46 +1,29 @@
-import { getCurrentAppUser } from "@/services/auth/userService";
 import { bulkCreateResourcesAndChapters } from "@/services/resourceService";
-import { CreateBulkResourceDto } from "@/shared.types";
+import { AppUser, CreateBulkResourceDto } from "@/shared.types";
+import { withApiErrorHandling } from "@/utils/apiErrorHandler";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
-    try {
-        const currentUser = await getCurrentAppUser();
+export const POST = withApiErrorHandling(async (currentUser: AppUser, request: Request) => {
 
-        if (!currentUser) {
-            return new Response(
-                JSON.stringify({ error: "Unauthorized" }),
-                { status: 401 }
-            );
-        }
+    const res = await request.json();
 
-        const { userId } = currentUser;
+    const resources: CreateBulkResourceDto =
+    {
+        userId: currentUser.userId,
+        resources: res["resources"]
+    }
 
-        const res = await request.json();
+    if (!resources.resources || !resources.userId) {
+        return NextResponse.json({ message: "No resources have been added to the payload." },
+            { status: 400 });
+    }
 
-        const resources: CreateBulkResourceDto =
-        {
-            userId: userId,
-            resources: res["resources"]
-        }
+    const result = await bulkCreateResourcesAndChapters(resources.resources, resources.userId);
 
-        if (!resources.resources || !resources.userId) {
-            return NextResponse.json({ message: "No resources have been added to the payload." },
-                { status: 400 });
-        }
-
-        const result = await bulkCreateResourcesAndChapters(resources.resources,resources.userId);
-
-        if (!result) {
-            return NextResponse.json({ message: "An issue has occured with creating the resources and chapters." },
-                { status: 500 });
-        }
-
-        return NextResponse.json({ success: result }, { status: 200 });
-
-    } catch (error) {
-        console.log("An issue has occured with creating the resources and chapters.", error);
+    if (!result) {
         return NextResponse.json({ message: "An issue has occured with creating the resources and chapters." },
             { status: 500 });
     }
-}
+
+    return NextResponse.json({ success: result }, { status: 200 });
+});

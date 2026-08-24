@@ -1,46 +1,28 @@
 import { getUserSettings } from "@/db/users/settings/getUserSettings";
 import { updateUserSettings } from "@/db/users/settings/updateUserSettings";
-import { getCurrentAppUser } from "@/services/auth/userService";
 import { validateUserSettings } from "@/services/validateUserSettingsService";
-import { UserSettings } from "@/shared.types";
+import { AppUser, UserSettings } from "@/shared.types";
+import { withApiErrorHandling } from "@/utils/apiErrorHandler";
 import { NextResponse } from "next/server";
 
-export async function GET() {
-    const currentUser = await getCurrentAppUser();
+export const GET = withApiErrorHandling(async (currentUser: AppUser) => {
 
-    if (!currentUser) {
-        return new Response(
-            JSON.stringify({ error: "Unauthorized" }),
-            { status: 401 }
-        );
-    }
+    const userSettings = await getUserSettings(currentUser.userId);
 
-    const { userId } = currentUser;
-    const userSettings = await getUserSettings(userId);
-    
     if (userSettings === null || userSettings === undefined) {
         return NextResponse.json({ message: "Could not find user settings." }, { status: 404 })
     }
 
     return NextResponse.json(userSettings, { status: 200 });
-}
+});
 
 
-export async function PUT(request: Request) {
-    const currentUser = await getCurrentAppUser();
+export const PUT = withApiErrorHandling(async (currentUser: AppUser, request: Request) => {
 
-    if (!currentUser) {
-        return new Response(
-            JSON.stringify({ error: "Unauthorized" }),
-            { status: 401 }
-        );
-    }
-
-    const { userId } = currentUser;
     const res = await request.json();
 
     const userSettings: UserSettings = {
-        userId: userId,
+        userId: currentUser.userId,
         aiHelperCredits: res['aiHelperCredits'],
         globalChapterDaysBeforeReviewDue: Math.floor(res['globalChapterDaysBeforeReviewDue'])
     }
@@ -58,4 +40,4 @@ export async function PUT(request: Request) {
     }
 
     return NextResponse.json(result, { status: 200 });
-}
+});

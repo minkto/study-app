@@ -1,125 +1,73 @@
 import { deleteChapter } from "@/db/chapters/deleteChapter";
 import { getChapter } from "@/db/chapters/getChapter";
 import { updateChapter } from "@/db/chapters/updateChapter";
-import { getCurrentAppUser } from "@/services/auth/userService";
 import { validateChapter } from "@/services/validateChaptersService";
-import { Chapter } from "@/shared.types";
+import { AppUser, Chapter } from "@/shared.types";
+import { withApiErrorHandling } from "@/utils/apiErrorHandler";
 import { NextResponse } from "next/server";
 
-export async function GET(_request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
-    try {
-        const currentUser = await getCurrentAppUser();
+export const GET = withApiErrorHandling(async (currentUser: AppUser, _request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) => {
 
-        if (!currentUser) {
-            return new Response(
-                JSON.stringify({ error: "Unauthorized" }),
-                { status: 401 }
-            );
-        }
+    const slug = (await params);
+    const chapterIdNum = Number(slug["chapter-id"]);
+    const chapter = await getChapter(chapterIdNum, currentUser.userId);
 
-        const { userId } = currentUser;
-
-        const slug = (await params);
-        const chapterIdNum = Number(slug["chapter-id"]);
-        const chapter = await getChapter(chapterIdNum, userId);
-
-        if (chapter === null || chapter === undefined) {
-            return NextResponse.json({ message: "Could not find chapter." }, { status: 404 });
-        }
-
-        return NextResponse.json(chapter, { status: 200 });
-
-    } catch (error) {
-        console.error("API error:", error);
-        return NextResponse.json({ message: 'API error', error: error instanceof Error ? error.message : error },
-            { status: 500 });
+    if (chapter === null || chapter === undefined) {
+        return NextResponse.json({ message: "Could not find chapter." }, { status: 404 });
     }
-}
 
-export async function PUT(request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
-    try {
+    return NextResponse.json(chapter, { status: 200 });
+});
 
-        const currentUser = await getCurrentAppUser();
+export const PUT = withApiErrorHandling(async (currentUser: AppUser, request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) => {
 
-        if (!currentUser) {
-            return new Response(
-                JSON.stringify({ error: "Unauthorized" }),
-                { status: 401 }
-            );
-        }
+    const res = await request.json();
+    const slug = (await params);
+    const chapterIdNum = Number(slug["chapter-id"]);
 
-        const { userId } = currentUser;
+    const chapterFromDb = await getChapter(chapterIdNum, currentUser.userId);
 
-        const res = await request.json();
-        const slug = (await params);
-        const chapterIdNum = Number(slug["chapter-id"]);
-
-        const chapterFromDb = await getChapter(chapterIdNum, userId);
-        
-        if (chapterFromDb === undefined ||
-            chapterFromDb === null) {
-            return NextResponse.json({ message: "No Chapter was found." }, { status: 404 });
-        }
-
-        const chapter: Chapter =
-        {
-            chapterId: chapterIdNum,
-            resourceId: res["resourceId"],
-            name: res["name"],
-            description: res["description"],
-            statusId: res["statusId"],
-            url: res["url"],
-            lastDateCompleted: res["lastDateCompleted"],
-            originalDateCompleted: res["originalDateCompleted"]
-        }
-
-        const validationModel = validateChapter(chapter);
-        if (!validationModel.isValid) {
-            return NextResponse.json({ message: validationModel.message }, { status: 400 });
-        }
-
-        const result = await updateChapter(chapter);
-
-        return NextResponse.json(result, { status: 200 });
-
-    } catch (error) {
-        console.error("API error:", error);
-        return NextResponse.json({ message: 'API error', error: error instanceof Error ? error.message : error },
-            { status: 500 });
+    if (chapterFromDb === undefined ||
+        chapterFromDb === null) {
+        return NextResponse.json({ message: "No Chapter was found." }, { status: 404 });
     }
-}
 
-
-export async function DELETE(_request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) {
-    try {
-
-        const currentUser = await getCurrentAppUser();
-
-        if (!currentUser) {
-            return new Response(
-                JSON.stringify({ error: "Unauthorized" }),
-                { status: 401 }
-            );
-        }
-
-        const { userId } = currentUser;
-        const slug = (await params);
-        const chapterIdNum = Number(slug["chapter-id"]);
-
-        const chapterFromDb = await getChapter(chapterIdNum, userId);
-
-        if (chapterFromDb === undefined ||
-            chapterFromDb === null) {
-            return NextResponse.json({ message: "No Chapter was found." }, { status: 404 });
-        }
-
-        const result = await deleteChapter(chapterIdNum);
-
-        return NextResponse.json(result, { status: 200 });
-
-    } catch (error) {
-        console.error("API error:", error);
-        return NextResponse.json({ message: 'API error:', error: error instanceof Error ? error.message : error },
-            { status: 500 });
+    const chapter: Chapter =
+    {
+        chapterId: chapterIdNum,
+        resourceId: res["resourceId"],
+        name: res["name"],
+        description: res["description"],
+        statusId: res["statusId"],
+        url: res["url"],
+        lastDateCompleted: res["lastDateCompleted"],
+        originalDateCompleted: res["originalDateCompleted"]
     }
-}
+
+    const validationModel = validateChapter(chapter);
+    if (!validationModel.isValid) {
+        return NextResponse.json({ message: validationModel.message }, { status: 400 });
+    }
+
+    const result = await updateChapter(chapter);
+
+    return NextResponse.json(result, { status: 200 });
+});
+
+
+export const DELETE = withApiErrorHandling(async (currentUser: AppUser, _request: Request, { params }: { params: Promise<{ "chapter-id": string }> }) => {
+
+    const slug = (await params);
+    const chapterIdNum = Number(slug["chapter-id"]);
+
+    const chapterFromDb = await getChapter(chapterIdNum, currentUser.userId);
+
+    if (chapterFromDb === undefined ||
+        chapterFromDb === null) {
+        return NextResponse.json({ message: "No Chapter was found." }, { status: 404 });
+    }
+
+    const result = await deleteChapter(chapterIdNum);
+
+    return NextResponse.json(result, { status: 200 });
+});
