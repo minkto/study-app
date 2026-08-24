@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import CategoryPill from '../category-pill/CategoryPill';
 import styles from './resource-listings-card.module.css'
 import CardDropdownMenu from '../card-dropdown-menu/CardDropdownMenu';
@@ -26,7 +27,7 @@ const renderCategory = (resource: GetResourceDto) => {
     return null;
 }
 
-const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps) => {
+const ResourceListingsCard = memo(({ resource, onDelete }: ResourceListingsCardProps) => {
 
     const { isVisible: deleteModalVisible, toggle: handleModalVisibility, hide } = useModalVisibility();
 
@@ -68,6 +69,8 @@ const ResourceListingsCard = ({ resource, onDelete }: ResourceListingsCardProps)
             </div>
         </div>
     );
-}
+});
+
+ResourceListingsCard.displayName = "ResourceListingsCard";
 
 export default ResourceListingsCard;
