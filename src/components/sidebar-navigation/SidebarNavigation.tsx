@@ -51,7 +51,7 @@ export const SidebarNavigation = () => {
         const handleOutsideFocus = (e: KeyboardEvent | MouseEvent) => {
 
             if (overlayRef.current === e.target) {
-                toggleSidebar();
+                setSidebarToggle(prev => !prev);
             }
         }
 
