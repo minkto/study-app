@@ -40,6 +40,10 @@ export const calculatePageCount = async (
     values: Array<string | number | boolean | undefined | null> = []): Promise<number> => {
 
     try {
+        if (!Number.isInteger(pageSize) || pageSize <= 0) {
+            throw new Error("Invalid page size.");
+        }
+
         const countQueryResult = await queryData(countQuery, values);
         const totalCount = Number(countQueryResult[0]?.count ?? 0);
         return Math.ceil(totalCount / pageSize);

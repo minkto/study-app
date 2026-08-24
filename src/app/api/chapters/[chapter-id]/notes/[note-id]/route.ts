@@ -54,14 +54,9 @@ export const DELETE = withApiErrorHandling(async (currentUser: AppUser, _request
     const chapterIdNum = Number(idSlugs["chapter-id"]);
     const noteIdNum = Number(idSlugs["note-id"]);
 
-    const noteFromDb = await getNote(noteIdNum, chapterIdNum, currentUser.userId);
-    if (!noteFromDb) {
+    const wasDeleted = await deleteNote(noteIdNum, chapterIdNum, currentUser.userId);
+    if (!wasDeleted) {
         return NextResponse.json({ message: "Could not find note for the given user chapter." }, { status: 404 });
-    }
-
-    const response = await deleteNote(noteIdNum);
-    if (!response) {
-        return NextResponse.json({ message: "Could not delete note for the given user chapter." }, { status: 400 });
     }
 
     return new Response(null, { status: 204 })

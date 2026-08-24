@@ -60,10 +60,6 @@ const buildGetUserCategoriesQuery = (query: ListingSearchQuery, excludePageLimit
         ["name", "name"],
     ]);
 
-    if (!query.userId) {
-        throw new Error("Invalid user id for fetching user categories.");
-    }
-
     querySql += buildCategoriesFilterQuery(query, values);
 
     querySql += buildOrderByFilter(columnsToSql, query?.sortBy, query?.sortOrder, "c.category_id");
@@ -79,6 +75,10 @@ const buildGetUserCategoriesQuery = (query: ListingSearchQuery, excludePageLimit
 
 const buildCategoriesFilterQuery = (searchQuery: ListingSearchQuery | undefined, values: Array<string | number>): string => {
 
+    if (searchQuery === undefined || isStringEmpty(searchQuery.userId?.toString())) {
+        throw new Error("Invalid user id for fetching user categories.");
+    }
+
     let queryFilter = "";
 
     if (!isStringEmpty(searchQuery?.searchTerm)) {
@@ -86,8 +86,7 @@ const buildCategoriesFilterQuery = (searchQuery: ListingSearchQuery | undefined,
         queryFilter = ` WHERE c.name ILIKE $${values.length}`;
     }
 
-    if (searchQuery !== undefined &&
-        searchQuery.filters !== undefined &&
+    if (searchQuery.filters !== undefined &&
         searchQuery.filters.category !== undefined &&
         searchQuery.filters.category.length > 0) {
 
@@ -96,22 +95,15 @@ const buildCategoriesFilterQuery = (searchQuery: ListingSearchQuery | undefined,
             return `$${values.length}`;
         }).join(',');
 
-        if (isStringEmpty(searchQuery?.searchTerm)) {
-            queryFilter += ` WHERE c.name IN(${categoryPlaceholders})`;
-        }
-        else {
-            queryFilter += ` AND c.name IN(${categoryPlaceholders})`;
-        }
+        queryFilter += isStringEmpty(queryFilter)
+            ? ` WHERE c.name IN(${categoryPlaceholders})`
+            : ` AND c.name IN(${categoryPlaceholders})`;
     }
 
-    if (isStringEmpty(queryFilter) && !isStringEmpty(searchQuery?.userId?.toString())) {
-        values.push(searchQuery?.userId as string | number);
-        queryFilter = ` WHERE c.user_id = $${values.length}`;
-    }
-    else if (!isStringEmpty(queryFilter)) {
-        values.push(searchQuery?.userId as string | number);
-        queryFilter += ` AND c.user_id = $${values.length}`;
-    }
+    values.push(searchQuery.userId as string | number);
+    queryFilter += isStringEmpty(queryFilter)
+        ? ` WHERE c.user_id = $${values.length}`
+        : ` AND c.user_id = $${values.length}`;
 
     return queryFilter;
 }

@@ -50,6 +50,10 @@ export async function getResources(listingSearchQuery: ListingSearchQuery) {
 
 const buildFilterQuery = (searchQuery: ListingSearchQuery | undefined, values: Array<string | number>): string => {
 
+    if (searchQuery === undefined || isStringEmpty(searchQuery.userId?.toString())) {
+        throw new Error("Invalid user id for fetching resources.");
+    }
+
     let queryFilter = "";
 
     if (!isStringEmpty(searchQuery?.searchTerm)) {
@@ -57,8 +61,7 @@ const buildFilterQuery = (searchQuery: ListingSearchQuery | undefined, values: A
         queryFilter = ` WHERE r.name ILIKE $${values.length}`;
     }
 
-    if (searchQuery !== undefined &&
-        searchQuery.filters !== undefined &&
+    if (searchQuery.filters !== undefined &&
         searchQuery.filters.category !== undefined &&
         searchQuery.filters.category.length > 0) {
 
@@ -67,22 +70,15 @@ const buildFilterQuery = (searchQuery: ListingSearchQuery | undefined, values: A
             return `$${values.length}`;
         }).join(',');
 
-        if (isStringEmpty(searchQuery?.searchTerm)) {
-            queryFilter += ` WHERE c.name IN(${categoryPlaceholders})`;
-        }
-        else {
-            queryFilter += ` AND c.name IN(${categoryPlaceholders})`;
-        }
+        queryFilter += isStringEmpty(queryFilter)
+            ? ` WHERE c.name IN(${categoryPlaceholders})`
+            : ` AND c.name IN(${categoryPlaceholders})`;
     }
 
-    if (isStringEmpty(queryFilter) && !isStringEmpty(searchQuery?.userId?.toString())) {
-        values.push(searchQuery?.userId as string | number);
-        queryFilter = ` WHERE r.user_id = $${values.length}`;
-    }
-    else if (!isStringEmpty(queryFilter)) {
-        values.push(searchQuery?.userId as string | number);
-        queryFilter += ` AND r.user_id = $${values.length}`;
-    }
+    values.push(searchQuery.userId as string | number);
+    queryFilter += isStringEmpty(queryFilter)
+        ? ` WHERE r.user_id = $${values.length}`
+        : ` AND r.user_id = $${values.length}`;
 
     return queryFilter;
 }
