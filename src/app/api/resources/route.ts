@@ -2,124 +2,75 @@ import { FilterByQueryKeys } from "@/constants/constants";
 import { createResource } from "@/db/resources/createResource";
 import { getResource } from "@/db/resources/getResource";
 import { updateResource } from "@/db/resources/updateResource";
-import { getCurrentAppUser } from "@/services/auth/userService";
 import { getResourcesDto } from "@/services/resourceService";
-import { ListingSearchQuery, Resource } from "@/shared.types";
+import { AppUser, ListingSearchQuery, Resource } from "@/shared.types";
+import { withApiErrorHandling } from "@/utils/apiErrorHandler";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export const GET = withApiErrorHandling(async (currentUser: AppUser, request: NextRequest) => {
 
-    try {
-
-        const currentUser = await getCurrentAppUser();
-
-        if (!currentUser) {
-            return new Response(
-                JSON.stringify({ error: "Unauthorized" }),
-                { status: 401 }
-            );
-        }
-
-        const { userId } = currentUser;
-
-        const searchParams = request.nextUrl.searchParams;
-        const listingSearchQuery: ListingSearchQuery =
+    const searchParams = request.nextUrl.searchParams;
+    const listingSearchQuery: ListingSearchQuery =
+    {
+        searchTerm: searchParams?.get('search-term')?.trim(),
+        sortBy: searchParams?.get('sortBy')?.trim(),
+        sortOrder: searchParams?.get('sortOrder')?.trim(),
+        page: searchParams?.get('page')?.trim(),
+        filters:
         {
-            searchTerm: searchParams?.get('search-term')?.trim(),
-            sortBy: searchParams?.get('sortBy')?.trim(),
-            sortOrder: searchParams?.get('sortOrder')?.trim(),
-            page: searchParams?.get('page')?.trim(),
-            filters:
-            {
-                category: searchParams?.getAll(FilterByQueryKeys.ResourceListings.CATEGORY),
-            },
-            userId: userId
-        };
+            category: searchParams?.getAll(FilterByQueryKeys.ResourceListings.CATEGORY),
+        },
+        userId: currentUser.userId
+    };
 
-        const mappedResources = await getResourcesDto(listingSearchQuery);
+    const mappedResources = await getResourcesDto(listingSearchQuery);
 
-        if (mappedResources === null || mappedResources === undefined) {
-            return NextResponse.json({ message: "No resources found." }, { status: 404 });
-        }
-        else {
-            return NextResponse.json(mappedResources, { status: 200 });
-        }
-    } catch (error) {
-        return NextResponse.json({ message: 'API Error', error }, { status: 500 });
+    if (mappedResources === null || mappedResources === undefined) {
+        return NextResponse.json({ message: "No resources found." }, { status: 404 });
     }
-}
-
-export async function POST(request: Request) {
-    try {
-        const currentUser = await getCurrentAppUser();
-
-        if (!currentUser) {
-            return new Response(
-                JSON.stringify({ error: "Unauthorized" }),
-                { status: 401 }
-            );
-        }
-
-        const { userId } = currentUser;
-
-        const res = await request.json();
-
-        const newResource = await createResource(
-            {
-                name: res["name"],
-                description: res["description"],
-                categoryId: res["categoryId"],
-                isPinned: res["isPinned"],
-                userId: userId,
-            });
-
-        return NextResponse.json(newResource, { status: 200 });
-
-    } catch (error) {
-        console.error("API error:", error);
-        return NextResponse.json({ message: 'API Error', error: error instanceof Error ? error.message : error },
-            { status: 500 });
+    else {
+        return NextResponse.json(mappedResources, { status: 200 });
     }
-}
+});
 
-export async function PUT(request: Request) {
-    try {
-        const currentUser = await getCurrentAppUser();
+export const POST = withApiErrorHandling(async (currentUser: AppUser, request: Request) => {
 
-        if (!currentUser) {
-            return new Response(
-                JSON.stringify({ error: "Unauthorized" }),
-                { status: 401 }
-            );
-        }
+    const res = await request.json();
 
-        const { userId } = currentUser;
-        const res = await request.json();
-
-        const resourceFromDb = await getResource(res["resourceId"], userId);
-
-        if (resourceFromDb === undefined ||
-            resourceFromDb === null) {
-            return NextResponse.json({ message: "No resource was found." }, { status: 404 });
-        }
-
-        const resourceFields: Resource =
+    const newResource = await createResource(
         {
-            resourceId: res["resourceId"],
             name: res["name"],
             description: res["description"],
             categoryId: res["categoryId"],
             isPinned: res["isPinned"],
-            userId: userId
-        };
+            userId: currentUser.userId,
+        });
 
-        const resource = await updateResource(res["resourceId"], resourceFields);
+    return NextResponse.json(newResource, { status: 200 });
+});
 
-        return NextResponse.json(resource, { status: 200 });
+export const PUT = withApiErrorHandling(async (currentUser: AppUser, request: Request) => {
 
-    } catch (error) {
-        console.error("API Error:", error);
-        return NextResponse.json({ message: 'API Error', error: error instanceof Error ? error.message : error },
-            { status: 500 });
+    const res = await request.json();
+
+    const resourceFromDb = await getResource(res["resourceId"], currentUser.userId);
+
+    if (resourceFromDb === undefined ||
+        resourceFromDb === null) {
+        return NextResponse.json({ message: "No resource was found." }, { status: 404 });
     }
-}
+
+    const resourceFields: Resource =
+    {
+        resourceId: res["resourceId"],
+        name: res["name"],
+        description: res["description"],
+        categoryId: res["categoryId"],
+        isPinned: res["isPinned"],
+        userId: currentUser.userId
+    };
+
+    const resource = await updateResource(res["resourceId"], resourceFields);
+
+    return NextResponse.json(resource, { status: 200 });
+});

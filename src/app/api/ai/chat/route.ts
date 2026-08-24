@@ -1,19 +1,11 @@
-import { getCurrentAppUser } from "@/services/auth/userService";
 import { getResourceFromAIService, validateOpenAIPromptValue } from "@/services/openAIService";
+import { AppUser } from "@/shared.types";
+import { withApiErrorHandling } from "@/utils/apiErrorHandler";
 import { createApiErrorResponse } from "@/utils/errors";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export const POST = withApiErrorHandling(async (currentUser: AppUser, request: Request) => {
     try {
-
-        const currentUser = await getCurrentAppUser();
-
-        if (!currentUser) {
-            return new Response(
-                JSON.stringify({ error: "Unauthorized" }),
-                { status: 401 }
-            );
-        }
 
         const body = await request.json();
 
@@ -42,4 +34,4 @@ export async function POST(request: Request) {
                 error: createApiErrorResponse(error)
             }, { status: 500 });
     }
-}
+});
