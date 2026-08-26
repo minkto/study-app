@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: Promise<{ "chapter-id":
     const currentUser = await getCurrentAppUser();
 
     if (!currentUser) {
-        redirectToSignInPage();
+        await redirectToSignInPage();
         return;
     }
 
