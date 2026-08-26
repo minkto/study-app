@@ -8,7 +8,7 @@ export default async function Page() {
     const currentUser = await initializeCurrentAppUser();
 
     if (!currentUser) {
-        redirectToSignInPage();
+        await redirectToSignInPage();
         return;
     }
 
