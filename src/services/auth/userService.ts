@@ -31,5 +31,5 @@ export const initializeCurrentAppUser = async () => {
 
 export const redirectToSignInPage = async () => {
     const { redirectToSignIn } = await auth();
-    redirectToSignIn();
+    return redirectToSignIn();
 }
