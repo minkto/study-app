@@ -26,27 +26,37 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: process.env.TESTING_BASE_URL,
+    baseURL: process.env.TESTING_BASE_URL || 'http://localhost:3000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
-  globalSetup: require.resolve('./global-setup'),
+
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'global setup',
+      testMatch: /tests\/global\.setup\.ts/,
+    }
+    ,
+    {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['global setup'],
     },
 
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      dependencies: ['global setup'],
+
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      dependencies: ['global setup'],
+
     },
 
     /* Test against mobile viewports. */
