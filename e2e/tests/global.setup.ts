@@ -12,7 +12,7 @@ setup("global setup", async () => {
         { dotenv: false }
     );
 
-    if (!process.env.E2E_CLERK_USER_EMAIL || !process.env.E2E_CLERK_USER_PASSWORD) {
+    if (!process.env.E2E_CLERK_USER_EMAIL) {
         throw new Error(
             "Please provide E2E_CLERK_USER_EMAIL and E2E_CLERK_USER_PASSWORD environment variables."
         );
