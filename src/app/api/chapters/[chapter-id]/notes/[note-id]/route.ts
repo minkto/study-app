@@ -51,11 +51,12 @@ export const PUT = withApiErrorHandling(async (currentUser: AppUser, request: Re
 export const DELETE = withApiErrorHandling(async (currentUser: AppUser, _request: Request, { params }: { params: Promise<{ "chapter-id": string, "note-id": string }> }) => {
 
     const idSlugs = (await params);
+    const chapterIdNum = Number(idSlugs["chapter-id"]);
     const noteIdNum = Number(idSlugs["note-id"]);
 
-    const response = await deleteNote(noteIdNum);
-    if (!response) {
-        return NextResponse.json({ message: "Could not delete note for the given user chapter." }, { status: 400 });
+    const wasDeleted = await deleteNote(noteIdNum, chapterIdNum, currentUser.userId);
+    if (!wasDeleted) {
+        return NextResponse.json({ message: "Could not find note for the given user chapter." }, { status: 404 });
     }
 
     return new Response(null, { status: 204 })
