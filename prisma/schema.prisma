@@ -36,17 +36,17 @@ model Categories {
 }
 
 model Resources {
-  resource_id  Int         @id @default(autoincrement())
-  user_id      String      @db.Uuid
-  user         Users       @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  name         String
-  description  String?
-  category_id  Int?
-  is_pinned    Boolean     @default(false)
-  chapters     Chapters[]
-  categories   Categories? @relation(fields: [category_id], references: [category_id])
-  created_at   DateTime    @default(now()) @db.Timestamptz(0)
-  updated_at   DateTime    @default(now()) @db.Timestamptz(0)
+  resource_id Int         @id @default(autoincrement())
+  user_id     String      @db.Uuid
+  user        Users       @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  name        String
+  description String?
+  category_id Int?
+  is_pinned   Boolean     @default(false)
+  chapters    Chapters[]
+  categories  Categories? @relation(fields: [category_id], references: [category_id])
+  created_at  DateTime    @default(now()) @db.Timestamptz(0)
+  updated_at  DateTime    @default(now()) @db.Timestamptz(0)
 
   @@map("resources")
 }
@@ -79,11 +79,12 @@ model Notes {
 }
 
 model Users {
-  user_id       String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  clerk_user_id String        @unique
-  categories    Categories[]
-  resources     Resources[]
-  user_settings UserSettings?
+  user_id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clerk_user_id         String        @unique
+  deletion_requested_at DateTime?     @db.Timestamptz(0)
+  categories            Categories[]
+  resources             Resources[]
+  user_settings         UserSettings?
 
   @@map("users")
 }

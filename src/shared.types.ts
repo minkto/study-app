@@ -39,6 +39,7 @@ export interface CreateBulkResourceDto {
 export interface AppUser {
     userId: string;
     clerkUserId: string;
+    deletionRequestedAt?: Date | null | undefined;
 }
 
 
