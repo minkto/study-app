@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { createUserFromClerk } from "@/db/users/createUser";
 import { createUserSettings } from "@/db/users/settings/createUserSettings";
+import { deleteUserHandler } from "@/utils/deleteUserHandler";
 
 export async function POST(request: NextRequest) {
 
@@ -19,7 +20,9 @@ export async function POST(request: NextRequest) {
         const webhookEvent = await verifyWebhook(request, { signingSecret: webhookSecret });
         switch (webhookEvent.type) {
             case 'user.created':
-                return handleUserCreation(webhookEvent?.data?.id);
+                return await handleUserCreation(webhookEvent?.data?.id);
+            case 'user.deleted':
+                return await handleUserDeletion(webhookEvent?.data?.id);
             default:
                 return NextResponse.json({ message: 'Event type not handled' }, { status: 400 });
         }
@@ -29,10 +32,23 @@ export async function POST(request: NextRequest) {
     }
 }
 
-async function handleUserCreation(clerkUserId: string) {
+async function handleUserDeletion(clerkUserId: string | undefined) {
+
+    try {
+        return await deleteUserHandler();
+    } catch (error) {
+        console.error("Error deleting user from webhook with Clerk ID:", clerkUserId, error);
+        return NextResponse.json({ message: 'Failed to delete user', error: error instanceof Error ? error.message : error }, { status: 500 });
+    }
+}
+
+async function handleUserCreation(clerkUserId: string | undefined) {
+    if (!clerkUserId) {
+        console.error("Clerk User ID is undefined");
+        return NextResponse.json({ message: 'Clerk User ID is undefined' }, { status: 400 });
+    }
     const newUser = await createUserFromClerk(clerkUserId);
-    if(!newUser)
-    {
+    if (!newUser) {
         console.error("Failed to create User from Clerk with Clerk id: ", clerkUserId);
         return NextResponse.json({ message: 'Failed to create user' }, { status: 500 });
     }
