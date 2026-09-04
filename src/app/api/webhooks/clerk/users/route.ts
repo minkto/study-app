@@ -39,7 +39,7 @@ async function handleUserDeletion(clerkUserId: string | undefined) {
         const currentUser = await getUserByClerkUserId(clerkUserId);
         if (!currentUser) {
             console.error("Could not find user in the database with Clerk ID:", clerkUserId);
-            return NextResponse.json({ message: 'Could not find user in the database' }, { status: 404 });
+            return new NextResponse(null, { status: 204 });
         }
 
         return await deleteUserHandler(currentUser);

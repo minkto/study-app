@@ -4,7 +4,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { setUserMarkedForDeletion } from "@/db/users/setUserMarkedForDeletion";
 import { AppUser } from "@/shared.types";
 
-export const deleteUserHandler = async (currentUser: AppUser): Promise<NextResponse | Response> => {
+export const deleteUserHandler = async (currentUser: AppUser): Promise<NextResponse> => {
 
     try {
         // 1. Step 1 of 3 Deletion set flag in the database for the user to be deleted.
@@ -21,7 +21,7 @@ export const deleteUserHandler = async (currentUser: AppUser): Promise<NextRespo
         return NextResponse.json({ message: 'Failed to delete user', error: error instanceof Error ? error.message : error }, { status: 500 });
     }
 
-    return new Response(null, { status: 204 });
+    return new NextResponse(null, { status: 204 });
 }
 
 async function markUserForDeletion(userId: string) {
