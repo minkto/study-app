@@ -3,6 +3,7 @@ import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { createUserFromClerk } from "@/db/users/createUser";
 import { createUserSettings } from "@/db/users/settings/createUserSettings";
 import { deleteUserHandler } from "@/utils/deleteUserHandler";
+import { getUserByClerkUserId } from "@/db/users/getUser";
 
 export async function POST(request: NextRequest) {
 
@@ -35,7 +36,13 @@ export async function POST(request: NextRequest) {
 async function handleUserDeletion(clerkUserId: string | undefined) {
 
     try {
-        return await deleteUserHandler();
+        const currentUser = await getUserByClerkUserId(clerkUserId);
+        if (!currentUser) {
+            console.error("Could not find user in the database with Clerk ID:", clerkUserId);
+            return NextResponse.json({ message: 'Could not find user in the database' }, { status: 404 });
+        }
+
+        return await deleteUserHandler(currentUser);
     } catch (error) {
         console.error("Error deleting user from webhook with Clerk ID:", clerkUserId, error);
         return NextResponse.json({ message: 'Failed to delete user', error: error instanceof Error ? error.message : error }, { status: 500 });

@@ -1,26 +1,17 @@
 import { NextResponse } from "next/server";
-import { getCurrentAppUser } from "../services/auth/userService";
 import { deleteUser } from "@/db/users/deleteUser";
 import { clerkClient } from "@clerk/nextjs/server";
 import { setUserMarkedForDeletion } from "@/db/users/setUserMarkedForDeletion";
+import { AppUser } from "@/shared.types";
 
-export const deleteUserHandler = async (skipClerkDeletion: boolean = false): Promise<NextResponse | Response> => {
-
-    const currentUser = await getCurrentAppUser();
-
-    if (!currentUser) {
-        console.error("Clerk User ID is undefined for deletion");
-        return NextResponse.json({ message: 'Clerk User ID is undefined' }, { status: 400 });
-    }
+export const deleteUserHandler = async (currentUser: AppUser): Promise<NextResponse | Response> => {
 
     try {
         // 1. Step 1 of 3 Deletion set flag in the database for the user to be deleted.
         await markUserForDeletion(currentUser.userId);
 
-        if (!skipClerkDeletion) {
-            // 2. Step 2 of 3 delete account from Clerk. This will trigger the webhook again for user.deleted event.
-            await deleteUserFromClerk(currentUser.userId, currentUser.clerkUserId);
-        }
+        // 2. Step 2 of 3 delete account from Clerk. This will trigger the webhook again for user.deleted event.
+        await deleteUserFromClerk(currentUser.userId, currentUser.clerkUserId);
 
         // 3. Step 3 of 3 Deletion set flag in the database for the user to be deleted.
         await deleteUserFromDatabase(currentUser.userId);
