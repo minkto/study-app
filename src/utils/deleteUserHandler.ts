@@ -16,21 +16,17 @@ export const deleteUserHandler = async (currentUser: AppUser): Promise<NextRespo
         // 3. Step 3 of 3 Deletion set flag in the database for the user to be deleted.
         await deleteUserFromDatabase(currentUser.userId);
 
+        return new NextResponse(null, { status: 204 });
+
     } catch (error) {
         console.error("Error deleting user from webhook with Clerk ID:", currentUser.clerkUserId, error);
         return NextResponse.json({ message: 'Failed to delete user', error: error instanceof Error ? error.message : error }, { status: 500 });
     }
-
-    return new NextResponse(null, { status: 204 });
 }
 
 async function markUserForDeletion(userId: string) {
     try {
-        const markUserForDeletionResult = await setUserMarkedForDeletion(userId);
-        if (!markUserForDeletionResult) {
-            console.error("DELETE User Step 1 of 3 - Failed to mark user for deletion in the database with User ID:", userId);
-            return NextResponse.json({ message: 'Failed to mark user for deletion in database' }, { status: 500 });
-        }
+        await setUserMarkedForDeletion(userId);
     } catch (error) {
         console.error("DELETE User Step 1 of 3 - Failed to mark user for deletion in the database with User ID:", userId);
         throw error;
@@ -49,12 +45,7 @@ async function deleteUserFromClerk(userId: string, clerkUserId: string) {
 
 async function deleteUserFromDatabase(userId: string) {
     try {
-        const userDeleted = await deleteUser(userId);
-        if (!userDeleted) {
-            console.error("DELETE User Step 3 of 3 - Failed final step to delete user from the database with User ID:", userId);
-            return NextResponse.json({ message: 'Failed to delete user from database' }, { status: 500 });
-        }
-
+        await deleteUser(userId);
     } catch (error) {
         console.error("DELETE User Step 3 of 3 - Failed final step to delete user from the database with User ID:", userId);
         throw error;
