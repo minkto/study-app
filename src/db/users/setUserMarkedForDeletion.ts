@@ -5,10 +5,10 @@ export async function setUserMarkedForDeletion(userId: string) {
     try {
         const result = await queryData(`UPDATE users
                     SET 
-                        deletion_requested_at = $2,
+                        deletion_requested_at = NOW()
                     WHERE
                         user_id = $1
-                        RETURNING *`, [userId, new Date()]);
+                        RETURNING *`, [userId]);
 
         if (result.length > 0) {
             const row = result[0];
