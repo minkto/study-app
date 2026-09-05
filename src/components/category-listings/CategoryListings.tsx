@@ -225,16 +225,6 @@ export const CategoryListings = ({ useQueryParams = true }: CategoryListingsProp
         }
     }, [dataLoaded]);
 
-    // Set loading to false after data has been loaded and component has re-rendered
-    useEffect(() => {
-        if (dataLoaded) {
-            // Use setTimeout to ensure the render cycle is complete
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 0);
-        }
-    }, [dataLoaded]);
-
     return (
 
         <div className={styles["data-table-listings"]}>

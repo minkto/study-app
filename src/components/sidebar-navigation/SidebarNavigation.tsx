@@ -26,7 +26,7 @@ export const SidebarNavigation = () => {
     const overlayRef = useRef<HTMLDivElement>(null);
 
     const toggleSidebar = () => {
-        setSidebarToggle(!sidebarToggle);
+        setSidebarToggle(prev => !prev);
     }
 
     const closeSidebar = () => {
@@ -51,7 +51,7 @@ export const SidebarNavigation = () => {
         const handleOutsideFocus = (e: KeyboardEvent | MouseEvent) => {
 
             if (overlayRef.current === e.target) {
-                toggleSidebar();
+                setSidebarToggle(prev => !prev);
             }
         }
 
@@ -66,7 +66,7 @@ export const SidebarNavigation = () => {
             currentOverlayRef?.removeEventListener('keydown', handleOutsideFocus);
             currentOverlayRef?.removeEventListener('mousedown', handleOutsideFocus);
         }
-    })
+    }, [])
 
     return (<aside className={styles[`sidebar${sidebarToggle ? "--expanded" : ""}`]}>
         <div className={styles["sidebar__container"]}>

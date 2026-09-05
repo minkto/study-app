@@ -157,6 +157,15 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
     }, [resourceId]);
 
 
+    const onDeleteChapter = useCallback((chapter: Chapter) => {
+        try {
+            setSelectedChapter(chapter);
+            handleModalVisibility();
+        } catch (error) {
+            console.error("Failed to delete chapter:", error);
+        }
+    }, [handleModalVisibility])
+
     const renderChapterOptionMenu = useCallback((chapter: Chapter) => {
         return (<CardDropdownMenu positionState={CardDropdownAlignment.LEFT} links={
             [
@@ -165,17 +174,12 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                 {
                     label: "Delete",
                     onClick: async () => {
-                        try {
-                            setSelectedChapter(chapter);
-                            handleModalVisibility();
-                        } catch (error) {
-                            console.error("Failed to delete chapter:", error);
-                        }
+                        onDeleteChapter(chapter);
                     },
                 }
             ]
         } />)
-    }, [handleModalVisibility, resourceId])
+    }, [onDeleteChapter, resourceId])
 
     const columns = useMemo(() => [
         columnHelper.accessor('name', {
@@ -362,7 +366,9 @@ const ResourceChaptersListings = ({ resourceId, useQueryParams = true, pageSize 
                     (
                         <div>
                             {table.getRowModel().rows.map(r => (
-                                <ChaptersDataTableCardView cardMenuOption={renderChapterOptionMenu(r.original)}
+                                <ChaptersDataTableCardView
+                                    resourceId={resourceId}
+                                    onDeleteChapter={onDeleteChapter}
                                     chapter={r.original}
                                     key={r.original.chapterId} />
                             ))}

@@ -1,22 +1,38 @@
+import { memo } from "react";
 import { ChapterStatuses } from "@/constants/constants";
 import { Chapter } from "@/shared.types";
 import styles from './chapters-data-table-card-view.module.css'
 import { TZDate } from "@date-fns/tz";
 import { ProgressPill } from "./ProgressPill";
 import ChapterDaysCompletedPill from "./ChapterDaysCompletedPill";
+import CardDropdownMenu, { CardDropdownAlignment } from "../card-dropdown-menu/CardDropdownMenu";
 
 interface ChaptersDataTableProps {
     chapter: Chapter;
-    cardMenuOption: React.ReactNode
+    resourceId?: string;
+    onDeleteChapter: (chapter: Chapter) => void;
 }
 
-const ChaptersDataTableCardView = ({ chapter, cardMenuOption }: ChaptersDataTableProps) => {
+const ChaptersDataTableCardView = memo(({ chapter, resourceId, onDeleteChapter }: ChaptersDataTableProps) => {
+
+    const menuLinks = [
+        ...(resourceId ? [
+            { label: "View", href: `/dashboard/resources/${resourceId}/chapters/${chapter.chapterId}` },
+            { label: "Edit", href: `/dashboard/resources/${resourceId}/chapters/${chapter.chapterId}/edit-chapter` },
+        ] : []),
+        {
+            label: "Delete",
+            onClick: async () => {
+                onDeleteChapter(chapter);
+            },
+        }
+    ];
 
     return (
         <div className={styles["chapter-data-table-card"]}>
             <div className={styles["chapter-data-table-card__header"]}>
                 <span className={styles["chapter-data-table-card__header-title"]}>{chapter.name}</span>
-                {cardMenuOption}
+                <CardDropdownMenu positionState={CardDropdownAlignment.LEFT} links={menuLinks} />
             </div>
             <ProgressPill statusId={chapter.statusId ?? ChapterStatuses.NOT_STARTED}/>
             <div className={styles["chapter-data-table-card__completion"]}>
@@ -36,6 +52,8 @@ const ChaptersDataTableCardView = ({ chapter, cardMenuOption }: ChaptersDataTabl
             </div>
         </div>
     )
-}
+});
+
+ChaptersDataTableCardView.displayName = "ChaptersDataTableCardView";
 
 export default ChaptersDataTableCardView;

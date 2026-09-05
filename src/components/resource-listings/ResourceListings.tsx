@@ -143,7 +143,7 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
     }
   }, [constructQueryString]);
 
-  const deleteResource = async (id: number | undefined): Promise<void> => {
+  const deleteResource = useCallback(async (id: number | undefined): Promise<void> => {
     setupLoading(true);
     try {
       const response = await fetch(`/api/resources/${id}`, {
@@ -160,7 +160,7 @@ const ResourceListings = ({ useQueryParams = true }: ResourceListingsProps) => {
     finally {
       setupLoading(false);
     }
-  }
+  }, [getResources])
 
   useEffect(() => {
     getCategories();
