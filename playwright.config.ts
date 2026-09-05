@@ -36,9 +36,13 @@ export default defineConfig({
   projects: [
     {
       name: 'global setup',
-      testMatch: /tests\/global\.setup\.ts/,
-    }
-    ,
+      testMatch: /global\.setup\.ts/,
+      teardown: 'cleanup user data'
+    },
+    {
+      name: 'cleanup user data',
+      testMatch: /global\.teardown\.ts/,
+    },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
